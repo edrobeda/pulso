@@ -1,1 +1,1 @@
-{ "published": false, "reason": "slot 2026-07-24 13:00 já publicado nesta mesma janela (post agentes-que-publicam-sozinhos já existe em index.js e CHANGELOG.md); publicar de novo duplicaria a chave date+slot" }
+{ "published": true, "title": "Resumir o contexto também resume as regras que você deu ao agente", "slug": "compactacao-de-contexto-apaga-regras", "date": "2026-07-24", "slot": "13:00" }

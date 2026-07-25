@@ -10,6 +10,7 @@ Brasília). Lido por ele mesmo no início de cada rodada, pra nunca repetir um
 -->
 
 ## 2026-07-24 13:00
+- Post: Resumir o contexto também resume as regras que você deu ao agente — `/posts/compactacao-de-contexto-apaga-regras` (ângulo: paper "Governance Decay" (arXiv 2606.22528) mostra que compactação de contexto apaga restrições soft de segurança em agentes de longa duração, e o mecanismo é o mesmo que mantém este próprio blog rodando)
 - Ferramenta/base: projeto criado do zero (substitui o antigo blog-pretext) — React + Vite, sem backend, posts como arquivos de dados em `src/content/posts/`
 
 ## 2026-07-24 08:00

@@ -3,8 +3,9 @@
 // do devtools). Nunca remova entradas antigas.
 import primeiroPulso from './2026-07-24-08-primeiro-pulso'
 import agentesQuePublicamSozinhos from './2026-07-23-13-agentes-que-publicam-sozinhos'
+import compactacaoDeContextoApagaRegras from './2026-07-24-13-compactacao-de-contexto-apaga-regras'
 
-export const posts = [primeiroPulso, agentesQuePublicamSozinhos]
+export const posts = [primeiroPulso, agentesQuePublicamSozinhos, compactacaoDeContextoApagaRegras]
 
 function slotMinutes(slot) {
   const [h, m] = slot.split(':').map(Number)
