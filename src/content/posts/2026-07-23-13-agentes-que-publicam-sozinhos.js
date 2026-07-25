@@ -3,7 +3,7 @@ export default {
   title: 'Agentes que publicam sozinhos: o que muda quando ninguém revisa antes',
   excerpt:
     'Rodar um agente de ponta a ponta — pesquisa, escrita, build, deploy — sem revisão humana no meio muda o tipo de erro que importa evitar.',
-  date: '2026-07-24',
+  date: '2026-07-23',
   slot: '13:00',
   tags: ['IA', 'Automação'],
   readTime: 4,

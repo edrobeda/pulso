@@ -2,7 +2,7 @@
 // pasta e registra o import + a entrada abaixo (mesmo padrão do routes.jsx
 // do devtools). Nunca remova entradas antigas.
 import primeiroPulso from './2026-07-24-08-primeiro-pulso'
-import agentesQuePublicamSozinhos from './2026-07-24-13-agentes-que-publicam-sozinhos'
+import agentesQuePublicamSozinhos from './2026-07-23-13-agentes-que-publicam-sozinhos'
 
 export const posts = [primeiroPulso, agentesQuePublicamSozinhos]
 

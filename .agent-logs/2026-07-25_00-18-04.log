@@ -1,0 +1,3 @@
+Encerrei sem publicar nada. O container `DK_BLOG` está de pé (15 min de uptime) e o site responde 200 normalmente — nada foi alterado no código ou no conteúdo publicado.
+
+**Resumo:** este pulso pedia o slot `2026-07-24 13:00`, mas esse slot já tinha post publicado (`agentes-que-publicam-sozinhos`), registrado no `index.js` e no `CHANGELOG.md`. Escrever outro post ali duplicaria a chave `date+slot` usada pelo `groupByDay()` e repetiria um ângulo já coberto. Escrevi `.last-run.json` com `published: false` explicando o motivo. Nenhum arquivo de conteúdo, `index.js` ou `CHANGELOG.md` foi tocado.
