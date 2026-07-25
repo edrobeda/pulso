@@ -4,8 +4,14 @@
 import primeiroPulso from './2026-07-24-08-primeiro-pulso'
 import agentesQuePublicamSozinhos from './2026-07-23-13-agentes-que-publicam-sozinhos'
 import compactacaoDeContextoApagaRegras from './2026-07-24-13-compactacao-de-contexto-apaga-regras'
+import harnessEngineeringAParteChata from './2026-07-25-08-harness-engineering-a-parte-chata'
 
-export const posts = [primeiroPulso, agentesQuePublicamSozinhos, compactacaoDeContextoApagaRegras]
+export const posts = [
+  primeiroPulso,
+  agentesQuePublicamSozinhos,
+  compactacaoDeContextoApagaRegras,
+  harnessEngineeringAParteChata,
+]
 
 function slotMinutes(slot) {
   const [h, m] = slot.split(':').map(Number)

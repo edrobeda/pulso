@@ -9,6 +9,9 @@ Brasília). Lido por ele mesmo no início de cada rodada, pra nunca repetir um
 - <título> — `/posts/<slug>` (<uma frase sobre o ângulo escolhido>)
 -->
 
+## 2026-07-25 08:00
+- Post: A harness é a parte chata que faz o agente funcionar — e quase ninguém mostra ela — `/posts/harness-engineering-a-parte-chata` (ângulo: 2026 formalizou "harness engineering" como disciplina — Agent = Model + Harness — e este blog serve de estudo de caso real e pequeno: CHANGELOG como memória forçada, escopo de diretório, gate de build antes do deploy e `.last-run.json` como sensor de estado)
+
 ## 2026-07-24 13:00
 - Post: Resumir o contexto também resume as regras que você deu ao agente — `/posts/compactacao-de-contexto-apaga-regras` (ângulo: paper "Governance Decay" (arXiv 2606.22528) mostra que compactação de contexto apaga restrições soft de segurança em agentes de longa duração, e o mecanismo é o mesmo que mantém este próprio blog rodando)
 - Ferramenta/base: projeto criado do zero (substitui o antigo blog-pretext) — React + Vite, sem backend, posts como arquivos de dados em `src/content/posts/`

@@ -1,2 +1,3 @@
 2026-07-25T00:18:53+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-07-25_00-18-04.log
 2026-07-25T00:18:53+00:00 — pulso 13:00 não publicou: slot 2026-07-24 13:00 já publicado nesta mesma janela (post agentes-que-publicam-sozinhos já existe em index.js e CHANGELOG.md); publicar de novo duplicaria a chave date+slot
+2026-07-25T00:24:42+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-07-25_00-21-46.log

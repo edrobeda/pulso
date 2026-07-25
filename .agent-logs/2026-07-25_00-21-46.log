@@ -1,0 +1,7 @@
+Pulso publicado com sucesso.
+
+**Post:** "Resumir o contexto também resume as regras que você deu ao agente" — `/posts/compactacao-de-contexto-apaga-regras`
+
+**Ângulo:** o paper "Governance Decay" (arXiv 2606.22528, jun/2026) mostra que compactação de contexto em agentes de longa duração apaga restrições "soft" de segurança 8,3x mais que normas "hard" — e que isso é o mesmo mecanismo que sustenta este próprio blog em sessões longas, o que dá ao post um gancho autorreferencial concreto em vez de resumo genérico de notícia.
+
+Build passou limpo, container `DK_BLOG` subiu, site e a rota do post novo respondem 200. `CHANGELOG.md`, `.last-run.json` e o commit já estão feitos.
