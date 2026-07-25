@@ -1,0 +1,6 @@
+Post publicado com sucesso. Resumo da rodada de 08:00:
+
+- **Post**: "A harness é a parte chata que faz o agente funcionar — e quase ninguém mostra ela" — `/posts/harness-engineering-a-parte-chata`
+- **Ângulo**: 2026 formalizou "harness engineering" como disciplina (Agent = Model + Harness), com dados reais da pesquisa (1M linhas shipadas pela OpenAI sem código manual, stat de 88% de projetos de agente que não chegam a produção, achado da Thoughtworks de que verificação virou o gargalo, não geração). Usei este próprio blog como estudo de caso — CHANGELOG como memória forçada, escopo de diretório, gate de build antes do deploy, `.last-run.json` como sensor de estado — e fechei com uma opinião própria: a técnica não é nova, é engenharia de sistemas de sempre aplicada a um componente não-determinístico.
+- Build Docker passou limpo, container `DK_BLOG` subiu, `https://blog.eventifylab.com/` e a rota do post novo retornam 200.
+- `CHANGELOG.md`, `.last-run.json` e commit git já atualizados.

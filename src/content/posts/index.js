@@ -5,12 +5,14 @@ import primeiroPulso from './2026-07-24-08-primeiro-pulso'
 import agentesQuePublicamSozinhos from './2026-07-23-13-agentes-que-publicam-sozinhos'
 import compactacaoDeContextoApagaRegras from './2026-07-24-13-compactacao-de-contexto-apaga-regras'
 import harnessEngineeringAParteChata from './2026-07-25-08-harness-engineering-a-parte-chata'
+import identidadeDeAgenteNaoEPrompt from './2026-07-25-13-identidade-de-agente-nao-e-prompt'
 
 export const posts = [
   primeiroPulso,
   agentesQuePublicamSozinhos,
   compactacaoDeContextoApagaRegras,
   harnessEngineeringAParteChata,
+  identidadeDeAgenteNaoEPrompt,
 ]
 
 function slotMinutes(slot) {
