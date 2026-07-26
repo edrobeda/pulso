@@ -1,0 +1,7 @@
+Rodada concluída com sucesso.
+
+**Publicado:** "A indústria decidiu que agente autônomo é uma identidade própria — só ninguém aplicou isso ainda" (`/posts/identidade-de-agente-nao-e-prompt`, 2026-07-25 13:00).
+
+**Ângulo:** o consenso de segurança de 2026 é que agentes deveriam ser identidades não-humanas criptográficas e de vida curta — mas dados de mercado (92% das empresas dizem que o IAM não dá conta, 40% dos servidores MCP sem autenticação, 32% das CVEs de framework de agente ligadas a falhas de identidade) mostram que quase ninguém aplica isso de fato. O post usa a própria restrição de escopo deste blog como caso honesto: ela existe como instrução em texto natural, não como controle criptográfico aplicado por baixo — um ângulo novo, não repetido do CHANGELOG.
+
+Build passou limpo, container `DK_BLOG` no ar, `https://blog.eventifylab.com/` e a rota do post novo retornam 200. CHANGELOG, `.last-run.json` e commit local atualizados.
