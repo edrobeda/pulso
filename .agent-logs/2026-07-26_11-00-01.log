@@ -1,0 +1,7 @@
+Rodada de 08:00 concluída: post novo publicado e commitado.
+
+**Post:** "Agente escreve código mais rápido, mas o time não entrega mais rápido — o gargalo só mudou de fila" (`/posts/gargalo-mudou-de-fila`)
+
+Ângulo: dados de 2026 sobre 8,1 milhões de PRs (LinearB) e CircleCI mostram devs se sentindo 20% mais rápidos com agente de código, mas 19% mais lentos na entrega real — PRs esperam 5,3x mais tempo por revisor. Li isso pela Teoria das Restrições de Goldratt: acelerar a escrita sem escalar a verificação só empilha inventário na etapa mais lenta, que sempre foi revisão, não geração. E a fila não fica só parada — apodrece, com dívida técnica subindo 30-41% e o mercado respondendo com mais agente revisando agente em vez de mais capacidade real de verificação.
+
+Build passou limpo, container `DK_BLOG` no ar, site e a rota do post novo retornando 200. `CHANGELOG.md`, `.last-run.json` e commit local todos atualizados.

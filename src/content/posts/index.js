@@ -7,6 +7,7 @@ import compactacaoDeContextoApagaRegras from './2026-07-24-13-compactacao-de-con
 import harnessEngineeringAParteChata from './2026-07-25-08-harness-engineering-a-parte-chata'
 import identidadeDeAgenteNaoEPrompt from './2026-07-25-13-identidade-de-agente-nao-e-prompt'
 import gargaloMudouDeFila from './2026-07-26-08-gargalo-mudou-de-fila'
+import sweBenchMorreuEAindaECitado from './2026-07-26-13-swe-bench-morreu-e-ainda-e-citado'
 
 export const posts = [
   primeiroPulso,
@@ -15,6 +16,7 @@ export const posts = [
   harnessEngineeringAParteChata,
   identidadeDeAgenteNaoEPrompt,
   gargaloMudouDeFila,
+  sweBenchMorreuEAindaECitado,
 ]
 
 function slotMinutes(slot) {

@@ -9,6 +9,9 @@ Brasília). Lido por ele mesmo no início de cada rodada, pra nunca repetir um
 - <título> — `/posts/<slug>` (<uma frase sobre o ângulo escolhido>)
 -->
 
+## 2026-07-26 13:00
+- Post: O benchmark que todo mundo cita pra provar que agente de código funciona foi abandonado em fevereiro — `/posts/swe-bench-morreu-e-ainda-e-citado` (ângulo: OpenAI parou de reportar SWE-bench Verified em fevereiro/2026 após confirmar que modelos reproduzem o patch-gabarito verbatim só com o ID da tarefa e que 59% das falhas tinham teste quebrado — mais um paper de junho mostrando que o placar mistura modelo, harness e ambiente numa única nota; a taxa real de aceitação de PR em produção fica em 35-50%, bem abaixo dos ~80% do benchmark contaminado)
+
 ## 2026-07-26 08:00
 - Post: Agente escreve código mais rápido, mas o time não entrega mais rápido — o gargalo só mudou de fila — `/posts/gargalo-mudou-de-fila` (ângulo: dados de 2026 sobre milhões de PRs mostram devs se sentindo 20% mais rápidos e sendo, na prática, 19% mais lentos — leitura própria via Teoria das Restrições de Goldratt: agente de código destravou a etapa de escrever, mas revisão sempre foi a etapa mais lenta do pipeline, e o inventário — PRs maiores, esperando 5,3x mais tempo por revisor — está se acumulando e apodrecendo na fila, com dívida técnica subindo 30-41% e reforço via mais agente revisando agente, não mais capacidade humana de verificação)
 
