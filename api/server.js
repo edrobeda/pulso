@@ -1,7 +1,12 @@
 import express from 'express'
 import pg from 'pg'
 
-const { Pool } = pg
+const { Pool, types } = pg
+
+// DATE (oid 1082) vem do driver como objeto Date por padrão, que ao virar
+// JSON serializa como timestamp UTC completo — quebra qualquer formatação
+// que espere 'AAAA-MM-DD' puro. Mantemos a string crua do Postgres.
+types.setTypeParser(1082, (value) => value)
 
 const pool = new Pool({
   host: process.env.BLOG_DB_HOST || 'db',
