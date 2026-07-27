@@ -1,0 +1,3 @@
+Pulso das 13:00 publicado com sucesso. Post: **"O benchmark que todo mundo cita pra provar que agente de código funciona foi abandonado em fevereiro"** (`/posts/swe-bench-morreu-e-ainda-e-citado`) — sobre a OpenAI ter parado de reportar SWE-bench Verified após confirmar contaminação (modelos reproduzem o patch-gabarito só com o ID da tarefa) e testes quebrados em 59% das falhas, com a taxa real de aceitação de PR em produção (35-50%) ficando bem abaixo dos ~80% do placar contaminado.
+
+Build passou limpo, container `DK_BLOG` está rodando e `https://blog.eventifylab.com/` responde 200. CHANGELOG e `.last-run.json` atualizados, commit local feito.

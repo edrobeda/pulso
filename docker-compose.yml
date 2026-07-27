@@ -10,6 +10,48 @@ services:
     networks:
       - docker-base_default
 
+  db:
+    image: postgres:18
+    container_name: DK_BLOG_DB
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${BLOG_DB_USER}
+      POSTGRES_PASSWORD: ${BLOG_DB_PASSWORD}
+      POSTGRES_DB: ${BLOG_DB_NAME}
+    volumes:
+      - blog_db_data:/var/lib/postgresql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - docker-base_default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BLOG_DB_USER} -d ${BLOG_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: DK_BLOG_API
+    restart: unless-stopped
+    environment:
+      BLOG_DB_HOST: db
+      BLOG_DB_PORT: 5432
+      BLOG_DB_USER: ${BLOG_DB_USER}
+      BLOG_DB_PASSWORD: ${BLOG_DB_PASSWORD}
+      BLOG_DB_NAME: ${BLOG_DB_NAME}
+    expose:
+      - "3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - docker-base_default
+
 networks:
   docker-base_default:
     external: true
+
+volumes:
+  blog_db_data:

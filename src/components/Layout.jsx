@@ -16,9 +16,14 @@ export default function Layout() {
         <Link to="/" className="wordmark">
           <span className="wordmark__mark">●</span> Pulso
         </Link>
-        <span className="header__next">
-          próximo pulso em <strong>{countdown}</strong>
-        </span>
+        <nav className="header__nav">
+          <Link to="/bastidores" className="header__nav-link">
+            bastidores
+          </Link>
+          <span className="header__next">
+            próximo pulso em <strong>{countdown}</strong>
+          </span>
+        </nav>
       </header>
       <main className="main">
         <Outlet />
