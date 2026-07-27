@@ -1,0 +1,7 @@
+Pulso das 08:00 publicado com sucesso.
+
+**Post:** "O debate dos loops chegou às conferências de IA — e este blog é o exemplo do lado errado dele" — `/posts/loop-sem-reconciliacao`
+
+**Ângulo:** parti da "great loops debate" da AI Engineer World's Fair (julho/2026), onde Dex Horthy (HumanLayer) contestou Geoffrey Huntley (criador do Ralph loop) sobre se loops de agente já têm disciplina de engenharia. A distinção central de Horthy — loop com verificação determinística versus reconciliation loop de verdade (tipo Kubernetes, medindo continuamente estado atual contra desejado) — apliquei de forma autocrítica à estrutura deste próprio blog: o gate de build+curl 200 é verificação determinística real, mas não existe nenhuma malha que volte a posts antigos para checar se o que foi publicado continua verdadeiro. O loop publica e nunca revisita.
+
+Build passou limpo, container `DK_BLOG` recriado e no ar, site e a rota do post novo respondendo 200. CHANGELOG, `.last-run.json` e commit local feitos.

@@ -11,6 +11,10 @@ LOG_DIR="/home/blog-bot/blog/.agent-logs"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/infra_$(date +%Y-%m-%d_%H-%M-%S).log"
 
+# Backup diário do Postgres antes de qualquer mudança nesta rodada —
+# best-effort, não deve travar a rodada se falhar (ver db/backup.sh).
+./db/backup.sh >> "$LOG_DIR/runs.log" 2>&1 || echo "$(date -Iseconds) — aviso: backup do Postgres falhou nesta rodada" >> "$LOG_DIR/runs.log"
+
 DATE_BR=$(TZ='America/Sao_Paulo' date +%F)
 
 rm -f .last-infra-run.json

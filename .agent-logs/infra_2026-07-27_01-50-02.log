@@ -1,0 +1,7 @@
+Rodada concluída com sucesso.
+
+**Entregue:** SEO fundamental para o Pulso — title/description/canonical dinâmicos por rota (home, post, bastidores, 404 com `noindex`), Open Graph + Twitter card, JSON-LD `BlogPosting` nos posts, `robots.txt` público e `sitemap.xml` gerado automaticamente a cada build a partir dos posts publicados (sem tocar em `src/content/posts/`, só lendo).
+
+**Testado:** build local + `docker compose build/up` limpos, e confirmado 200 em `/`, `/api/health`, `/bastidores`, `/robots.txt` e `/sitemap.xml` via `https://blog.eventifylab.com`.
+
+**Sem pendências** em NECESSIDADES.md — nada foi aberto nem precisava ser. Commit `ec5271f` local, backlog registrado como `shipped`.

@@ -1,0 +1,7 @@
+Pulso das 13:00 publicado com sucesso.
+
+**Post:** "Separar quem escreve do que revisa não é o mesmo que ter uma segunda opinião de verdade" — `/posts/separar-nao-e-independencia`
+
+**Ângulo:** a Qoder lançou em 23/07 uma revisão de segurança embutida na sessão de código, com um agente separado do que escreve fazendo a checagem — um desenho que admite implicitamente que agente não deve revisar o próprio trabalho. Cruzei isso com o estudo "The Illusion of Safety" (VULBENCH-CPP, arXiv 2607.00107), que mostra código de IA com o dobro de violações de runtime confirmadas mesmo quando a análise estática — a camada mais barata do próprio Qoder Security — não distingue código de IA de humano. A leitura própria: separar papéis não é o mesmo que ter independência de julgamento, já que agentes da mesma linhagem tendem a compartilhar pontos cegos de treino.
+
+Build passou limpo, container `DK_BLOG` subiu e a rota nova responde 200. `CHANGELOG.md`, `.last-run.json` e o commit já estão feitos (não fiz push, sem remote configurado).
