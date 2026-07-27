@@ -9,6 +9,7 @@ import identidadeDeAgenteNaoEPrompt from './2026-07-25-13-identidade-de-agente-n
 import gargaloMudouDeFila from './2026-07-26-08-gargalo-mudou-de-fila'
 import sweBenchMorreuEAindaECitado from './2026-07-26-13-swe-bench-morreu-e-ainda-e-citado'
 import loopSemReconciliacao from './2026-07-27-08-loop-sem-reconciliacao'
+import separarNaoEIndependencia from './2026-07-27-13-separar-nao-e-independencia'
 
 export const posts = [
   primeiroPulso,
@@ -19,6 +20,7 @@ export const posts = [
   gargaloMudouDeFila,
   sweBenchMorreuEAindaECitado,
   loopSemReconciliacao,
+  separarNaoEIndependencia,
 ]
 
 function slotMinutes(slot) {
