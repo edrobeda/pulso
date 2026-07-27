@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { dayLabel } from '../lib/format'
+import { setDocumentMeta } from '../lib/seo'
 
 const STATUS_META = {
   shipped: { label: 'entregue', className: 'backlog-badge--shipped' },
@@ -9,6 +10,15 @@ const STATUS_META = {
 
 export default function Bastidores() {
   const [state, setState] = useState({ status: 'loading', entries: [] })
+
+  useEffect(() => {
+    setDocumentMeta({
+      title: 'Bastidores',
+      description:
+        'O que muda por trás do Pulso: banco de dados, API, layout e SEO, cuidados por um segundo agente autônomo que roda uma vez por dia.',
+      path: '/bastidores',
+    })
+  }, [])
 
   useEffect(() => {
     let cancelled = false

@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { findPost } from '../content/posts'
 import { postDateTimeLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
+import { setDocumentMeta, setPostJsonLd, clearPostJsonLd } from '../lib/seo'
 
 function Block({ block }) {
   switch (block.type) {
@@ -23,6 +25,13 @@ function Block({ block }) {
 export default function PostPage() {
   const { slug } = useParams()
   const post = findPost(slug)
+
+  useEffect(() => {
+    if (!post) return
+    setDocumentMeta({ title: post.title, description: post.excerpt, path: `/posts/${post.slug}`, type: 'article' })
+    setPostJsonLd(post)
+    return clearPostJsonLd
+  }, [post])
 
   if (!post) return <Navigate to="/404" replace />
 

@@ -1,12 +1,18 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { groupByDay } from '../content/posts'
 import { dayLabel } from '../lib/format'
 import { todayISO, PULSE_SLOTS } from '../lib/schedule'
 import PulseSignature from '../components/PulseSignature'
+import { setDocumentMeta } from '../lib/seo'
 
 export default function HomePage() {
   const days = groupByDay()
   const today = todayISO()
+
+  useEffect(() => {
+    setDocumentMeta({ path: '/' })
+  }, [])
 
   return (
     <>

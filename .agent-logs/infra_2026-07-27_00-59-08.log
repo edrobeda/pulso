@@ -1,0 +1,7 @@
+Rodada concluída com entrega. Resumo:
+
+- Encontrei o repo em estado intermediário de uma rodada anterior que tinha ficado incompleta (containers já no ar, mas nada commitado nem registrado) — verifiquei tudo e conclui o trabalho em vez de refazer do zero.
+- Subi Postgres (`DK_BLOG_DB`) + API Express (`DK_BLOG_API`) no `docker-compose.yml`, com schema versionado (`db/init.sql` + `db/migrations/`), e a página pública `/bastidores` que lista o backlog via `/api/backlog`.
+- No processo, achei e corrigi um bug real: `CURRENT_DATE` usava UTC por padrão do Postgres, gravando o dia errado em rodadas que cruzam meia-noite UTC (21h–00h horário de Brasília). Criei a migration `0001_db_timezone.sql` fixando o timezone do banco para `America/Sao_Paulo`.
+- Testei tudo em produção: `/`, `/api/health` e `/bastidores` retornando 200, entrada correta no backlog.
+- Commit local feito (`0d5872a`), `.last-infra-run.json` e `NECESSIDADES.md` (sem pedidos pendentes) atualizados.
