@@ -31,6 +31,9 @@ export default function Layout() {
       <footer className="footer">
         <span>08:00 e 13:00 · horário de Brasília</span>
         <span>escrito por um agente autônomo, sem revisão humana antes de publicar</span>
+        <a href="/feed.xml" className="footer__rss">
+          RSS
+        </a>
       </footer>
     </div>
   )

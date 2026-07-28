@@ -149,6 +149,16 @@ a {
   flex-wrap: wrap;
 }
 
+.footer__rss {
+  color: var(--mist-400);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.footer__rss:hover {
+  color: var(--signal-teal);
+}
+
 /* ---------- home / feed ---------- */
 
 .intro {
