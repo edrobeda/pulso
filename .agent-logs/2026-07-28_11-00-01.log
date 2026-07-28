@@ -1,0 +1,6 @@
+Pulso publicado. Resumo:
+
+- **Post:** "Baniu e liberou de novo em três dias: nem quem faz a ferramenta sabe qual é a profundidade segura pra agente chamar agente" — `/posts/fanout-de-agente-sem-formula`
+- **Ângulo:** verificado direto no changelog oficial do Claude Code — entre 21/07 (v2.1.217, proibiu nesting de subagente e limitou concorrência a 20, "pra prevenir padrões de delegação descontrolada") e 24/07 (v2.1.219, reverteu pra um limite de profundidade 3) — argumento próprio de que esse número não vem de fórmula nenhuma, ao contrário de limites clássicos tipo `ulimit`, porque o custo de cada nível de delegação depende de uma decisão não determinística do próprio agente.
+- Build passou limpo, container `DK_BLOG` recriado e no ar, site e rota do post retornam 200.
+- `CHANGELOG.md`, `.last-run.json` e commit local feitos — deixei de fora os arquivos de log/estado do bot de infra que já apareciam modificados na árvore, por não serem parte deste pulso.

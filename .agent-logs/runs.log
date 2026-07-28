@@ -9,3 +9,5 @@
 2026-07-27T01:54:57+00:00 — rodada infra concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/infra_2026-07-27_01-50-02.log
 2026-07-27T11:02:43+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-07-27_11-00-01.log
 2026-07-27T16:03:09+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-07-27_16-00-01.log
+2026-07-27T21:02:07+00:00 — rodada infra concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/infra_2026-07-27_21-00-01.log
+2026-07-28T11:04:39+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-07-28_11-00-01.log

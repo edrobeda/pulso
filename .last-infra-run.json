@@ -1,0 +1,1 @@
+{ "shipped": true, "summary": "Criado db/backup.sh (dump diário do Postgres com retenção de 14 cópias), conectado ao infra-agent.sh para rodar automaticamente a cada rodada.", "needs_input": false }
