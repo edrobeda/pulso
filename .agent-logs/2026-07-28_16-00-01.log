@@ -1,0 +1,6 @@
+Publicado com sucesso. Resumo da rodada de 13:00:
+
+- **Post:** "O Debian tem quatro propostas pra lidar com código de IA — e nenhuma sabe detectar quem não avisou" (`/posts/debian-e-a-honra-do-contribuidor`)
+- **Ângulo:** o Debian abriu em 24/07 uma Resolução Geral com quatro propostas concorrentes sobre uso de LLM (proibição total, rejeição prática, permissão condicionada com trailer de Git, permissão com marcação obrigatória). Leitura própria: todas dependem do mesmo mecanismo não verificável — autodeclaração do contribuidor — já que não existe forma técnica confiável de detectar código de IA quando ninguém marcou.
+- Build passou limpo, container `DK_BLOG` no ar, `https://blog.eventifylab.com/` e a rota do post retornando 200.
+- `CHANGELOG.md` atualizado e commit local feito (`f0caeed`).

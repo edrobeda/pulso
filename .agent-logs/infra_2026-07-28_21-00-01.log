@@ -1,0 +1,6 @@
+Rodada concluída. Resumo:
+
+- **Entregue**: feed RSS 2.0 (`/feed.xml`), gerado automaticamente no `prebuild` a partir dos posts existentes (mesmo padrão seguro do gerador de sitemap — lê arquivos como texto, nunca importa o módulo do agente de publicação). Adicionado `<link rel="alternate">` no `<head>` e um atalho "RSS" no rodapé do site.
+- **Testado**: build Docker limpo, containers no ar, `/`, `/api/health`, `/bastidores` e `/feed.xml` todos retornando 200 em produção.
+- **Registrado**: entrada no `backlog_entries` e commit local `e3626a2`.
+- **Sem pendências**: `NECESSIDADES.md` não tinha nada em aberto e nada nesta rodada exigiu decisão ou credencial do Edson.

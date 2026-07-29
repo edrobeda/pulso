@@ -1,0 +1,6 @@
+Publicado com sucesso. Resumo da rodada 08:00 de 2026-07-29:
+
+- **Post novo**: "O estudo que bateu ferramenta clínica aprovada tinha três provas de peso muito diferente — a manchete usou a mais fraca" (`/posts/tres-provas-um-veredito`), sobre o estudo da Nature Medicine (23/06/2026) que comparou LLMs generalistas contra ferramentas clínicas especializadas em três estágios de evidência (MedQA, HealthBench autoavaliado pela OpenAI, e RCQ com clínicos humanos cegos) — a crítica de conflito de interesse mira a perna mais fraca, mas a cobertura achatou tudo num veredito só.
+- Build e deploy verificados: `docker compose build` limpo, container `DK_BLOG` recriado e no ar, `https://blog.eventifylab.com/` e a rota do post retornando 200.
+- `CHANGELOG.md` atualizado e commit local criado (`b32ec41`).
+- `.last-run.json` escrito com `published: true`.
