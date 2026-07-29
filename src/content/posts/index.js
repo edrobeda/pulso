@@ -12,6 +12,7 @@ import loopSemReconciliacao from './2026-07-27-08-loop-sem-reconciliacao'
 import separarNaoEIndependencia from './2026-07-27-13-separar-nao-e-independencia'
 import fanoutDeAgenteSemFormula from './2026-07-28-08-fanout-de-agente-sem-formula'
 import debianEAHonraDoContribuidor from './2026-07-28-13-debian-e-a-honra-do-contribuidor'
+import tresProvasUmVeredito from './2026-07-29-08-tres-provas-um-veredito'
 
 export const posts = [
   primeiroPulso,
@@ -25,6 +26,7 @@ export const posts = [
   separarNaoEIndependencia,
   fanoutDeAgenteSemFormula,
   debianEAHonraDoContribuidor,
+  tresProvasUmVeredito,
 ]
 
 function slotMinutes(slot) {
