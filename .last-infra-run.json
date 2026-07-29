@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionado feed RSS (feed.xml) gerado no prebuild, com link no head e atalho no rodapé.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionado healthcheck no docker-compose.yml para frontend e API, corrigindo um bug de DNS (localhost -> ::1) descoberto no processo", "needs_input": false }
