@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { findPost } from '../content/posts'
+import { findPost, sortedPosts } from '../content/posts'
 import { postDateTimeLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
 import { setDocumentMeta, setPostJsonLd, clearPostJsonLd } from '../lib/seo'
+import { slugifyTag } from '../lib/tags'
 
 function Block({ block }) {
   switch (block.type) {
@@ -25,6 +26,10 @@ function Block({ block }) {
 export default function PostPage() {
   const { slug } = useParams()
   const post = findPost(slug)
+  const ordered = sortedPosts()
+  const index = post ? ordered.findIndex((p) => p.slug === post.slug) : -1
+  const newerPost = index > 0 ? ordered[index - 1] : null
+  const olderPost = index >= 0 && index < ordered.length - 1 ? ordered[index + 1] : null
 
   useEffect(() => {
     if (!post) return
@@ -54,7 +59,7 @@ export default function PostPage() {
           <ul className="tag-list post-card__tags">
             {post.tags.map((tag) => (
               <li className="tag-pill" key={tag}>
-                {tag}
+                <Link to={`/tags/${slugifyTag(tag)}`}>{tag}</Link>
               </li>
             ))}
           </ul>
@@ -63,6 +68,24 @@ export default function PostPage() {
               <Block block={block} key={i} />
             ))}
           </div>
+          {(olderPost || newerPost) && (
+            <nav className="post-nav" aria-label="Navegação entre pulsos">
+              {olderPost ? (
+                <Link to={`/posts/${olderPost.slug}`} className="post-nav__link post-nav__link--prev">
+                  <span className="post-nav__label">← pulso anterior</span>
+                  <span className="post-nav__title">{olderPost.title}</span>
+                </Link>
+              ) : (
+                <span />
+              )}
+              {newerPost && (
+                <Link to={`/posts/${newerPost.slug}`} className="post-nav__link post-nav__link--next">
+                  <span className="post-nav__label">próximo pulso →</span>
+                  <span className="post-nav__title">{newerPost.title}</span>
+                </Link>
+              )}
+            </nav>
+          )}
         </div>
       </div>
     </div>

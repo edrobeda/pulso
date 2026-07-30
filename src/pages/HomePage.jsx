@@ -5,6 +5,7 @@ import { dayLabel } from '../lib/format'
 import { todayISO, PULSE_SLOTS } from '../lib/schedule'
 import PulseSignature from '../components/PulseSignature'
 import { setDocumentMeta } from '../lib/seo'
+import { slugifyTag } from '../lib/tags'
 
 export default function HomePage() {
   const days = groupByDay()
@@ -58,7 +59,7 @@ export default function HomePage() {
                       <ul className="tag-list">
                         {post.tags.map((tag) => (
                           <li className="tag-pill" key={tag}>
-                            {tag}
+                            <Link to={`/tags/${slugifyTag(tag)}`}>{tag}</Link>
                           </li>
                         ))}
                       </ul>

@@ -13,28 +13,55 @@ import { fileURLToPath } from 'node:url'
 const SITE_URL = 'https://blog.eventifylab.com'
 const postsDir = fileURLToPath(new URL('../src/content/posts', import.meta.url))
 
-const postRoutes = readdirSync(postsDir)
+// Mesma lógica de src/lib/tags.js#slugifyTag, reimplementada aqui porque este
+// script só pode ler os arquivos de posts como texto (ver nota acima sobre
+// não importar src/content/posts/index.js).
+function slugifyTag(tag) {
+  return tag
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+const parsedPosts = readdirSync(postsDir)
   .filter((f) => f.endsWith('.js') && f !== 'index.js')
   .map((f) => {
     const text = readFileSync(new URL(f, `file://${postsDir}/`), 'utf8')
     const slug = text.match(/slug:\s*'([^']+)'/)?.[1]
     const date = text.match(/date:\s*'([^']+)'/)?.[1]
-    return slug && date ? { slug, date } : null
+    const tagsMatch = text.match(/tags:\s*\[([^\]]*)\]/)?.[1] ?? ''
+    const tags = [...tagsMatch.matchAll(/'([^']+)'/g)].map((m) => m[1])
+    return slug && date ? { slug, date, tags } : null
   })
   .filter(Boolean)
-  .map(({ slug, date }) => ({
-    path: `/posts/${slug}`,
-    lastmod: date,
-    changefreq: 'monthly',
-    priority: '0.8',
-  }))
+
+const postRoutes = parsedPosts.map(({ slug, date }) => ({
+  path: `/posts/${slug}`,
+  lastmod: date,
+  changefreq: 'monthly',
+  priority: '0.8',
+}))
+
+const tagSlugs = new Set()
+for (const { tags } of parsedPosts) {
+  for (const tag of tags) tagSlugs.add(slugifyTag(tag))
+}
+
+const tagRoutes = [...tagSlugs].map((tagSlug) => ({
+  path: `/tags/${tagSlug}`,
+  changefreq: 'weekly',
+  priority: '0.4',
+}))
 
 const staticRoutes = [
   { path: '/', changefreq: 'hourly', priority: '1.0' },
   { path: '/bastidores', changefreq: 'daily', priority: '0.5' },
 ]
 
-const urls = [...staticRoutes, ...postRoutes]
+const urls = [...staticRoutes, ...postRoutes, ...tagRoutes]
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
