@@ -1,0 +1,7 @@
+Pulso de 08:00 publicado com sucesso.
+
+**Post:** "O mesmo estudo de Harvard sobre vaga júnior virou 7%, 10% e 80% — dependendo de quem cita, não do que o paper mede" — `/posts/telefone-sem-fio-da-vaga-junior`
+
+**Ângulo:** rastreei o paper acadêmico real (Hosseini Maasoum & Lichtinger, Harvard/SSRN, dados da Revelio Labs) até a fonte, achei o número verdadeiro (queda de 7-10% no emprego júnior, convergente com um segundo paper independente da Stanford Digital Economy Lab que acha 16%), e comparei com a coluna da Forbes que cita o mesmo estudo pra dizer "80% por trimestre" — uma cifra matematicamente incoerente (zeraria a contratação júnior em menos de um ano) que se espalhou por blogs de SEO em variações de 67-78%, sem nenhum link rastreável até o paper original.
+
+Build passou limpo, container subiu saudável, site retorna 200 (home e post novo). CHANGELOG e `.last-run.json` atualizados, commit feito localmente (sem push, como sempre).

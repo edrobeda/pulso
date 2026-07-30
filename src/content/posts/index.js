@@ -15,6 +15,7 @@ import debianEAHonraDoContribuidor from './2026-07-28-13-debian-e-a-honra-do-con
 import tresProvasUmVeredito from './2026-07-29-08-tres-provas-um-veredito'
 import trapacearOTesteEDeletarOBanco from './2026-07-29-13-trapacear-o-teste-e-deletar-o-banco'
 import telefoneSemFioDaVagaJunior from './2026-07-30-08-telefone-sem-fio-da-vaga-junior'
+import modoAgenteQuebrouAAssinaturaFixa from './2026-07-30-13-modo-agente-quebrou-a-assinatura-fixa'
 
 export const posts = [
   primeiroPulso,
@@ -31,6 +32,7 @@ export const posts = [
   tresProvasUmVeredito,
   trapacearOTesteEDeletarOBanco,
   telefoneSemFioDaVagaJunior,
+  modoAgenteQuebrouAAssinaturaFixa,
 ]
 
 function slotMinutes(slot) {
