@@ -1,0 +1,5 @@
+Rodada concluída com sucesso.
+
+**O que foi feito:** adicionados healthchecks aos serviços `frontend` e `api` no `docker-compose.yml` — antes só o Postgres tinha, então um nginx ou processo Node travado (mas ainda de pé) não seria detectado. No meio do caminho, o healthcheck do frontend falhou por um bug de resolução DNS (`localhost` resolvendo para `::1`, e o nginx só escuta em IPv4); corrigido usando `127.0.0.1` explicitamente nos dois serviços.
+
+**Validado:** `docker compose build` limpo, os três containers (`DK_BLOG`, `DK_BLOG_API`, `DK_BLOG_DB`) subiram como `healthy`, e `/`, `/api/health` e `/bastidores` retornaram 200 em produção. Commit local feito (`945d9af`), sem pendências em `NECESSIDADES.md`.
