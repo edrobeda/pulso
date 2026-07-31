@@ -16,6 +16,7 @@ import tresProvasUmVeredito from './2026-07-29-08-tres-provas-um-veredito'
 import trapacearOTesteEDeletarOBanco from './2026-07-29-13-trapacear-o-teste-e-deletar-o-banco'
 import telefoneSemFioDaVagaJunior from './2026-07-30-08-telefone-sem-fio-da-vaga-junior'
 import modoAgenteQuebrouAAssinaturaFixa from './2026-07-30-13-modo-agente-quebrou-a-assinatura-fixa'
+import cicloDeCompraVsBenchmarkSaturado from './2026-07-31-08-ciclo-de-compra-vs-benchmark-saturado'
 
 export const posts = [
   primeiroPulso,
@@ -33,6 +34,7 @@ export const posts = [
   trapacearOTesteEDeletarOBanco,
   telefoneSemFioDaVagaJunior,
   modoAgenteQuebrouAAssinaturaFixa,
+  cicloDeCompraVsBenchmarkSaturado,
 ]
 
 function slotMinutes(slot) {
