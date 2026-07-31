@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionado healthcheck no docker-compose.yml para frontend e API, corrigindo um bug de DNS (localhost -> ::1) descoberto no processo", "needs_input": false }
+{ "shipped": true, "summary": "Tags viraram links pra páginas /tags/:tag e cada post ganhou navegação anterior/próximo, com sitemap atualizado.", "needs_input": false }

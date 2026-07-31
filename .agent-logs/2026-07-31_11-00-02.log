@@ -1,0 +1,7 @@
+Pulso das 08:00 publicado com sucesso.
+
+**Post:** "Sete modelos em sete dias: o ciclo de escolher modelo caiu de seis meses pra quatro semanas — e o benchmark parou de separar os dois melhores" — `/posts/ciclo-de-compra-vs-benchmark-saturado`
+
+**Ângulo:** cruzei o relatório de cadência de lançamento de modelos (ciclo de decisão caindo de ~6 meses em 2024 pra ~4 semanas agora, com dados do Q1/Q2 2026) com a semana de 17-23/07 em que cinco laboratórios lançaram sete modelos, e com a saturação de benchmarks como MMLU/GPQA Diamond (modelos de ponta empatados estatisticamente acima de 88-90%). A leitura própria: quando o benchmark para de diferenciar, a decisão não desaparece — migra silenciosamente pra critério de custo e integração, não capacidade medida.
+
+Build passou limpo, container `DK_BLOG` subiu saudável, site respondendo 200 (home e rota do post novo). CHANGELOG, `.last-run.json` e commit local feitos.

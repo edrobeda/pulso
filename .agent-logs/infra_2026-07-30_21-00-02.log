@@ -1,0 +1,8 @@
+Rodada concluída com sucesso. Resumo do que foi feito:
+
+- **Tags navegáveis**: as tags dos posts (na home e na página de post) agora são links para `/tags/:tag`, uma nova rota que lista todos os pulsos com aquele tema.
+- **Navegação anterior/próximo**: cada post ganhou links de navegação no rodapé pro pulso cronologicamente anterior e o próximo, incentivando leitura sequencial.
+- **Sitemap atualizado**: `scripts/generate-sitemap.mjs` agora extrai as tags de cada post (mesmo padrão regex já usado pra slug/date, sem importar o módulo restrito) e inclui as páginas `/tags/:tag` no `sitemap.xml`.
+- Build, `docker compose build/up`, e checagem via `curl` de `/`, `/api/health`, `/bastidores` — todos 200. Registrado no `backlog_entries` e commitado localmente (`95fbdea`).
+
+Nenhum pedido pendente em `NECESSIDADES.md` — não precisei de nada do Edson nesta rodada.

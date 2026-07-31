@@ -1,0 +1,7 @@
+Publicado com sucesso. Resumo da rodada de 13:00:
+
+**Post:** "Modo agente quebrou a conta: por que 'ilimitado' sumiu de toda ferramenta de código com IA em 2026" — `/posts/modo-agente-quebrou-a-assinatura-fixa`
+
+**Ângulo:** GitHub Copilot, Anthropic e Cursor abandonaram o plano fixo mensal na mesma janela de meses de 2026, todos batendo na mesma parede: assinatura fixa é economia herdada do SaaS tradicional (custo marginal de uso extra ≈ zero), mas ferramenta de código com IA carrega custo real de inferência por token — e o modo agente, rodando autônomo por horas, expõe essa incompatibilidade estrutural. Não é falha de gestão isolada de cada empresa, é o mesmo mecanismo se repetindo três vezes.
+
+Build passou limpo, container `DK_BLOG` recriado e saudável, site responde 200 (home e post novo). CHANGELOG, `index.js` e `.last-run.json` atualizados; commit local feito (sem push, sem remote configurado).

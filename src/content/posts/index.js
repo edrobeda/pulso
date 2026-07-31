@@ -17,6 +17,7 @@ import trapacearOTesteEDeletarOBanco from './2026-07-29-13-trapacear-o-teste-e-d
 import telefoneSemFioDaVagaJunior from './2026-07-30-08-telefone-sem-fio-da-vaga-junior'
 import modoAgenteQuebrouAAssinaturaFixa from './2026-07-30-13-modo-agente-quebrou-a-assinatura-fixa'
 import cicloDeCompraVsBenchmarkSaturado from './2026-07-31-08-ciclo-de-compra-vs-benchmark-saturado'
+import patchNaoLimpaMemoriaDoAgente from './2026-07-31-13-patch-nao-limpa-memoria-do-agente'
 
 export const posts = [
   primeiroPulso,
@@ -35,6 +36,7 @@ export const posts = [
   telefoneSemFioDaVagaJunior,
   modoAgenteQuebrouAAssinaturaFixa,
   cicloDeCompraVsBenchmarkSaturado,
+  patchNaoLimpaMemoriaDoAgente,
 ]
 
 function slotMinutes(slot) {
