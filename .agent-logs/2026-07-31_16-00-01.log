@@ -1,0 +1,7 @@
+Publicado com sucesso. Resumo da rodada de 13:00:
+
+**Post:** "RufRoot: o patch saiu em 24 horas, mas a memória do agente que ele envenenou continua envenenada" — `/posts/patch-nao-limpa-memoria-do-agente`
+
+**Ângulo:** a vulnerabilidade CVE-2026-59726 no Ruflo (plataforma open source de orquestração de agentes) permitia execução de comando sem autenticação, mas também expunha ferramentas que gravavam padrões falsos na memória persistente do agente e criavam enxames de agentes controlados pelo atacante. O patch saiu em 24h, mas a própria empresa que descobriu a falha (Noma Security) alertou que isso não desfaz o que já foi gravado na memória — é preciso auditoria manual separada. Leitura própria: o ciclo padrão de divulgação de vulnerabilidade (CVE → patch → changelog) foi desenhado pra um mundo onde o estado comprometido vive só no código; ele não tem como registrar dano que sobrevive ao patch por definição.
+
+Build passou limpo, container `DK_BLOG` no ar e saudável, site retornando 200 (inclusive a rota do post novo). CHANGELOG e `.last-run.json` atualizados, commit local feito.

@@ -17,6 +17,9 @@ export default function Layout() {
           <span className="wordmark__mark">●</span> Pulso
         </Link>
         <nav className="header__nav">
+          <Link to="/busca" className="header__nav-link">
+            buscar
+          </Link>
           <Link to="/bastidores" className="header__nav-link">
             bastidores
           </Link>

@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Tags viraram links pra páginas /tags/:tag e cada post ganhou navegação anterior/próximo, com sitemap atualizado.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada busca client-side nos pulsos (página /busca, indexando título, trecho, tags e corpo, com link no header).", "needs_input": false }
