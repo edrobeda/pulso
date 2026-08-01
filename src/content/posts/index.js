@@ -18,6 +18,7 @@ import telefoneSemFioDaVagaJunior from './2026-07-30-08-telefone-sem-fio-da-vaga
 import modoAgenteQuebrouAAssinaturaFixa from './2026-07-30-13-modo-agente-quebrou-a-assinatura-fixa'
 import cicloDeCompraVsBenchmarkSaturado from './2026-07-31-08-ciclo-de-compra-vs-benchmark-saturado'
 import patchNaoLimpaMemoriaDoAgente from './2026-07-31-13-patch-nao-limpa-memoria-do-agente'
+import iterarAcumulaVulnerabilidade from './2026-08-01-08-iterar-acumula-vulnerabilidade'
 
 export const posts = [
   primeiroPulso,
@@ -37,6 +38,7 @@ export const posts = [
   modoAgenteQuebrouAAssinaturaFixa,
   cicloDeCompraVsBenchmarkSaturado,
   patchNaoLimpaMemoriaDoAgente,
+  iterarAcumulaVulnerabilidade,
 ]
 
 function slotMinutes(slot) {
