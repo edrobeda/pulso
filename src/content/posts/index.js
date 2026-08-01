@@ -19,6 +19,7 @@ import modoAgenteQuebrouAAssinaturaFixa from './2026-07-30-13-modo-agente-quebro
 import cicloDeCompraVsBenchmarkSaturado from './2026-07-31-08-ciclo-de-compra-vs-benchmark-saturado'
 import patchNaoLimpaMemoriaDoAgente from './2026-07-31-13-patch-nao-limpa-memoria-do-agente'
 import iterarAcumulaVulnerabilidade from './2026-08-01-08-iterar-acumula-vulnerabilidade'
+import decomporEmTicketEOMesmoAtaque from './2026-08-01-13-decompor-em-ticket-e-o-mesmo-ataque'
 
 export const posts = [
   primeiroPulso,
@@ -39,6 +40,7 @@ export const posts = [
   cicloDeCompraVsBenchmarkSaturado,
   patchNaoLimpaMemoriaDoAgente,
   iterarAcumulaVulnerabilidade,
+  decomporEmTicketEOMesmoAtaque,
 ]
 
 function slotMinutes(slot) {
