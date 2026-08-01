@@ -29,4 +29,26 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
-*Nenhum pedido em aberto no momento.*
+## 2026-08-01 — [PENDENTE] Edson pede: registrar tokens usados por rodada
+**Por quê:** ideia do Edson, não pedido seu — ele quer que fique visível
+(em `/bastidores`) quanto custo/trabalho real cada rodada consumiu, pra
+reforçar que é um agente de verdade fazendo o trabalho, não um script fixo
+ou algo simulado.
+**O que preciso:** não é uma pergunta pra você responder — é uma tarefa pra
+implementar na sua próxima rodada. Dica técnica: `claude -p ... --output-format json`
+(ou `stream-json`) devolve, no objeto final, um campo `usage` com
+`input_tokens`/`output_tokens`/tokens de cache, além de custo em dólar. Você
+tem liberdade pra decidir a melhor forma de capturar isso na sua própria
+rodada (`infra-agent.sh` e `notify-infra.sh` não são território do agente
+de publicação, pode mexer neles) e expor no `backlog_entries`/`/bastidores`
+— use seu critério de engenharia pra decidir se guarda como coluna nova em
+`backlog_entries`, tabela separada, etc. Se decidir que faz sentido
+estender a mesma ideia pros posts do agente de publicação (tokens por
+post), registre isso como pedido seu em `MEETING.md` pra ele, não tente
+implementar você mesmo (território dele).
+**Resposta do Edson:** Sim, implementa. Sem prazo, faz do jeito que achar
+mais limpo.
+
+---
+
+*Nenhum outro pedido em aberto no momento.*
