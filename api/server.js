@@ -53,6 +53,7 @@ function toPost(row) {
     tags: row.tags,
     readTime: row.read_time,
     blocks: row.blocks,
+    viewCount: Number(row.view_count || 0),
   }
 }
 
@@ -63,9 +64,11 @@ function toPost(row) {
 app.get('/api/posts', async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT slug, title, excerpt, date, slot, tags, read_time, blocks
-       FROM posts
-       ORDER BY date DESC, slot DESC`
+      `SELECT p.slug, p.title, p.excerpt, p.date, p.slot, p.tags, p.read_time, p.blocks,
+              COALESCE(v.view_count, 0) AS view_count
+       FROM posts p
+       LEFT JOIN post_views v ON v.slug = p.slug
+       ORDER BY p.date DESC, p.slot DESC`
     )
     res.json(rows.map(toPost))
   } catch (err) {
@@ -76,12 +79,39 @@ app.get('/api/posts', async (_req, res) => {
 app.get('/api/posts/:slug', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT slug, title, excerpt, date, slot, tags, read_time, blocks
-       FROM posts WHERE slug = $1`,
+      `SELECT p.slug, p.title, p.excerpt, p.date, p.slot, p.tags, p.read_time, p.blocks,
+              COALESCE(v.view_count, 0) AS view_count
+       FROM posts p
+       LEFT JOIN post_views v ON v.slug = p.slug
+       WHERE p.slug = $1`,
       [req.params.slug]
     )
     if (rows.length === 0) return res.status(404).json({ error: 'not found' })
     res.json(toPost(rows[0]))
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Incrementa o contador de visualização de um post. Contagem simples por
+// carregamento de página (sem dedupe por visitante) — suficiente pro
+// propósito de mostrar engajamento relativo entre pulsos, sem precisar de
+// sessão/cookie.
+app.post('/api/posts/:slug/view', async (req, res) => {
+  try {
+    const { rows: postRows } = await pool.query('SELECT 1 FROM posts WHERE slug = $1', [
+      req.params.slug,
+    ])
+    if (postRows.length === 0) return res.status(404).json({ error: 'not found' })
+
+    const { rows } = await pool.query(
+      `INSERT INTO post_views (slug, view_count, updated_at)
+       VALUES ($1, 1, now())
+       ON CONFLICT (slug) DO UPDATE SET view_count = post_views.view_count + 1, updated_at = now()
+       RETURNING view_count`,
+      [req.params.slug]
+    )
+    res.json({ viewCount: Number(rows[0].view_count) })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

@@ -1,10 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { usePosts, findPost, sortPosts } from '../content/posts'
 import { postDateTimeLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
 import { setDocumentMeta, setPostJsonLd, clearPostJsonLd } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
+
+function viewsLabel(count) {
+  return count === 1 ? '1 leitura' : `${count} leituras`
+}
 
 function Block({ block }) {
   switch (block.type) {
@@ -32,11 +36,27 @@ export default function PostPage() {
   const newerPost = index > 0 ? ordered[index - 1] : null
   const olderPost = index >= 0 && index < ordered.length - 1 ? ordered[index + 1] : null
 
+  const [viewCount, setViewCount] = useState(post ? post.viewCount : 0)
+  const countedSlug = useRef(null)
+
   useEffect(() => {
     if (!post) return
     setDocumentMeta({ title: post.title, description: post.excerpt, path: `/posts/${post.slug}`, type: 'article' })
     setPostJsonLd(post)
     return clearPostJsonLd
+  }, [post])
+
+  useEffect(() => {
+    if (!post) return
+    setViewCount(post.viewCount)
+    if (countedSlug.current === post.slug) return
+    countedSlug.current = post.slug
+    fetch(`/api/posts/${post.slug}/view`, { method: 'POST' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setViewCount(data.viewCount)
+      })
+      .catch(() => {})
   }, [post])
 
   if (loading) return <p className="search-status">carregando…</p>
@@ -49,7 +69,8 @@ export default function PostPage() {
           <div className="post-card__meta">
             <PulseSignature slug={post.slug} size="lg" />
             <span>
-              {postDateTimeLabel(post)} · <strong>{post.readTime} min de leitura</strong>
+              {postDateTimeLabel(post)} · <strong>{post.readTime} min de leitura</strong> ·{' '}
+              {viewsLabel(viewCount)}
             </span>
           </div>
         </div>
