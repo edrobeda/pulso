@@ -1,67 +1,81 @@
-// Registro de posts. Cada rodada do agente adiciona um novo arquivo nesta
-// pasta e registra o import + a entrada abaixo (mesmo padrão do routes.jsx
-// do devtools). Nunca remova entradas antigas.
-import primeiroPulso from './2026-07-24-08-primeiro-pulso'
-import agentesQuePublicamSozinhos from './2026-07-23-13-agentes-que-publicam-sozinhos'
-import compactacaoDeContextoApagaRegras from './2026-07-24-13-compactacao-de-contexto-apaga-regras'
-import harnessEngineeringAParteChata from './2026-07-25-08-harness-engineering-a-parte-chata'
-import identidadeDeAgenteNaoEPrompt from './2026-07-25-13-identidade-de-agente-nao-e-prompt'
-import gargaloMudouDeFila from './2026-07-26-08-gargalo-mudou-de-fila'
-import sweBenchMorreuEAindaECitado from './2026-07-26-13-swe-bench-morreu-e-ainda-e-citado'
-import loopSemReconciliacao from './2026-07-27-08-loop-sem-reconciliacao'
-import separarNaoEIndependencia from './2026-07-27-13-separar-nao-e-independencia'
-import fanoutDeAgenteSemFormula from './2026-07-28-08-fanout-de-agente-sem-formula'
-import debianEAHonraDoContribuidor from './2026-07-28-13-debian-e-a-honra-do-contribuidor'
-import tresProvasUmVeredito from './2026-07-29-08-tres-provas-um-veredito'
-import trapacearOTesteEDeletarOBanco from './2026-07-29-13-trapacear-o-teste-e-deletar-o-banco'
-import telefoneSemFioDaVagaJunior from './2026-07-30-08-telefone-sem-fio-da-vaga-junior'
-import modoAgenteQuebrouAAssinaturaFixa from './2026-07-30-13-modo-agente-quebrou-a-assinatura-fixa'
-import cicloDeCompraVsBenchmarkSaturado from './2026-07-31-08-ciclo-de-compra-vs-benchmark-saturado'
-import patchNaoLimpaMemoriaDoAgente from './2026-07-31-13-patch-nao-limpa-memoria-do-agente'
-import iterarAcumulaVulnerabilidade from './2026-08-01-08-iterar-acumula-vulnerabilidade'
-import decomporEmTicketEOMesmoAtaque from './2026-08-01-13-decompor-em-ticket-e-o-mesmo-ataque'
+// Posts vêm do Postgres via API (`/api/posts`), não mais de arquivo estático
+// — migrado em 2026-08-01. O agente de publicação insere posts novos direto
+// no banco (ver .agent-prompt.md), então este módulo só busca e cacheia.
+import { useEffect, useState } from 'react'
 
-export const posts = [
-  primeiroPulso,
-  agentesQuePublicamSozinhos,
-  compactacaoDeContextoApagaRegras,
-  harnessEngineeringAParteChata,
-  identidadeDeAgenteNaoEPrompt,
-  gargaloMudouDeFila,
-  sweBenchMorreuEAindaECitado,
-  loopSemReconciliacao,
-  separarNaoEIndependencia,
-  fanoutDeAgenteSemFormula,
-  debianEAHonraDoContribuidor,
-  tresProvasUmVeredito,
-  trapacearOTesteEDeletarOBanco,
-  telefoneSemFioDaVagaJunior,
-  modoAgenteQuebrouAAssinaturaFixa,
-  cicloDeCompraVsBenchmarkSaturado,
-  patchNaoLimpaMemoriaDoAgente,
-  iterarAcumulaVulnerabilidade,
-  decomporEmTicketEOMesmoAtaque,
-]
+let listCache = null
+let listPromise = null
+
+function loadList() {
+  if (listCache) return Promise.resolve(listCache)
+  if (!listPromise) {
+    listPromise = fetch('/api/posts')
+      .then((r) => {
+        if (!r.ok) throw new Error(`GET /api/posts -> ${r.status}`)
+        return r.json()
+      })
+      .then((data) => {
+        listCache = data
+        return data
+      })
+      .catch((err) => {
+        listPromise = null // permite tentar de novo numa próxima chamada
+        throw err
+      })
+  }
+  return listPromise
+}
+
+/**
+ * Todos os posts (com `blocks` incluído). Busca uma vez só e cacheia em
+ * memória pro resto da sessão do browser — o corpus é pequeno o bastante
+ * pra isso não pesar.
+ */
+export function usePosts() {
+  const [state, setState] = useState(() =>
+    listCache
+      ? { posts: listCache, loading: false, error: null }
+      : { posts: [], loading: true, error: null }
+  )
+
+  useEffect(() => {
+    if (listCache) return
+    let cancelled = false
+    loadList()
+      .then((posts) => {
+        if (!cancelled) setState({ posts, loading: false, error: null })
+      })
+      .catch((error) => {
+        if (!cancelled) setState({ posts: [], loading: false, error })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return state
+}
 
 function slotMinutes(slot) {
   const [h, m] = slot.split(':').map(Number)
   return h * 60 + m
 }
 
-export function sortedPosts() {
+/** A API já ordena por data/slot decrescente; reordena por garantia. */
+export function sortPosts(posts) {
   return [...posts].sort((a, b) => {
     if (a.date !== b.date) return a.date < b.date ? 1 : -1
     return slotMinutes(b.slot) - slotMinutes(a.slot)
   })
 }
 
-export function findPost(slug) {
-  return posts.find((p) => p.slug === slug)
+export function findPost(posts, slug) {
+  return posts.find((p) => p.slug === slug) || null
 }
 
-export function groupByDay() {
+export function groupByDay(posts) {
   const groups = new Map()
-  for (const post of sortedPosts()) {
+  for (const post of sortPosts(posts)) {
     if (!groups.has(post.date)) groups.set(post.date, {})
     groups.get(post.date)[post.slot] = post
   }

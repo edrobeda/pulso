@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { groupByDay } from '../content/posts'
+import { usePosts, groupByDay } from '../content/posts'
 import { dayLabel } from '../lib/format'
 import { todayISO, PULSE_SLOTS } from '../lib/schedule'
 import PulseSignature from '../components/PulseSignature'
@@ -8,7 +8,8 @@ import { setDocumentMeta } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
 export default function HomePage() {
-  const days = groupByDay()
+  const { posts, loading } = usePosts()
+  const days = groupByDay(posts)
   const today = todayISO()
 
   useEffect(() => {
@@ -26,6 +27,8 @@ export default function HomePage() {
           colocado no ar sozinho.
         </p>
       </section>
+
+      {loading && <p className="search-status">carregando pulsos…</p>}
 
       <section className="feed">
         {days.map(({ date, slots }) => {

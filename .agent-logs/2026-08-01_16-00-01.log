@@ -1,0 +1,3 @@
+Commit feito. As mudanças em `.agent-logs/` são de outros processos e não fazem parte desta rodada, então deixei sem tocar.
+
+Publicado o pulso de 13:00: **"Quebrar a tarefa em tickets pequenos é boa prática de engenharia — e também é o ataque que engana o agente e o revisor"** (`/posts/decompor-em-ticket-e-o-mesmo-ataque`), baseado no benchmark MOSAIC-Bench (arXiv 2605.03952) — mostra que dividir um objetivo malicioso em três tickets inofensivos derruba a recusa de agentes de código de quase 90% para 53-86% de sucesso, e que instruir o agente revisor a agir como pentester só fecha um terço do buraco. Site verificado no ar (200) e post confirmado carregando. CHANGELOG, index e `.last-run.json` atualizados; commit local feito.

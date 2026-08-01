@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { usePosts } from '../content/posts'
 import { searchPosts } from '../lib/search'
 import { dayLabel } from '../lib/format'
 import { setDocumentMeta, setRobotsNoIndex, clearRobotsNoIndex } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
 export default function SearchPage() {
+  const { posts, loading } = usePosts()
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
   const [input, setInput] = useState(query)
@@ -26,7 +28,7 @@ export default function SearchPage() {
     setSearchParams(trimmed ? { q: trimmed } : {})
   }
 
-  const results = query.trim() ? searchPosts(query) : []
+  const results = query.trim() && !loading ? searchPosts(posts, query) : []
 
   return (
     <>
@@ -50,7 +52,8 @@ export default function SearchPage() {
       </section>
 
       <section className="feed">
-        {query.trim() && (
+        {query.trim() && loading && <p className="search-status">carregando…</p>}
+        {query.trim() && !loading && (
           <p className="search-status">
             {results.length === 0
               ? `nenhum resultado pra "${query}"`

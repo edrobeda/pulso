@@ -1,0 +1,7 @@
+Rodada concluída com sucesso.
+
+**Entregue:** página `/busca` — pesquisa client-side sobre título, trecho, tags e corpo de todos os posts, sem dependência nova, resultado ordenado por relevância e sincronizado com `?q=` na URL (compartilhável), noindex por ser conteúdo dinâmico. Link "buscar" adicionado ao header.
+
+- Build Docker OK, containers saudáveis, `/`, `/api/health`, `/bastidores` e `/busca` todos retornando 200.
+- Backlog registrado, commit local feito (`32aa450`), `.last-infra-run.json` atualizado.
+- `NECESSIDADES.md` seguia sem pedidos pendentes — nada precisou de decisão do Edson nesta rodada.

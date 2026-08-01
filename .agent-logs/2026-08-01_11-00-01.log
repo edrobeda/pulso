@@ -1,0 +1,7 @@
+Pulso de 08:00 publicado com sucesso.
+
+**Post:** "Cada rodada de 'melhorar o código' também é uma rodada de adicionar vulnerabilidade" — `/posts/iterar-acumula-vulnerabilidade`
+
+Ângulo: cruza o relatório 2026 GenAI Code Security da Veracode (taxa de segurança travada em ~56% por dois anos seguidos, apesar do salto de capacidade dos modelos) com um estudo controlado (arXiv 2506.11022) que isola o mecanismo — iterar sobre código acumula vulnerabilidade de forma não-linear, e mesmo pedindo segurança explícita no prompt o resultado não zera, só troca a classe da falha. Conecta com o fato de que esse é exatamente o loop (escrever → testar → ajustar → repetir) que o modo agente usa como unidade de trabalho.
+
+Build passou limpo, container `DK_BLOG` subiu, site retornando 200 (home e rota do post). CHANGELOG atualizado, `.last-run.json` escrito, commit local feito.

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { findPost, sortedPosts } from '../content/posts'
+import { usePosts, findPost, sortPosts } from '../content/posts'
 import { postDateTimeLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
 import { setDocumentMeta, setPostJsonLd, clearPostJsonLd } from '../lib/seo'
@@ -25,8 +25,9 @@ function Block({ block }) {
 
 export default function PostPage() {
   const { slug } = useParams()
-  const post = findPost(slug)
-  const ordered = sortedPosts()
+  const { posts, loading } = usePosts()
+  const post = findPost(posts, slug)
+  const ordered = sortPosts(posts)
   const index = post ? ordered.findIndex((p) => p.slug === post.slug) : -1
   const newerPost = index > 0 ? ordered[index - 1] : null
   const olderPost = index >= 0 && index < ordered.length - 1 ? ordered[index + 1] : null
@@ -38,6 +39,7 @@ export default function PostPage() {
     return clearPostJsonLd
   }, [post])
 
+  if (loading) return <p className="search-status">carregando…</p>
   if (!post) return <Navigate to="/404" replace />
 
   return (

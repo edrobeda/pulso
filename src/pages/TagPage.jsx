@@ -1,13 +1,15 @@
 import { useEffect } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { usePosts } from '../content/posts'
 import { postsByTagSlug, tagLabelFromSlug, slugifyTag } from '../lib/tags'
 import { dayLabel } from '../lib/format'
 import { setDocumentMeta } from '../lib/seo'
 
 export default function TagPage() {
   const { tag } = useParams()
-  const posts = postsByTagSlug(tag)
-  const label = tagLabelFromSlug(tag)
+  const { posts: allPosts, loading } = usePosts()
+  const posts = postsByTagSlug(allPosts, tag)
+  const label = tagLabelFromSlug(allPosts, tag)
 
   useEffect(() => {
     setDocumentMeta({
@@ -17,6 +19,7 @@ export default function TagPage() {
     })
   }, [tag, label])
 
+  if (loading) return <p className="search-status">carregando…</p>
   if (posts.length === 0) return <Navigate to="/404" replace />
 
   return (

@@ -1,4 +1,4 @@
-import { sortedPosts } from '../content/posts'
+import { sortPosts } from '../content/posts'
 
 function normalize(text) {
   return text
@@ -13,10 +13,8 @@ function blocksText(post) {
     .join(' ')
 }
 
-let cachedIndex = null
-
-function buildIndex() {
-  return sortedPosts().map((post) => ({
+function buildIndex(posts) {
+  return sortPosts(posts).map((post) => ({
     post,
     haystack: normalize(
       [post.title, post.excerpt, ...(post.tags || []), blocksText(post)].join(' ')
@@ -28,16 +26,17 @@ function buildIndex() {
  * Busca simples por substring, sem lib externa: o corpus é pequeno (uma
  * dezena de posts por enquanto) e cresce devagar, então não vale o peso de
  * bundle de um motor de busca de verdade. Título e trecho pesam mais que o
- * corpo do post na ordenação.
+ * corpo do post na ordenação. Reconstrói o índice a cada chamada — dataset
+ * pequeno o bastante pra isso não importar.
  */
-export function searchPosts(query) {
+export function searchPosts(posts, query) {
   const q = normalize(query.trim())
   if (!q) return []
 
-  if (!cachedIndex) cachedIndex = buildIndex()
+  const index = buildIndex(posts)
 
   const results = []
-  for (const { post, haystack } of cachedIndex) {
+  for (const { post, haystack } of index) {
     if (!haystack.includes(q)) continue
     const inTitle = normalize(post.title).includes(q)
     const inExcerpt = normalize(post.excerpt).includes(q)
