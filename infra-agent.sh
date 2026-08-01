@@ -16,13 +16,24 @@ LOG_FILE="$LOG_DIR/infra_$(date +%Y-%m-%d_%H-%M-%S).log"
 ./db/backup.sh >> "$LOG_DIR/runs.log" 2>&1 || echo "$(date -Iseconds) — aviso: backup do Postgres falhou nesta rodada" >> "$LOG_DIR/runs.log"
 
 DATE_BR=$(TZ='America/Sao_Paulo' date +%F)
+DOW=$(TZ='America/Sao_Paulo' date +%u)  # 1=segunda ... 7=domingo
 
 rm -f .last-infra-run.json
+
+SUPER_UPGRADE=""
+if [ "$DOW" = "7" ]; then
+    SUPER_UPGRADE="
+Hoje é domingo — dia de \"super upgrade\": em vez do limite normal de UMA
+melhoria, você pode entregar até CINCO melhorias concretas nesta rodada
+(dia mais tranquilo, cota maior disponível). Ver regra completa na seção
+\"O que fazer nesta rodada\" abaixo.
+"
+fi
 
 CONTEXT="## Contexto desta rodada
 Data de hoje (horário de Brasília): $DATE_BR
 Esta é a rodada diária das 18:00 do agente de infraestrutura.
-
+${SUPER_UPGRADE}
 "
 PROMPT="${CONTEXT}$(cat /home/blog-bot/blog/.infra-agent-prompt.md)"
 
