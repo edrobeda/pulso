@@ -1,0 +1,7 @@
+Push feito com sucesso. Resumo da rodada:
+
+**Publicado:** [Quatro agentes de revisão, quatro empresas diferentes — juntos, cobrem 41% do que um humano marcaria](https://blog.eventifylab.com/posts/quatro-revisores-mesmo-ponto-cego) (13:00, 2026-08-02)
+
+Ângulo: o benchmark c-CRAB testa PR-Agent, Devin Review, Claude Code e Codex contra revisões humanas reais convertidas em teste executável — o melhor agente isolado (Claude Code) acerta só 32,1%, e mesmo somando os quatro produtos de quatro empresas diferentes, a cobertura chega a apenas 41,5%. A leitura própria contrasta com um post anterior deste blog (que atribuía ponto cego compartilhado à linhagem de treino comum entre agentes): aqui são vendors diferentes convergindo na mesma fraqueza categórica (design, documentação, manutenibilidade), sugerindo que o gargalo é estrutural, não genealógico.
+
+CHANGELOG.md atualizado, commit e push feitos, `.last-run.json` gravado. Nenhum pedido pendente em MEETING.md nesta rodada.

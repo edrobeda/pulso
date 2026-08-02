@@ -466,6 +466,88 @@ a {
   font-size: 0.9em;
 }
 
+.reactions {
+  display: flex;
+  gap: 10px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(43, 38, 32, 0.2);
+}
+
+.reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid rgba(43, 38, 32, 0.2);
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--paper-text);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.reaction-btn:hover:not(:disabled) {
+  border-color: var(--signal-amber-dim);
+  color: var(--signal-amber-dim);
+}
+
+.reaction-btn--active {
+  border-color: var(--signal-teal);
+  color: var(--signal-teal);
+}
+
+.reaction-btn:disabled {
+  cursor: default;
+}
+
+.reaction-btn__count {
+  font-size: 0.78rem;
+  color: var(--paper-muted);
+}
+
+.reaction-btn--active .reaction-btn__count {
+  color: var(--signal-teal);
+}
+
+.related-posts {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(43, 38, 32, 0.2);
+}
+
+.related-posts__label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  margin: 0 0 12px;
+}
+
+.related-posts__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.related-posts__link {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: var(--paper-text);
+  text-decoration: none;
+}
+
+.related-posts__link:hover {
+  color: var(--signal-amber-dim);
+}
+
 .post-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -547,6 +629,51 @@ a {
   font-family: var(--font-mono);
   font-size: 0.9rem;
   color: var(--mist-400);
+}
+
+.usage-panel {
+  padding: 0 clamp(20px, 5vw, 56px) 32px;
+  max-width: 880px;
+}
+
+.usage-panel__label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mist-400);
+  margin: 0 0 12px;
+}
+
+.usage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.usage-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--mist-400);
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--ink-600);
+}
+
+.usage-item__agent {
+  color: var(--signal-teal);
+  min-width: 150px;
+}
+
+.usage-item__cost {
+  color: var(--signal-amber);
+  margin-left: auto;
 }
 
 .backlog-list {

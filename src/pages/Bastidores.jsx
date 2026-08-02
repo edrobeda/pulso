@@ -8,8 +8,39 @@ const STATUS_META = {
   blocked: { label: 'aguardando o Edson', className: 'backlog-badge--blocked' },
 }
 
+const AGENT_LABEL = {
+  infra: 'infra · 18:00',
+  publicacao: 'publicação · 08:00/13:00',
+}
+
+function usageRunLabel(isoTimestamp) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+    .format(new Date(isoTimestamp))
+    .replace('.', '')
+}
+
+function usageTokensLabel(entry) {
+  const total =
+    Number(entry.input_tokens) +
+    Number(entry.output_tokens) +
+    Number(entry.cache_read_tokens) +
+    Number(entry.cache_creation_tokens)
+  return `${total.toLocaleString('pt-BR')} tokens`
+}
+
+function usageCostLabel(costUsd) {
+  return `US$ ${Number(costUsd).toFixed(2)}`
+}
+
 export default function Bastidores() {
   const [state, setState] = useState({ status: 'loading', entries: [] })
+  const [usage, setUsage] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -38,6 +69,24 @@ export default function Bastidores() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/usage')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setUsage({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setUsage({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <section className="bastidores">
       <div className="intro">
@@ -50,6 +99,24 @@ export default function Bastidores() {
           quando a resposta é só &ldquo;ainda analisando&rdquo;.
         </p>
       </div>
+
+      {usage.status === 'ready' && usage.rows.length > 0 && (
+        <div className="usage-panel">
+          <p className="usage-panel__label">custo real por rodada</p>
+          <ul className="usage-list">
+            {usage.rows.map((entry, i) => (
+              <li className="usage-item" key={i}>
+                <span className="usage-item__agent">
+                  {AGENT_LABEL[entry.agent] || entry.agent}
+                </span>
+                <span className="usage-item__when">{usageRunLabel(entry.run_at)}</span>
+                <span className="usage-item__tokens">{usageTokensLabel(entry)}</span>
+                <span className="usage-item__cost">{usageCostLabel(entry.cost_usd)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {state.status === 'loading' && <p className="backlog-empty">carregando…</p>}
 

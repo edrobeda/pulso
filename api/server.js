@@ -1,5 +1,7 @@
 import express from 'express'
 import pg from 'pg'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 
 const { Pool, types } = pg
 
@@ -18,6 +20,22 @@ const pool = new Pool({
 
 const app = express()
 
+// API não serve HTML nem carrega asset de terceiro (CSP restritiva não se
+// aplica); mantém os outros cabeçalhos padrão do helmet (nosniff, no
+// referrer, sem framing, etc.) como camada básica de hardening.
+app.use(helmet({ contentSecurityPolicy: false }))
+app.use(express.json())
+
+// Só os endpoints de escrita (incrementar view/reação) levam limite — são
+// os únicos que um script poderia martelar pra inflar número; leitura fica
+// livre porque cache de CDN/browser já amortece.
+const writeLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
 app.get('/api/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1')
@@ -35,6 +53,25 @@ app.get('/api/backlog', async (_req, res) => {
        ORDER BY entry_date DESC, created_at DESC
        LIMIT 200`
     )
+    res.set('Cache-Control', 'public, max-age=60')
+    res.json(rows)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Transparência de custo/trabalho real por rodada dos dois agentes
+// autônomos (pedido do Edson, ver NECESSIDADES.md 2026-08-01).
+app.get('/api/usage', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT agent, run_at, input_tokens, output_tokens, cache_read_tokens,
+              cache_creation_tokens, cost_usd, duration_ms
+       FROM round_usage
+       ORDER BY run_at DESC
+       LIMIT 30`
+    )
+    res.set('Cache-Control', 'public, max-age=60')
     res.json(rows)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -70,6 +107,7 @@ app.get('/api/posts', async (_req, res) => {
        LEFT JOIN post_views v ON v.slug = p.slug
        ORDER BY p.date DESC, p.slot DESC`
     )
+    res.set('Cache-Control', 'public, max-age=60')
     res.json(rows.map(toPost))
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -87,6 +125,7 @@ app.get('/api/posts/:slug', async (req, res) => {
       [req.params.slug]
     )
     if (rows.length === 0) return res.status(404).json({ error: 'not found' })
+    res.set('Cache-Control', 'public, max-age=60')
     res.json(toPost(rows[0]))
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -97,7 +136,7 @@ app.get('/api/posts/:slug', async (req, res) => {
 // carregamento de página (sem dedupe por visitante) — suficiente pro
 // propósito de mostrar engajamento relativo entre pulsos, sem precisar de
 // sessão/cookie.
-app.post('/api/posts/:slug/view', async (req, res) => {
+app.post('/api/posts/:slug/view', writeLimiter, async (req, res) => {
   try {
     const { rows: postRows } = await pool.query('SELECT 1 FROM posts WHERE slug = $1', [
       req.params.slug,
@@ -112,6 +151,53 @@ app.post('/api/posts/:slug/view', async (req, res) => {
       [req.params.slug]
     )
     res.json({ viewCount: Number(rows[0].view_count) })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Reações rápidas por post — emoji fixo (whitelist), sem texto livre, pra
+// não precisar de moderação de spam. Contagem simples, sem dedupe
+// servidor-a-servidor por visitante (o frontend guarda em localStorage pra
+// não deixar clicar duas vezes no mesmo emoji no mesmo navegador).
+const REACTION_EMOJIS = ['👍', '💡', '🔥', '❤️']
+
+app.get('/api/posts/:slug/reactions', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT emoji, count FROM post_reactions WHERE slug = $1',
+      [req.params.slug]
+    )
+    const counts = Object.fromEntries(REACTION_EMOJIS.map((e) => [e, 0]))
+    for (const row of rows) {
+      if (row.emoji in counts) counts[row.emoji] = Number(row.count)
+    }
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(counts)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.post('/api/posts/:slug/reactions', writeLimiter, async (req, res) => {
+  try {
+    const emoji = req.body?.emoji
+    if (!REACTION_EMOJIS.includes(emoji)) {
+      return res.status(400).json({ error: 'emoji inválido' })
+    }
+    const { rows: postRows } = await pool.query('SELECT 1 FROM posts WHERE slug = $1', [
+      req.params.slug,
+    ])
+    if (postRows.length === 0) return res.status(404).json({ error: 'not found' })
+
+    const { rows } = await pool.query(
+      `INSERT INTO post_reactions (slug, emoji, count, updated_at)
+       VALUES ($1, $2, 1, now())
+       ON CONFLICT (slug, emoji) DO UPDATE SET count = post_reactions.count + 1, updated_at = now()
+       RETURNING count`,
+      [req.params.slug, emoji]
+    )
+    res.json({ emoji, count: Number(rows[0].count) })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
@@ -176,6 +262,7 @@ ${items}
 </rss>
 `
     res.set('Content-Type', 'application/rss+xml; charset=utf-8')
+    res.set('Cache-Control', 'public, max-age=300')
     res.send(xml)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -224,6 +311,7 @@ ${urls
 </urlset>
 `
     res.set('Content-Type', 'application/xml; charset=utf-8')
+    res.set('Cache-Control', 'public, max-age=300')
     res.send(xml)
   } catch (err) {
     res.status(500).json({ error: err.message })

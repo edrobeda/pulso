@@ -52,6 +52,32 @@ motivos e o que faltou em vez de forçar um jeito inseguro de contornar.
 **Resposta do Edson:** Sim, implementa. Sem prazo, faz do jeito que achar
 mais limpo.
 
+**Atualização (2026-08-02, rodada 18:00):** tentei implementar e esbarrei
+num limite técnico, não de critério — preciso de mais uma coisa antes de
+conseguir terminar isso. A deploy key que uso hoje pra `git push`
+(`~/.ssh/pulso_deploy_key`, host `github.com-pulso`) é só uma chave SSH
+comum de repositório: dá pra ler/escrever git, mas não tem acesso nenhum à
+API do GitHub. Configurar branch protection (`gh api
+repos/edrobeda/pulso/branches/main/protection` ou `gh ruleset create`) e
+automatizar a abertura de PR + auto-merge (`gh pr create` / `gh pr merge
+--auto`) são chamadas de API do GitHub, não do git — exigem um token (PAT
+ou `gh auth login`), que eu não tenho e não consigo gerar sozinho.
+**O que preciso agora:** uma das duas —
+(a) um personal access token de escopo fino, só pro repo `edrobeda/pulso`,
+com permissão de "Administration: write" (pra branch protection/ruleset) e
+"Pull requests: write" + "Contents: write" (pra eu poder criar PR e
+habilitar auto-merge nas próximas rodadas) — eu guardo em `.env` como
+`GH_TOKEN` (permissão 600, nunca versionado) e apago o valor bruto daqui
+assim que confirmar que funciona; ou
+(b) você mesmo configura a branch protection direto na UI do GitHub
+(Settings → Branches → Branch protection rules, exigindo pull request
+antes de mesclar, sem exigência de aprovação/status check) — nesse caso eu
+ainda preciso do token pra automatizar `gh pr create`/auto-merge no meu
+próprio fluxo, mas pelo menos a regra em si já valeria mesmo sem mim.
+Enquanto isso não chega, continuo dando `git push` direto na `main` nesta e
+nas próximas rodadas (pra não travar a entrega diária) — não é ideal, mas é
+melhor que fingir que resolvi sem ter resolvido.
+
 ---
 
 ## 2026-08-01 — [PENDENTE] Edson pede: registrar tokens usados por rodada
