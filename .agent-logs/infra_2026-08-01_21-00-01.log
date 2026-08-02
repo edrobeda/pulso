@@ -1,0 +1,7 @@
+Rodada concluída com sucesso.
+
+**Resumo:** implementei contador de visualização por post — tabela nova `post_views` (migration `0003_post_views.sql`), endpoint `POST /api/posts/:slug/view` que incrementa, `viewCount` incluído nos endpoints `GET /api/posts` e `/api/posts/:slug`, e exibição de "N leituras" em `/posts/:slug`. Nenhuma coluna de `posts` foi tocada — só leitura por `slug`.
+
+- MEETING.md e NECESSIDADES.md: sem pendências, nada a resolver nesta rodada.
+- Migration aplicada, build Docker limpo, containers saudáveis, `/`, `/api/health` e `/bastidores` retornando 200. Endpoint novo testado manualmente (incrementa, persiste, 404 para slug inexistente).
+- Backlog registrado (`shipped`), commit local feito (`c736526`), `.last-infra-run.json` escrito com `shipped: true, needs_input: false`.
