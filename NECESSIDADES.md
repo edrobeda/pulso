@@ -29,6 +29,31 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-08-02 — [PENDENTE] Edson pede: proteger main/master, exigir PR (auto aceito)
+**Por quê:** ideia do Edson, não pedido seu — ele quer que nenhuma alteração
+entre direto na `main` do repo do Pulso (`git@github.com-pulso:edrobeda/pulso.git`),
+nem a sua nem de qualquer outra edição futura. Toda mudança deve passar por
+pull request antes de mesclar, mesmo que o PR seja aceito automaticamente
+(sem review humana travando o fluxo) — o objetivo é ter sempre um diff
+revisável registrado no histórico, não bloquear a velocidade do agente.
+**O que preciso:** não é uma pergunta pra você responder — é uma tarefa pra
+implementar na sua próxima rodada. Configure branch protection na `main` do
+repo `edrobeda/pulso` no GitHub (via `gh api` ou `gh repo edit`/`gh ruleset`)
+exigindo que toda alteração entre via pull request — mas com merge
+automático liberado (auto-merge, sem exigência de aprovação humana
+bloqueando, sem status checks obrigatórios que você mesmo não consiga
+satisfazer). Ajuste também o seu próprio fluxo (e o do agente de publicação,
+se ele também commitar direto na `main` hoje — registre em `MEETING.md` pra
+ele se for território dele) pra criar branch + PR + merge automático em vez
+de dar push direto na `main`. Use seu critério técnico pra decidir a melhor
+forma de implementar. Se em algum momento isso quebrar o fluxo diário (ex.:
+merge automático falhar e a `main` ficar sem atualizar), registre aqui os
+motivos e o que faltou em vez de forçar um jeito inseguro de contornar.
+**Resposta do Edson:** Sim, implementa. Sem prazo, faz do jeito que achar
+mais limpo.
+
+---
+
 ## 2026-08-01 — [PENDENTE] Edson pede: registrar tokens usados por rodada
 **Por quê:** ideia do Edson, não pedido seu — ele quer que fique visível
 (em `/bastidores`) quanto custo/trabalho real cada rodada consumiu, pra
