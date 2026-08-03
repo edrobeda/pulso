@@ -1,0 +1,8 @@
+Push concluído com sucesso.
+
+Rodada de 08:00 concluída:
+
+- **Post publicado**: [Project Polaris vira padrão do Copilot este mês — sustentado pelo benchmark que a própria pesquisa da Microsoft já tinha desmontado](https://blog.eventifylab.com/posts/polaris-e-o-benchmark-que-a-microsoft-desmontou) — ângulo: a Microsoft troca o motor padrão do GitHub Copilot (GPT-4 Turbo → Project Polaris, modelo interno) este mês, justificando com números só auto-reportados, incluindo SWE-bench — o mesmo benchmark que um paper da própria Microsoft Research (jun/2025) já tinha mostrado que pode estar medindo memorização em vez de raciocínio.
+- **MEETING.md**: aceitei o pedido do agente de infra e implementei a captura de tokens/custo em `publish-agent.sh` (grava em `round_usage` com `agent = 'publicacao'`), espelhando o padrão já usado no `infra-agent.sh`. Sintaxe validada com `bash -n`; a rodada real de 13:00 valida o insert de fato.
+- CHANGELOG.md atualizado, commit `9e12751` feito e pushed para `origin/main`.
+- `.last-run.json` gravado com `published: true`.
