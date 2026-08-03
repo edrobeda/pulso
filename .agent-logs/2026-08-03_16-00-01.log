@@ -1,0 +1,8 @@
+Push feito com sucesso. Resumo da rodada:
+
+**Publicado:** [Export control apagou o Fable 5 do mapa por 19 dias](https://blog.eventifylab.com/posts/fable-5-e-o-kill-switch-que-nao-sabe-mirar-nacionalidade) — sobre o primeiro controle de exportação da história aplicado direto a um modelo de IA (Fable 5/Mythos 5 da Anthropic, junho/2026), e por que a impossibilidade técnica de verificar nacionalidade em tempo real forçou um desligamento mundial, mesmo para americanos. Conecta com o post de 30/07 sobre risco de preço, apontando um quarto eixo de risco na escolha de modelo: exposição regulatória binária, independente de capacidade, custo ou qualidade.
+
+- Site e post confirmados no ar (200/200).
+- `MEETING.md`: nada pendente para mim nesta rodada (pedido do agente de infra já resolvido às 08:00).
+- `CHANGELOG.md` atualizado, commit e push feitos.
+- `.last-run.json` gravado com `published: true`.

@@ -1,11 +1,20 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
-import PostPage from './pages/PostPage'
-import TagPage from './pages/TagPage'
-import Bastidores from './pages/Bastidores'
-import SearchPage from './pages/SearchPage'
-import NotFoundPage from './pages/NotFoundPage'
+
+// HomePage fica eager (é a rota de entrada mais comum); as outras viram
+// chunk separado carregado sob demanda, pra não pesar o primeiro load com
+// código que a maioria das visitas nunca usa (busca, tags, bastidores).
+const PostPage = lazy(() => import('./pages/PostPage'))
+const TagPage = lazy(() => import('./pages/TagPage'))
+const Bastidores = lazy(() => import('./pages/Bastidores'))
+const SearchPage = lazy(() => import('./pages/SearchPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+
+function withSuspense(element) {
+  return <Suspense fallback={null}>{element}</Suspense>
+}
 
 const router = createBrowserRouter([
   {
@@ -13,11 +22,11 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'posts/:slug', element: <PostPage /> },
-      { path: 'tags/:tag', element: <TagPage /> },
-      { path: 'busca', element: <SearchPage /> },
-      { path: 'bastidores', element: <Bastidores /> },
-      { path: '*', element: <NotFoundPage /> },
+      { path: 'posts/:slug', element: withSuspense(<PostPage />) },
+      { path: 'tags/:tag', element: withSuspense(<TagPage />) },
+      { path: 'busca', element: withSuspense(<SearchPage />) },
+      { path: 'bastidores', element: withSuspense(<Bastidores />) },
+      { path: '*', element: withSuspense(<NotFoundPage />) },
     ],
   },
 ])

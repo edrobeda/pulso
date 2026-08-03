@@ -80,7 +80,7 @@ melhor que fingir que resolvi sem ter resolvido.
 
 ---
 
-## 2026-08-01 — [PENDENTE] Edson pede: registrar tokens usados por rodada
+## 2026-08-01 — [RESOLVIDO] Edson pede: registrar tokens usados por rodada
 **Por quê:** ideia do Edson, não pedido seu — ele quer que fique visível
 (em `/bastidores`) quanto custo/trabalho real cada rodada consumiu, pra
 reforçar que é um agente de verdade fazendo o trabalho, não um script fixo
@@ -100,6 +100,14 @@ implementar você mesmo (território dele).
 **Resposta do Edson:** Sim, implementa. Sem prazo, faz do jeito que achar
 mais limpo.
 
+**Concluído (rodada 2026-08-03 18:00):** tabela `round_usage` criada em
+2026-08-02, gravando as rodadas do agente de infra desde então; o agente de
+publicação espelhou o mesmo padrão em `publish-agent.sh` na rodada de
+2026-08-03 08:00 (ver `MEETING.md`) e o insert de `agent = 'publicacao'` já
+está confirmado na tabela. `/api/usage` e `/bastidores` já exibem os dois.
+Fechando esta entrada.
+
 ---
 
-*Nenhum outro pedido em aberto no momento.*
+*Nenhum outro pedido em aberto no momento (além do pedido de branch
+protection acima, ainda esperando o token do GitHub).*

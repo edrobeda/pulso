@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "custo/tokens por rodada em /bastidores, reações por pulso, pulsos relacionados por tag, rate limit + headers de segurança na API, gzip e Cache-Control", "needs_input": true }
+{ "shipped": true, "summary": "code splitting por rota, reduzindo o bundle inicial de ~323KB para ~247KB", "needs_input": false }
