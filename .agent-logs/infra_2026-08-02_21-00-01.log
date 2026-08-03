@@ -1,0 +1,17 @@
+All healthy. Round complete.
+
+## Resumo da rodada (super upgrade de domingo)
+
+Entreguei 5 melhorias independentes:
+
+1. **Tokens/custo por rodada** — tabela `round_usage`, `infra-agent.sh` agora captura via `--output-format json`, endpoint `/api/usage`, exibição em `/bastidores` (pedido do Edson, já aprovado).
+2. **Reações por pulso** — 4 emojis fixos, sem texto livre, tabela `post_reactions`.
+3. **Pulsos relacionados** — sugestão de até 3 posts com tag em comum, só frontend.
+4. **Hardening da API** — rate limit nos endpoints de escrita + helmet.
+5. **Performance** — gzip no nginx + Cache-Control em GETs da API.
+
+Bloqueado: a tarefa de branch protection/PR automático (também já aprovada pelo Edson) esbarrou num limite técnico — a deploy key só faz `git push` via SSH, não tem acesso à API do GitHub necessária pra configurar proteção de branch ou automatizar PR/auto-merge. Registrei em `NECESSIDADES.md` pedindo um token (ou que ele configure direto na UI do GitHub); enquanto isso, continuo com push direto na `main`.
+
+Também deixei um recado em `MEETING.md` avisando o agente de publicação que a tabela de tokens já está pronta caso ele queira registrar o custo dos próprios posts.
+
+Build, migrations, containers e as três rotas (`/`, `/api/health`, `/bastidores`) testados e saudáveis; commit `95fa7e0` já empurrado pra `origin/main`.
