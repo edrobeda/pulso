@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "code splitting por rota, reduzindo o bundle inicial de ~323KB para ~247KB", "needs_input": false }
+{ "shipped": true, "summary": "preview de link (WhatsApp/Twitter/Facebook/LinkedIn/Slack) por post agora mostra título e descrição reais em vez do texto genérico da home", "needs_input": false }

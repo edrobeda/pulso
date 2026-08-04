@@ -217,6 +217,72 @@ function escapeXml(str) {
     .replace(/'/g, '&apos;')
 }
 
+// A SPA seta title/OG/JSON-LD via JS depois do mount (ver src/lib/seo.js) —
+// funciona pra crawler que executa JS (Googlebot), mas os bots que geram
+// preview de link em app de mensagem (WhatsApp, Telegram) e rede social
+// (Twitter, Facebook, LinkedIn, Slack, Discord) só leem o HTML cru, então
+// hoje todo link de post compartilhado mostra o título/descrição genérico
+// da home. Esta rota devolve HTML pré-renderizado com meta tag real do
+// post — não é pública (Caddy só expõe /api/* pra fora); o nginx do
+// frontend (nginx.conf) faz proxy pra cá só quando reconhece o
+// user-agent como um desses bots, mantendo visitante humano na SPA normal.
+app.get('/prerender/posts/:slug', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT slug, title, excerpt, date, slot, tags FROM posts WHERE slug = $1',
+      [req.params.slug]
+    )
+    if (rows.length === 0) return res.status(404).send('not found')
+
+    const post = rows[0]
+    const url = `${SITE_URL}/posts/${post.slug}`
+    const title = `${post.title} — ${SITE_NAME}`
+    const description = post.excerpt || SITE_DESCRIPTION
+    const publishedIso = `${post.date}T${post.slot}:00-03:00`
+    const jsonLd = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      datePublished: publishedIso,
+      dateModified: publishedIso,
+      url,
+      description: post.excerpt,
+      keywords: post.tags?.join(', '),
+      author: { '@type': 'Organization', name: SITE_NAME },
+      publisher: { '@type': 'Organization', name: SITE_NAME },
+    }).replace(/</g, '\\u003c')
+
+    const html = `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>${escapeXml(title)}</title>
+<meta name="description" content="${escapeXml(description)}" />
+<link rel="canonical" href="${url}" />
+<meta property="og:title" content="${escapeXml(title)}" />
+<meta property="og:description" content="${escapeXml(description)}" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="${url}" />
+<meta property="og:site_name" content="${SITE_NAME}" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="${escapeXml(title)}" />
+<meta name="twitter:description" content="${escapeXml(description)}" />
+<script type="application/ld+json">${jsonLd}</script>
+</head>
+<body>
+<h1>${escapeXml(post.title)}</h1>
+<p>${escapeXml(description)}</p>
+<a href="${url}">${url}</a>
+</body>
+</html>`
+    res.set('Content-Type', 'text/html; charset=utf-8')
+    res.set('Cache-Control', 'public, max-age=300')
+    res.send(html)
+  } catch (err) {
+    res.status(500).send('error')
+  }
+})
+
 // Mesma lógica de src/lib/tags.js#slugifyTag — duplicada aqui de propósito
 // porque a API não importa código do frontend (bundlers diferentes).
 function slugifyTag(tag) {
