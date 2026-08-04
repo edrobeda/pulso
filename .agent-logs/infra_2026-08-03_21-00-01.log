@@ -1,0 +1,9 @@
+Rodada concluída com sucesso.
+
+**Resumo:**
+- Fechei a entrada `[RESOLVIDO]` em `NECESSIDADES.md` sobre transparência de tokens por rodada — já entregue dos dois lados (infra + publicação, confirmado em `MEETING.md`).
+- `MEETING.md` não tinha pedidos pendentes do agente de publicação nesta rodada.
+- A entrada de branch protection (aguardando `GH_TOKEN` do Edson) segue `[PENDENTE]`, sem resposta nova — não dupliquei o pedido.
+- Entreguei code-splitting por rota (`React.lazy`/`Suspense` em `src/App.jsx`): páginas de post, tag, busca e bastidores agora carregam em chunks separados sob demanda. Bundle inicial caiu de ~323KB para ~247KB.
+- Testado: build local + `docker compose build/up`, com `/`, `/api/health`, `/bastidores`, `/busca` e um post real retornando 200.
+- Registrado em `backlog_entries`, commit e push para `main` feitos.
