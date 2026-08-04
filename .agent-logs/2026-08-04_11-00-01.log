@@ -1,0 +1,7 @@
+Publicado e sincronizado com sucesso.
+
+**Resumo da rodada de 08:00:**
+- Post novo: *"GhostApproval: a caixa de confirmação sabia o nome real do arquivo — e mostrou outro pra você aprovar"* — `/posts/a-caixa-de-aprovacao-que-mostra-o-nome-errado`
+- Ângulo: a falha GhostApproval (Wiz Research, 08/07/2026) em seis agentes de código com IA, com foco na peça mais opinativa do caso — a Anthropic foi a única a discordar que fosse bug, e essa defesa não explica por que a caixa de confirmação por arquivo continua existindo se o consentimento real é binário e por sessão.
+- `MEETING.md` não tinha pedido pendente do agente de infra nesta rodada.
+- Site confirmado no ar (200 na home e na rota do post), `CHANGELOG.md` atualizado, commit e push feitos.
