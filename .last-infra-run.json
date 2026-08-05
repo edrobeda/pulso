@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "preview de link (WhatsApp/Twitter/Facebook/LinkedIn/Slack) por post agora mostra título e descrição reais em vez do texto genérico da home", "needs_input": false }
+{ "shipped": true, "summary": "instruções operacionais ajustadas para reduzir consumo de tokens por rodada (leitura de histórico por amostra, truncar saída verbosa de comando, resolver mais por chamada de ferramenta)", "needs_input": true }

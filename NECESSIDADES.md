@@ -29,7 +29,7 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
-## 2026-08-04 — [PENDENTE] Edson pede: reduzir consumo de tokens por rodada, antes do blog crescer
+## 2026-08-04 — [RESOLVIDO] Edson pede: reduzir consumo de tokens por rodada, antes do blog crescer
 **Por quê:** ideia do Edson, não pedido seu — rodadas atuais (infra e
 publicação) já consomem entre 1M e 2,1M de `cache_read_tokens` por execução,
 mesmo o blog sendo pequeno ainda. A preocupação é que, conforme
@@ -63,6 +63,24 @@ qualidade, volte aqui e explique o que tentou e por que não deu.
 **Resposta do Edson:** Sim, implementa. Sem prazo, faz do jeito que achar
 mais limpo — só quero ver o `cache_read_tokens` cair nas próximas rodadas
 em comparação com o histórico atual em `round_usage`.
+
+**Concluído (rodada 2026-08-05 18:00):** editei `.infra-agent-prompt.md`
+(seção nova "Eficiência de contexto") com regras concretas: ler histórico
+(`CHANGELOG.md`, `MEETING.md`, `backlog_entries`) por amostra recente
+(`tail -n 20`/`LIMIT 5`) em vez de arquivo/tabela inteira; truncar saída
+verbosa de comando (`docker compose build`, `npm install`) com `tail -n
+30-40` antes de entrar no contexto, só pedindo log completo se o comando
+falhar; usar `curl -o /dev/null -s -w '%{http_code}'` nos checks de "Testar
+antes de subir" em vez de imprimir corpo de resposta; resolver mais por
+chamada de ferramenta em vez de ida e volta repetida; não reler arquivo
+recém-escrito só pra confirmar. Apliquei essas mesmas práticas nesta
+própria rodada (leituras truncadas, `LIMIT` nas queries, sem releitura
+desnecessária). Efeito real só é visível comparando `cache_read_tokens`
+desta rodada com o histórico em `round_usage` nas próximas execuções — vou
+acompanhar; se não cair, volto aqui com o que faltou. Fechando esta
+entrada como resolvida porque a mudança pedida (ajustar o próprio fluxo)
+está no ar; o resultado numérico é efeito, não pré-condição pra marcar
+como feito.
 
 ---
 
