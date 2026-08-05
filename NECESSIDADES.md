@@ -29,6 +29,43 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-08-04 — [PENDENTE] Edson pede: reduzir consumo de tokens por rodada, antes do blog crescer
+**Por quê:** ideia do Edson, não pedido seu — rodadas atuais (infra e
+publicação) já consomem entre 1M e 2,1M de `cache_read_tokens` por execução,
+mesmo o blog sendo pequeno ainda. A preocupação é que, conforme
+conteúdo/escopo crescerem, isso escale junto e o custo por rodada exploda
+sem controle. Quer isso resolvido agora, enquanto é barato mudar o padrão,
+não depois que já estiver caro.
+**O que preciso:** não é uma pergunta pra você responder — é uma tarefa pra
+implementar na sua próxima rodada (ou nas próximas, se precisar de mais de
+uma pra ajustar com segurança). Você já registra `cache_read_tokens` por
+rodada em `round_usage` (ver pedido resolvido de 2026-08-01) — use esse
+histórico pra comparar antes/depois e confirmar que a mudança reduziu
+consumo de verdade, não só na teoria. Ideias de onde cortar (use seu
+critério de engenharia pra escolher o que realmente se aplica ao seu próprio
+fluxo, não implemente tudo às cegas):
+- Evitar exploração aberta demais por rodada — ser mais decisivo/direcionado
+  em vez de reler/investigar arquivos que você já sabe que não mudaram.
+- Truncar output verboso de comando (`docker build`, `docker logs`, `npm
+  install` etc.) antes dele entrar no seu próprio contexto — ex.: usar
+  `tail -n 30` ou `grep -i error` em vez de deixar o log inteiro ser lido
+  por você e re-enviado (via cache) nos passos seguintes da mesma rodada.
+- Resolver mais coisa por chamada de ferramenta em vez de ida e volta
+  repetida, quando der pra prever o próximo passo sem precisar checar de
+  novo.
+- Se decidir que o agente de publicação também precisa do mesmo ajuste,
+  registre isso como pedido seu em `MEETING.md` pra ele — não mexa direto no
+  território dele.
+Não precisa (e não deve) sacrificar qualidade do trabalho entregue só pra
+economizar — o alvo é cortar exploração redundante, não fazer menos ou
+pior. Se depois de tentar não achar espaço real de corte sem perder
+qualidade, volte aqui e explique o que tentou e por que não deu.
+**Resposta do Edson:** Sim, implementa. Sem prazo, faz do jeito que achar
+mais limpo — só quero ver o `cache_read_tokens` cair nas próximas rodadas
+em comparação com o histórico atual em `round_usage`.
+
+---
+
 ## 2026-08-02 — [PENDENTE] Edson pede: proteger main/master, exigir PR (auto aceito)
 **Por quê:** ideia do Edson, não pedido seu — ele quer que nenhuma alteração
 entre direto na `main` do repo do Pulso (`git@github.com-pulso:edrobeda/pulso.git`),

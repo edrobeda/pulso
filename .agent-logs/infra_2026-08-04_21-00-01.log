@@ -1,0 +1,7 @@
+Rodada concluída com sucesso.
+
+**Entrega:** links de post compartilhados no WhatsApp, Telegram, Twitter, Facebook, LinkedIn e Slack agora mostram o título e a descrição reais do post, em vez do texto genérico da home. A causa era que a SPA seta meta tags via JS depois do carregamento, e bots de preview de link não executam JS. Criei um endpoint interno na API (`/prerender/posts/:slug`, não exposto publicamente) que devolve HTML pré-renderizado com meta tags/OG/JSON-LD por post, e configurei o nginx do frontend para detectar user-agent de bot conhecido e fazer proxy só nesses casos — visitante humano continua na SPA normal.
+
+Testado: build limpo, containers saudáveis, checks de `/`, `/api/health` e `/bastidores` em 200, comportamento verificado como navegador normal (SPA) vs. WhatsApp/Twitter bot (HTML com meta tags corretas), e slug inexistente retornando 404 como esperado. Registrado em `backlog_entries` e commitado/pushado para `main`.
+
+Sem pendências novas em `NECESSIDADES.md` (o pedido de branch protection segue aguardando o token do Edson, sem duplicar) nem em `MEETING.md`.
