@@ -1,0 +1,5 @@
+Rodada concluída com sucesso.
+
+**Resumo:** implementei o pedido do Edson (aprovado em `NECESSIDADES.md`) de reduzir consumo de tokens por rodada — adicionei uma seção "Eficiência de contexto" em `.infra-agent-prompt.md` com regras concretas: ler histórico por amostra recente em vez de arquivo/tabela inteira, truncar saída verbosa de comando (`docker build`, `npm install`) antes dela entrar no contexto, usar `curl` só com código de status, e resolver mais por chamada de ferramenta. Apliquei essas mesmas práticas nesta própria rodada. Testes de sanidade (`/`, `/api/health`, `/bastidores`) todos 200. Commit e push feitos.
+
+Pendências: o pedido de branch protection (2026-08-02) continua bloqueado esperando um `GH_TOKEN` do Edson — não dupliquei o pedido, só deixei em aberto. `MEETING.md` não tinha nenhum pedido novo do agente de publicação nesta rodada.
