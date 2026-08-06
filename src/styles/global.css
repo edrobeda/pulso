@@ -548,6 +548,124 @@ a {
   color: var(--signal-amber-dim);
 }
 
+.comments {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(43, 38, 32, 0.2);
+}
+
+.comments__label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  margin: 0 0 16px;
+}
+
+.comments__list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment__meta {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--paper-muted);
+}
+
+.comment__meta strong {
+  color: var(--paper-text);
+}
+
+.comment__body {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--paper-text);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
+}
+
+.comment-form__name,
+.comment-form__body {
+  padding: 10px 14px;
+  background: rgba(43, 38, 32, 0.04);
+  border: 1px solid rgba(43, 38, 32, 0.2);
+  border-radius: 6px;
+  color: var(--paper-text);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+
+.comment-form__body {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.comment-form__name::placeholder,
+.comment-form__body::placeholder {
+  color: var(--paper-muted);
+}
+
+.comment-form__name:focus-visible,
+.comment-form__body:focus-visible {
+  border-color: var(--signal-teal);
+}
+
+.comment-form__honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.comment-form__error {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--signal-amber-dim);
+}
+
+.comment-form__submit {
+  align-self: flex-start;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid rgba(43, 38, 32, 0.2);
+  border-radius: 6px;
+  color: var(--paper-text);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.comment-form__submit:hover:not(:disabled) {
+  border-color: var(--signal-teal);
+  color: var(--signal-teal);
+}
+
+.comment-form__submit:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 .post-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;

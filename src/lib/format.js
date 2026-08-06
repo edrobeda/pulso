@@ -14,3 +14,14 @@ export function dayLabel(isoDate) {
 export function postDateTimeLabel(post) {
   return `${dayLabel(post.date)} · ${post.slot}`
 }
+
+export function commentDateLabel(isoTimestamp) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+    .format(new Date(isoTimestamp))
+    .replace('.', '')
+}

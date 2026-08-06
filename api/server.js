@@ -203,6 +203,65 @@ app.post('/api/posts/:slug/reactions', writeLimiter, async (req, res) => {
   }
 })
 
+// Comentários por post — moderação heurística antes de ir ao ar (sem link
+// na mensagem, tamanho limitado, honeypot, mesmo writeLimiter das reações)
+// em vez de fila manual, seguindo a mesma filosofia do resto do blog.
+// `visible` deixa uma válvula de escape pra esconder via psql um
+// comentário problemático que passe pela heurística, sem apagar a linha.
+const COMMENT_MIN_LEN = 2
+const COMMENT_MAX_LEN = 1000
+const COMMENT_BLOCK_PATTERN = /https?:\/\/|www\.|\b(viagra|cialis|casino|apostas?|empr[eé]stimo|bit\.ly)\b/i
+
+app.get('/api/posts/:slug/comments', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, author_name, body, created_at
+       FROM post_comments
+       WHERE slug = $1 AND visible = true
+       ORDER BY created_at ASC
+       LIMIT 200`,
+      [req.params.slug]
+    )
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(rows)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
+  try {
+    // Honeypot: campo escondido no form que só um bot preencheria.
+    if (req.body?.website) return res.status(400).json({ error: 'invalid' })
+
+    const body = String(req.body?.body || '').trim()
+    if (body.length < COMMENT_MIN_LEN || body.length > COMMENT_MAX_LEN) {
+      return res.status(400).json({ error: 'comentário precisa ter entre 2 e 1000 caracteres' })
+    }
+    if (COMMENT_BLOCK_PATTERN.test(body)) {
+      return res.status(400).json({ error: 'comentário rejeitado (link ou termo bloqueado)' })
+    }
+
+    let authorName = String(req.body?.authorName || '').trim().slice(0, 60)
+    if (!authorName || COMMENT_BLOCK_PATTERN.test(authorName)) authorName = 'anônimo'
+
+    const { rows: postRows } = await pool.query('SELECT 1 FROM posts WHERE slug = $1', [
+      req.params.slug,
+    ])
+    if (postRows.length === 0) return res.status(404).json({ error: 'not found' })
+
+    const { rows } = await pool.query(
+      `INSERT INTO post_comments (slug, author_name, body)
+       VALUES ($1, $2, $3)
+       RETURNING id, author_name, body, created_at`,
+      [req.params.slug, authorName, body]
+    )
+    res.status(201).json(rows[0])
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 const SITE_URL = 'https://blog.eventifylab.com'
 const SITE_NAME = 'Pulso'
 const SITE_DESCRIPTION =

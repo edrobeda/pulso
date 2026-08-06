@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { usePosts, findPost, sortPosts } from '../content/posts'
-import { postDateTimeLabel } from '../lib/format'
+import { postDateTimeLabel, commentDateLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
 import { setDocumentMeta, setPostJsonLd, clearPostJsonLd } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
@@ -67,6 +67,13 @@ export default function PostPage() {
   const [reactions, setReactions] = useState({})
   const [reacted, setReacted] = useState([])
 
+  const [comments, setComments] = useState([])
+  const [commentName, setCommentName] = useState('')
+  const [commentBody, setCommentBody] = useState('')
+  const [commentHoneypot, setCommentHoneypot] = useState('')
+  const [commentStatus, setCommentStatus] = useState('idle')
+  const [commentError, setCommentError] = useState('')
+
   useEffect(() => {
     if (!post) return
     setDocumentMeta({ title: post.title, description: post.excerpt, path: `/posts/${post.slug}`, type: 'article' })
@@ -97,6 +104,43 @@ export default function PostPage() {
       })
       .catch(() => {})
   }, [post])
+
+  useEffect(() => {
+    if (!post) return
+    fetch(`/api/posts/${post.slug}/comments`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setComments(data)
+      })
+      .catch(() => {})
+  }, [post])
+
+  function handleCommentSubmit(e) {
+    e.preventDefault()
+    if (!post || commentStatus === 'sending') return
+    setCommentStatus('sending')
+    setCommentError('')
+    fetch(`/api/posts/${post.slug}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ authorName: commentName, body: commentBody, website: commentHoneypot }),
+    })
+      .then(async (r) => {
+        const data = await r.json().catch(() => null)
+        if (!r.ok) throw new Error(data?.error || 'não foi possível publicar o comentário')
+        return data
+      })
+      .then((data) => {
+        setComments((prev) => [...prev, data])
+        setCommentBody('')
+        setCommentName('')
+        setCommentStatus('idle')
+      })
+      .catch((err) => {
+        setCommentError(err.message)
+        setCommentStatus('idle')
+      })
+  }
 
   function handleReact(emoji) {
     if (!post || reacted.includes(emoji)) return
@@ -179,6 +223,59 @@ export default function PostPage() {
               </ul>
             </div>
           )}
+          <div className="comments">
+            <p className="comments__label">
+              {comments.length === 0 ? 'comentários' : `comentários (${comments.length})`}
+            </p>
+            {comments.length > 0 && (
+              <ul className="comments__list">
+                {comments.map((c) => (
+                  <li className="comment" key={c.id}>
+                    <div className="comment__meta">
+                      <strong>{c.author_name}</strong>
+                      <span>{commentDateLabel(c.created_at)}</span>
+                    </div>
+                    <p className="comment__body">{c.body}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <form className="comment-form" onSubmit={handleCommentSubmit}>
+              <input
+                type="text"
+                className="comment-form__name"
+                placeholder="nome (opcional)"
+                value={commentName}
+                onChange={(e) => setCommentName(e.target.value)}
+                maxLength={60}
+                aria-label="Seu nome"
+              />
+              <input
+                type="text"
+                name="website"
+                className="comment-form__honeypot"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={commentHoneypot}
+                onChange={(e) => setCommentHoneypot(e.target.value)}
+              />
+              <textarea
+                className="comment-form__body"
+                placeholder="deixe um comentário"
+                value={commentBody}
+                onChange={(e) => setCommentBody(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                required
+                aria-label="Seu comentário"
+              />
+              {commentError && <p className="comment-form__error">{commentError}</p>}
+              <button type="submit" className="comment-form__submit" disabled={commentStatus === 'sending'}>
+                {commentStatus === 'sending' ? 'enviando…' : 'comentar'}
+              </button>
+            </form>
+          </div>
           {(olderPost || newerPost) && (
             <nav className="post-nav" aria-label="Navegação entre pulsos">
               {olderPost ? (
