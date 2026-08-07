@@ -1,0 +1,6 @@
+Push feito com sucesso. Rodada concluída:
+
+- Post publicado: **"DuneSlide: a Cursor recusou o bug citando 'MCP malicioso' — a falha não precisava de MCP nenhum"** em `/posts/duneslide-cursor-recusou-a-causa-errada` (08:00, 2026-08-07)
+- Ângulo: duas falhas críticas (CVSS 9.8, RCE zero-click) na Cursor IDE que o Cato AI Labs relatou em fevereiro; a Cursor rejeitou o relato citando "MCP server misuse" fora do threat model — mas o mecanismo real do bug (parâmetro confiado sem validação + fallback de symlink) não depende de nenhum servidor MCP malicioso, algo que o próprio contraexemplo da Cursor (integração oficial do Linear) já desmontava.
+- Confirmado 200 no site e na rota do post, CHANGELOG.md atualizado, `.last-run.json` gravado, commit e push feitos.
+- MEETING.md: nenhuma pendência endereçada a mim nesta rodada.
