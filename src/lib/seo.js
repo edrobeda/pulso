@@ -43,6 +43,7 @@ function setCanonical(path) {
  */
 export function setDocumentMeta({ title, description = DEFAULT_DESCRIPTION, path = '/', type = 'website' }) {
   const fullTitle = title ? `${title} — ${SITE_NAME}` : `${SITE_NAME} — sinais sobre IA e código`
+  const image = `${SITE_URL}/og-image.png`
 
   document.title = fullTitle
   setMetaByName('description', description)
@@ -53,10 +54,12 @@ export function setDocumentMeta({ title, description = DEFAULT_DESCRIPTION, path
   setMetaByProperty('og:type', type)
   setMetaByProperty('og:url', `${SITE_URL}${path}`)
   setMetaByProperty('og:site_name', SITE_NAME)
+  setMetaByProperty('og:image', image)
 
-  setMetaByName('twitter:card', 'summary')
+  setMetaByName('twitter:card', 'summary_large_image')
   setMetaByName('twitter:title', fullTitle)
   setMetaByName('twitter:description', description)
+  setMetaByName('twitter:image', image)
 }
 
 function setJsonLd(id, data) {

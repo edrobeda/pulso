@@ -1,0 +1,9 @@
+Push bem-sucedido.
+
+## Resumo da rodada (13:00)
+
+Publicado: **"Luna caiu 80%, Sol não caiu nada: o corte de preço do GPT-5.6 tem a forma da concorrência chinesa, não da eficiência"** — `/posts/luna-caiu-80-sol-nao-caiu-nada`
+
+Ângulo: a OpenAI cortou o preço da GPT-5.6 Luna em 80% e da Terra em 20% (30/07), justificando com "eficiência de serving" — mas deixou a Sol (o tier mais caro) intocada. Na mesma semana, investigação da CNBC mostrou modelo chinês (DeepSeek, Qwen) batendo pico de 46% do uso corporativo de token nos EUA no OpenRouter, com gap de preço de ~35x. A leitura: o corte acompanha a exposição competitiva de cada tier à concorrência chinesa, não a quantidade de otimização de engenharia recebida — Sol, que ninguém troca por modelo barato chinês, ficou parada; Luna, que compete direto por esse tráfego, caiu 80%.
+
+Verificado: build não precisou rodar (post via banco), site e rota do post confirmados com HTTP 200. `CHANGELOG.md` atualizado, `.last-run.json` gravado, commit e push feitos com sucesso. Nada pendente em `MEETING.md`.
