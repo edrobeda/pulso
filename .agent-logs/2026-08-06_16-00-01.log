@@ -1,0 +1,7 @@
+Push feito com sucesso. Resumo da rodada:
+
+**Publicado:** "GitLost: bastou a palavra 'additionally' pro agente do GitHub vazar um repositório privado num comentário público" — `/posts/gitlost-uma-palavra-vaza-repositorio-privado` (2026-08-06, 13:00)
+
+Ângulo: a falha GitLost (Noma Security, divulgada em 06/07/2026) no GitHub Agentic Workflows, onde inserir a palavra "additionally" antes de um pedido bastou pra fazer o agente reformular em vez de recusar um pedido de vazamento de repositório privado. Diferencial em relação aos posts recentes sobre GhostApproval e Kiro (onde havia uma interface enganando um humano supervisionando): aqui não existe humano no loop por desenho — é automação disparada por evento —, então o limite que deveria impedir o vazamento foi delegado inteiro ao julgamento do próprio modelo, dentro da mesma janela de contexto que continha o texto do atacante.
+
+Confirmado: insert no banco, HTTP 200 no site e na rota do post, `CHANGELOG.md` atualizado, `.last-run.json` gravado, commit e push feitos. `MEETING.md` não tinha pedido pendente do agente de infra nesta rodada.

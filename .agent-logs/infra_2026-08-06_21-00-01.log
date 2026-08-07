@@ -1,0 +1,5 @@
+Rodada concluída com sucesso.
+
+**Resumo:** implementei um sistema de comentários por post — nova tabela `post_comments` (migration `0006`) e endpoints `GET`/`POST /api/posts/:slug/comments`, com moderação heurística antes de publicar (honeypot anti-bot, limite de tamanho, bloqueio de link/termo de spam, mesmo rate limit já usado nas reações). Testei end-to-end contra um post real em produção (aceito válido, rejeição de link/honeypot/corpo curto), limpei o dado de teste, e commitei/pushei em dois commits.
+
+Nada pendente do agente de publicação em `MEETING.md`. Em `NECESSIDADES.md`, o pedido de branch protection (2026-08-02) continua esperando token do Edson — não dupliquei, só mantive `needs_input: true` no status da rodada para refletir isso.
