@@ -29,6 +29,53 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-08-08 — [RESOLVIDO] Edson pede: auto-scroll na leitura do post + reações/comentários na home
+**Por quê:** ideia do Edson, não pedido seu — ele lê o blog com a bebê no colo
+e queria poder ler sem precisar tocar na tela pra rolar. Segundo pedido, sem
+relação com o primeiro: na home (feed), ele quer ver de relance quantas
+reações e quantos comentários cada post já tem, sem precisar entrar em cada
+post pra descobrir.
+**O que preciso:** não é uma pergunta pra você responder — são duas tarefas
+pra implementar na sua próxima rodada (ou nas próximas, se precisar
+dividir):
+1. **Auto-scroll na página do post** (`PostPage.jsx`): rolagem automática
+   lenta e suave (velocidade baixa — é pra dar tempo de ler confortavelmente,
+   não uma rolagem rápida), com jeito fácil de pausar/retomar (ex.: qualquer
+   toque/scroll manual do usuário pausa o auto-scroll; ideal também ter um
+   botão visível de play/pause, já que a pessoa pode estar com as mãos
+   ocupadas e não necessariamente vai tocar a tela pra pausar por acidente).
+   Não precisa ligar sozinho — pode começar desligado e a pessoa ativa
+   quando quiser, use seu critério de UX.
+2. **Reações e contagem de comentários na home** (`HomePage.jsx`): já existem
+   os endpoints `GET /api/posts/:slug/reactions` e
+   `GET /api/posts/:slug/comments` (usados hoje só em `PostPage.jsx`), mas
+   nenhum endpoint que devolva isso em lote pra todos os posts do feed de
+   uma vez — evite N+1 chamada por post na home; crie um endpoint novo
+   agregado (ex.: `GET /api/posts/summary` ou parecido, retornando por slug
+   a contagem total de reações e de comentários) e use ele na home. Mostrar
+   de forma discreta em cada card do feed (ex.: emoji + total de reações,
+   ícone de balão + número de comentários).
+Use seu critério de engenharia e de design pra decidir os detalhes visuais —
+só não gaste tempo além do necessário, é uma melhoria de UX, não precisa de
+over-engineering.
+**Resposta do Edson:** Sim, implementa os dois. Sem prazo.
+
+**Concluído parte 1/2 (rodada 2026-08-08 18:00):** implementei a tarefa 2
+(reações/comentários na home). Criei `GET /api/posts/summary`
+(`api/server.js`), que agrega `post_reactions`/`post_comments` por `slug`
+numa única query (evita N+1) e devolve `{ slug: { reactionCount,
+commentCount } }` pra todos os posts de uma vez. `HomePage.jsx` busca esse
+endpoint uma vez ao montar e mostra um badge discreto (👍 N · 💬 N) em cada
+card do feed, só quando a contagem é maior que zero, pra não poluir posts
+sem engajamento ainda. Testado em produção: endpoint responde 200 com
+contagem correta, bundle buildado contém a classe nova, home/health/
+bastidores continuam 200. Tarefa 1 (auto-scroll em `PostPage.jsx`) fica
+pra próxima rodada — escopo grande o bastante (pausa automática no
+scroll/toque manual + botão play/pause) pra merecer o slot de melhoria
+inteiro de outra rodada, em vez de apressar as duas na mesma.
+
+---
+
 ## 2026-08-04 — [RESOLVIDO] Edson pede: reduzir consumo de tokens por rodada, antes do blog crescer
 **Por quê:** ideia do Edson, não pedido seu — rodadas atuais (infra e
 publicação) já consomem entre 1M e 2,1M de `cache_read_tokens` por execução,

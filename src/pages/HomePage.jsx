@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePosts, groupByDay } from '../content/posts'
 import { dayLabel } from '../lib/format'
@@ -11,9 +11,19 @@ export default function HomePage() {
   const { posts, loading } = usePosts()
   const days = groupByDay(posts)
   const today = todayISO()
+  const [summary, setSummary] = useState({})
 
   useEffect(() => {
     setDocumentMeta({ path: '/' })
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/posts/summary')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setSummary(data)
+      })
+      .catch(() => {})
   }, [])
 
   return (
@@ -48,6 +58,7 @@ export default function HomePage() {
                     </div>
                   )
                 }
+                const stats = summary[post.slug]
                 return (
                   <article className="slot-row" key={slot}>
                     <span className="slot-row__time">
@@ -59,13 +70,29 @@ export default function HomePage() {
                         <h2 className="slot-row__title">{post.title}</h2>
                       </Link>
                       <p className="slot-row__excerpt">{post.excerpt}</p>
-                      <ul className="tag-list">
-                        {post.tags.map((tag) => (
-                          <li className="tag-pill" key={tag}>
-                            <Link to={`/tags/${slugifyTag(tag)}`}>{tag}</Link>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="slot-row__footer">
+                        <ul className="tag-list">
+                          {post.tags.map((tag) => (
+                            <li className="tag-pill" key={tag}>
+                              <Link to={`/tags/${slugifyTag(tag)}`}>{tag}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                        {stats && (stats.reactionCount > 0 || stats.commentCount > 0) && (
+                          <span className="slot-row__stats">
+                            {stats.reactionCount > 0 && (
+                              <span className="slot-row__stat">
+                                <span aria-hidden="true">👍</span> {stats.reactionCount}
+                              </span>
+                            )}
+                            {stats.commentCount > 0 && (
+                              <span className="slot-row__stat">
+                                <span aria-hidden="true">💬</span> {stats.commentCount}
+                              </span>
+                            )}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </article>
                 )

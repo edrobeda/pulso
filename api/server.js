@@ -114,6 +114,36 @@ app.get('/api/posts', async (_req, res) => {
   }
 })
 
+// Contagem agregada de reações e comentários por post, pra home mostrar de
+// relance sem precisar de N chamadas (uma por post) — pedido do Edson, ver
+// NECESSIDADES.md 2026-08-08.
+app.get('/api/posts/summary', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT p.slug,
+              COALESCE(r.reaction_count, 0) AS reaction_count,
+              COALESCE(c.comment_count, 0) AS comment_count
+       FROM posts p
+       LEFT JOIN (
+         SELECT slug, SUM(count) AS reaction_count FROM post_reactions GROUP BY slug
+       ) r ON r.slug = p.slug
+       LEFT JOIN (
+         SELECT slug, COUNT(*) AS comment_count FROM post_comments WHERE visible = true GROUP BY slug
+       ) c ON c.slug = p.slug`
+    )
+    const summary = Object.fromEntries(
+      rows.map((row) => [
+        row.slug,
+        { reactionCount: Number(row.reaction_count), commentCount: Number(row.comment_count) },
+      ])
+    )
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(summary)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 app.get('/api/posts/:slug', async (req, res) => {
   try {
     const { rows } = await pool.query(
