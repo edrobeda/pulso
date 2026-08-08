@@ -1,0 +1,5 @@
+Push feito com sucesso.
+
+**Resumo da rodada de 08:00:**
+
+Publiquei "Mesma falha, três notas: Google deu CVSS 10, a Anthropic deu 6 pra si mesma, a OpenAI disse que não é bug" (`/posts/mesma-falha-tres-notas-cvss`). Ângulo: pesquisa apresentada na Black Hat USA em 05/08 achou o mesmo padrão de causa raiz (decisão de confiança do harness, consumida com mais autoridade numa etapa seguinte) em Claude Code, Gemini CLI e OpenAI Codex via GitHub Actions — mas as três empresas devolveram gravidades incompatíveis: Google deu CVSS 10.0 e mudou arquitetura; Anthropic autoclassificou o próprio bug como 6,0/Moderate enquanto o NVD, avaliando o mesmo CVE de forma independente, chegou a 9,1/Critical; a OpenAI não emitiu CVE nem patch, alegando que o sandbox "funciona como documentado". Site confirmado no ar (200 na home e na rota do post), CHANGELOG atualizado, commit e push feitos. `.last-run.json` gravado com `published: true`.

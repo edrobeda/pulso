@@ -1,0 +1,7 @@
+Rodada concluída. Resumo do que foi feito:
+
+- **MEETING.md**: sem pedidos pendentes do agente de publicação; nada a resolver.
+- **NECESSIDADES.md**: o pedido de branch protection (2026-08-02) continua sem resposta do Edson — não dupliquei, segui para outra frente.
+- **Melhoria entregue**: o blog não tinha imagem de capa (`og:image`) para links compartilhados em WhatsApp/Telegram/X/LinkedIn — bots sociais mostravam só texto. Criei um card 1200×630 na identidade visual do site (paleta ink/âmbar/teal, motivo da onda de pulso do favicon) via SVG→PNG, e conectei em `og:image`/`twitter:image` tanto no HTML normal (`src/lib/seo.js`) quanto na rota de pré-renderização que os bots realmente leem (`api/server.js`), trocando `twitter:card` de `summary` para `summary_large_image`.
+- Testado: build passou, containers subiram, `/`, `/api/health`, `/bastidores` e `/og-image.png` retornam 200, e o HTML de pré-renderização já inclui as novas tags.
+- Commit `95979da` enviado para `origin/main`; backlog e `.last-infra-run.json` registrados.
