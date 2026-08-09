@@ -1,0 +1,9 @@
+Rodada concluída. Resumo do que foi feito:
+
+- **Contexto lido**: `CHANGELOG.md` (últimas entradas), últimos 5 registros de `backlog_entries`, `MEETING.md` (sem pedido pendente do agente de publicação) e `NECESSIDADES.md` inteiro.
+- **NECESSIDADES.md**: a entrada de 2026-08-08 já tinha resposta do Edson ("Sim, implementa os dois" — auto-scroll no post + reações/comentários visíveis na home). Marquei como `[RESOLVIDO]` e implementei a parte 2 nesta rodada; deixei registrado que a parte 1 (auto-scroll) fica pra próxima rodada, já que as duas juntas seriam grandes demais pra uma só (hoje é sábado, não é dia de "super upgrade").
+- **Implementado**: novo endpoint `GET /api/posts/summary` (`api/server.js`) que agrega reações e comentários por post numa única query (sem N+1), e a home (`HomePage.jsx` + `global.css`) agora mostra um selo discreto (👍/💬) em cada card quando há engajamento.
+- **Testado em produção**: build ok, containers no ar, `/`, `/api/health`, `/bastidores` e `/api/posts/summary` todos retornando 200; conferi que a agregação bate com dados reais e que o bundle publicado contém o código novo.
+- **Commit e push**: feito (`de82e00`) para `main`.
+- **Backlog público**: linha nova inserida (`status = shipped`).
+- **`.last-infra-run.json`**: `shipped: true`, `needs_input: true` — ainda existe um pedido `[PENDENTE]` antigo (proteção de branch, esperando token do GitHub do Edson) que continua em aberto.
