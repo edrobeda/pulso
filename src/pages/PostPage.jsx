@@ -74,6 +74,24 @@ export default function PostPage() {
   const [commentStatus, setCommentStatus] = useState('idle')
   const [commentError, setCommentError] = useState('')
 
+  const [autoScroll, setAutoScroll] = useState(false)
+  const [readProgress, setReadProgress] = useState(0)
+
+  useEffect(() => {
+    if (!post) return
+    function updateProgress() {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight
+      setReadProgress(scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0)
+    }
+    updateProgress()
+    window.addEventListener('scroll', updateProgress, { passive: true })
+    window.addEventListener('resize', updateProgress)
+    return () => {
+      window.removeEventListener('scroll', updateProgress)
+      window.removeEventListener('resize', updateProgress)
+    }
+  }, [post])
+
   useEffect(() => {
     if (!post) return
     setDocumentMeta({ title: post.title, description: post.excerpt, path: `/posts/${post.slug}`, type: 'article' })
@@ -114,6 +132,46 @@ export default function PostPage() {
       })
       .catch(() => {})
   }, [post])
+
+  // Desliga sozinho quando a pessoa troca de post (índice reseta o scroll pro topo).
+  useEffect(() => {
+    setAutoScroll(false)
+  }, [post?.slug])
+
+  useEffect(() => {
+    if (!autoScroll) return
+
+    const PX_PER_FRAME = 0.4 // ritmo de leitura confortável, não uma rolagem rápida
+    let raf
+
+    function tick() {
+      window.scrollBy(0, PX_PER_FRAME)
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2
+      if (atBottom) {
+        setAutoScroll(false)
+        return
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+
+    // Qualquer gesto manual (roda do mouse, toque, arrastar barra, seta/espaço do teclado) pausa.
+    function pauseOnManualInput() {
+      setAutoScroll(false)
+    }
+    window.addEventListener('wheel', pauseOnManualInput, { passive: true })
+    window.addEventListener('touchstart', pauseOnManualInput, { passive: true })
+    window.addEventListener('mousedown', pauseOnManualInput, { passive: true })
+    window.addEventListener('keydown', pauseOnManualInput)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('wheel', pauseOnManualInput)
+      window.removeEventListener('touchstart', pauseOnManualInput)
+      window.removeEventListener('mousedown', pauseOnManualInput)
+      window.removeEventListener('keydown', pauseOnManualInput)
+    }
+  }, [autoScroll])
 
   function handleCommentSubmit(e) {
     e.preventDefault()
@@ -167,6 +225,28 @@ export default function PostPage() {
 
   return (
     <div className="post-shell">
+      <div className="read-progress" aria-hidden="true">
+        <div className="read-progress__bar" style={{ width: `${readProgress}%` }} />
+      </div>
+      {autoScroll ? (
+        <button
+          type="button"
+          className="autoscroll-btn autoscroll-btn--active"
+          onClick={() => setAutoScroll(false)}
+          aria-pressed="true"
+        >
+          ❚❚ <span>pausar leitura automática</span>
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="autoscroll-btn"
+          onClick={() => setAutoScroll(true)}
+          aria-pressed="false"
+        >
+          ▶ <span>leitura automática</span>
+        </button>
+      )}
       <div className="post-card">
         <div className="post-card__band">
           <div className="post-card__meta">

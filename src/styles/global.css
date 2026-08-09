@@ -50,6 +50,24 @@ a {
   border-radius: 2px;
 }
 
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--signal-amber);
+  color: var(--ink-950);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  border-radius: 6px;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -354,6 +372,33 @@ a {
   color: var(--signal-teal);
 }
 
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+}
+
+.tag-cloud__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+}
+
+.tag-cloud__count {
+  color: var(--ink-600);
+  font-size: 0.7rem;
+}
+
+.tag-cloud__pill:hover .tag-cloud__count {
+  color: var(--signal-teal);
+}
+
 .slot-row--empty {
   border-bottom: 1px solid var(--ink-600);
   padding: 22px 0;
@@ -382,6 +427,62 @@ a {
   padding: 48px clamp(16px, 5vw, 56px) 100px;
   display: flex;
   justify-content: center;
+}
+
+.read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 30;
+  background: transparent;
+}
+
+.read-progress__bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--signal-amber), var(--signal-teal));
+  transition: width 0.1s linear;
+}
+
+.autoscroll-btn {
+  position: fixed;
+  right: clamp(16px, 4vw, 40px);
+  bottom: clamp(16px, 4vw, 40px);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--ink-800);
+  border: 1px solid var(--ink-600);
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--mist-200);
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.autoscroll-btn:hover {
+  border-color: var(--signal-amber-dim);
+  color: var(--signal-amber);
+}
+
+.autoscroll-btn--active {
+  border-color: var(--signal-teal);
+  color: var(--signal-teal);
+}
+
+.autoscroll-btn span {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .autoscroll-btn span {
+    display: inline;
+  }
 }
 
 .post-card {

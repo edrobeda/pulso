@@ -29,3 +29,16 @@ export function allTagSlugs(posts) {
   }
   return [...slugs]
 }
+
+export function tagCounts(posts) {
+  const bySlug = new Map()
+  for (const post of posts) {
+    for (const tag of post.tags) {
+      const slug = slugifyTag(tag)
+      const entry = bySlug.get(slug)
+      if (entry) entry.count += 1
+      else bySlug.set(slug, { slug, label: tag, count: 1 })
+    }
+  }
+  return [...bySlug.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+}

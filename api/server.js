@@ -78,6 +78,35 @@ app.get('/api/usage', async (_req, res) => {
   }
 })
 
+// Analytics próprio (sem terceiros): uma visita conta no máximo uma vez por
+// dispositivo por dia — o frontend deduplica via localStorage antes de
+// chamar isso, então isso não é pageview bruto, é "visitantes únicos/dia".
+app.post('/api/visits', writeLimiter, async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO site_visits (visit_date, visit_count)
+       VALUES (CURRENT_DATE, 1)
+       ON CONFLICT (visit_date) DO UPDATE SET visit_count = site_visits.visit_count + 1
+       RETURNING visit_count`
+    )
+    res.json({ visitCount: Number(rows[0].visit_count) })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.get('/api/visits', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT visit_date, visit_count FROM site_visits ORDER BY visit_date DESC LIMIT 14`
+    )
+    res.set('Cache-Control', 'public, max-age=60')
+    res.json(rows.map((r) => ({ date: r.visit_date, count: Number(r.visit_count) })))
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 // Linha do banco -> shape que o frontend espera (mesmo formato dos antigos
 // arquivos de post em src/content/posts/*.js: readTime em vez de read_time).
 function toPost(row) {
@@ -451,6 +480,7 @@ app.get('/sitemap.xml', async (_req, res) => {
 
     const staticRoutes = [
       { path: '/', changefreq: 'hourly', priority: '1.0' },
+      { path: '/tags', changefreq: 'weekly', priority: '0.4' },
       { path: '/bastidores', changefreq: 'daily', priority: '0.5' },
     ]
 

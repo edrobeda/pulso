@@ -10,8 +10,24 @@ export default function Layout() {
     return () => clearInterval(id)
   }, [])
 
+  // Analytics próprio: conta no máximo uma visita por dispositivo por dia,
+  // sem terceiro nenhum (ver /api/visits em api/server.js).
+  useEffect(() => {
+    // en-CA formata como AAAA-MM-DD; usamos o fuso de Brasília pra bater com
+    // o CURRENT_DATE do Postgres, que já está setado pro mesmo fuso.
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
+    const key = 'pulso-visited'
+    if (localStorage.getItem(key) === today) return
+    fetch('/api/visits', { method: 'POST' })
+      .then(() => localStorage.setItem(key, today))
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="shell">
+      <a href="#main" className="skip-link">
+        pular para o conteúdo
+      </a>
       <header className="header">
         <Link to="/" className="wordmark">
           <span className="wordmark__mark">●</span> Pulso
@@ -19,6 +35,9 @@ export default function Layout() {
         <nav className="header__nav">
           <Link to="/busca" className="header__nav-link">
             buscar
+          </Link>
+          <Link to="/tags" className="header__nav-link">
+            tags
           </Link>
           <Link to="/bastidores" className="header__nav-link">
             bastidores
@@ -28,7 +47,7 @@ export default function Layout() {
           </span>
         </nav>
       </header>
-      <main className="main">
+      <main className="main" id="main" tabIndex={-1}>
         <Outlet />
       </main>
       <footer className="footer">

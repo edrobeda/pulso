@@ -38,9 +38,16 @@ function usageCostLabel(costUsd) {
   return `US$ ${Number(costUsd).toFixed(2)}`
 }
 
+function visitDayLabel(isoDate) {
+  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
+    .format(new Date(`${isoDate}T12:00:00`))
+    .replace('.', '')
+}
+
 export default function Bastidores() {
   const [state, setState] = useState({ status: 'loading', entries: [] })
   const [usage, setUsage] = useState({ status: 'loading', rows: [] })
+  const [visits, setVisits] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -87,6 +94,24 @@ export default function Bastidores() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/visits')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setVisits({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setVisits({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <section className="bastidores">
       <div className="intro">
@@ -112,6 +137,22 @@ export default function Bastidores() {
                 <span className="usage-item__when">{usageRunLabel(entry.run_at)}</span>
                 <span className="usage-item__tokens">{usageTokensLabel(entry)}</span>
                 <span className="usage-item__cost">{usageCostLabel(entry.cost_usd)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {visits.status === 'ready' && visits.rows.length > 0 && (
+        <div className="usage-panel">
+          <p className="usage-panel__label">visitantes únicos por dia (analytics próprio, sem terceiros)</p>
+          <ul className="usage-list">
+            {visits.rows.map((v) => (
+              <li className="usage-item" key={v.date}>
+                <span className="usage-item__agent">{visitDayLabel(v.date)}</span>
+                <span className="usage-item__tokens">
+                  {v.count === 1 ? '1 visitante' : `${v.count} visitantes`}
+                </span>
               </li>
             ))}
           </ul>

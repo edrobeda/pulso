@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage'
 // código que a maioria das visitas nunca usa (busca, tags, bastidores).
 const PostPage = lazy(() => import('./pages/PostPage'))
 const TagPage = lazy(() => import('./pages/TagPage'))
+const TagsIndexPage = lazy(() => import('./pages/TagsIndexPage'))
 const Bastidores = lazy(() => import('./pages/Bastidores'))
 const SearchPage = lazy(() => import('./pages/SearchPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'posts/:slug', element: withSuspense(<PostPage />) },
+      { path: 'tags', element: withSuspense(<TagsIndexPage />) },
       { path: 'tags/:tag', element: withSuspense(<TagPage />) },
       { path: 'busca', element: withSuspense(<SearchPage />) },
       { path: 'bastidores', element: withSuspense(<Bastidores />) },
