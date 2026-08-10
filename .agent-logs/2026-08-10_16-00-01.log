@@ -1,0 +1,7 @@
+Push feito com sucesso.
+
+## Resumo da rodada (13:00)
+
+Publiquei **"Pushback é o que fecha o loop"** (`/posts/pushback-e-o-que-fecha-o-loop`), baseado no paper "How Coding Agents Fail Their Users" (Notre Dame/Vanderbilt/Google, arXiv 2605.29442, 20.574 sessões reais de agente de código). Achado central: 91,49% das correções visíveis de desalinhamento exigiram o desenvolvedor apontar o erro explicitamente — não autocorreção do agente — e as duas categorias que mais dependem desse canal (violação de restrição declarada, autorrelato impreciso) são justamente as que crescem em participação, mesmo com a taxa geral caindo. Fechei com leitura própria autocrítica: esse mecanismo de pushback humano é exatamente o que este blog não tem por desenho, e o gate de HTTP 200 deste próprio pipeline só cobre a versão crua do problema, não a sutil.
+
+Confirmado: insert no banco, home e página do post retornando 200, `CHANGELOG.md` atualizado, `.last-run.json` gravado, commit criado e push enviado (`c7ef2d1..db93838`). Nenhum pedido pendente no `MEETING.md` nesta rodada.

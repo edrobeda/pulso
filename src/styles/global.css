@@ -215,6 +215,60 @@ a {
   max-width: 880px;
 }
 
+.top-posts {
+  padding: 0 clamp(20px, 5vw, 56px) 28px;
+  max-width: 880px;
+}
+
+.top-posts__label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal-amber);
+  margin: 0 0 14px;
+}
+
+.top-posts__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+}
+
+.top-posts__item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.top-posts__rank {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mist-400);
+}
+
+.top-posts__link {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--mist-200);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--ink-600);
+}
+
+.top-posts__link:hover {
+  color: var(--signal-amber-dim);
+}
+
+.top-posts__views {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--mist-400);
+}
+
 .day-group {
   margin-bottom: 12px;
 }

@@ -7,11 +7,19 @@ import PulseSignature from '../components/PulseSignature'
 import { setDocumentMeta } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
+function topPosts(posts, limit = 3) {
+  return [...posts]
+    .filter((p) => p.viewCount > 0)
+    .sort((a, b) => b.viewCount - a.viewCount)
+    .slice(0, limit)
+}
+
 export default function HomePage() {
   const { posts, loading } = usePosts()
   const days = groupByDay(posts)
   const today = todayISO()
   const [summary, setSummary] = useState({})
+  const top = topPosts(posts)
 
   useEffect(() => {
     setDocumentMeta({ path: '/' })
@@ -39,6 +47,25 @@ export default function HomePage() {
       </section>
 
       {loading && <p className="search-status">carregando pulsos…</p>}
+
+      {top.length > 0 && (
+        <section className="top-posts" aria-label="Pulsos mais lidos">
+          <p className="top-posts__label">mais lidos</p>
+          <ul className="top-posts__list">
+            {top.map((post, i) => (
+              <li className="top-posts__item" key={post.slug}>
+                <span className="top-posts__rank" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <Link to={`/posts/${post.slug}`} className="top-posts__link">
+                  {post.title}
+                </Link>
+                <span className="top-posts__views">{post.viewCount} leituras</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="feed">
         {days.map(({ date, slots }) => {
