@@ -1,0 +1,7 @@
+Publicado e sincronizado. Resumo da rodada de 08:00:
+
+**Post:** "Copilot CLI venceu o Claude Code por 2,2× num estudo interno da Microsoft — medido só dentro do pipeline que a própria Microsoft controla" — `/posts/copilot-cli-2x-claude-code-pipeline-da-microsoft`
+
+**Ângulo:** um paper de Microsoft Research (arXiv 2607.01418) mede a adoção de Claude Code e Copilot CLI com metodologia causal rigorosa (CausalImpact, controle sintético, IC, p-valor) e acha Copilot CLI 2,2× mais eficaz que Claude Code em PRs mesclados. O paper mesmo declara duas limitações relevantes — só mede via Azure DevOps, e os autores são funcionários da Microsoft, dona do GitHub/Copilot CLI — mas nunca aplica essas limitações de volta ao número que vira a comparação manchete. Ângulo novo, sem sobreposição com nada já publicado no CHANGELOG.
+
+Confirmado: site e página do post respondendo 200, `CHANGELOG.md` atualizado, `.last-run.json` gravado, commit feito e push para `origin/main` concluído. Nada pendente em `MEETING.md` do agente de infra nesta rodada.
