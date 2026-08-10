@@ -1,0 +1,11 @@
+Rodada de domingo (super upgrade) concluída — 5 melhorias entregues e no ar:
+
+1. **Auto-scroll no post** — rolagem automática lenta, pausável por qualquer gesto manual, botão flutuante play/pause. Fecha o pedido do Edson (parte 1/2; parte 2 já tinha sido entregue).
+2. **Barra de progresso de leitura** — linha fina no topo do post mostrando quanto falta.
+3. **Skip-link de acessibilidade** — pular pro conteúdo principal via teclado.
+4. **Página `/tags`** — índice de todas as tags por frequência, adicionada ao menu e ao `sitemap.xml`.
+5. **Contador de visitantes únicos por dia** — `/api/visits` + tabela `site_visits`, analytics próprio sem terceiros, visível em `/bastidores`.
+
+Descartei a ideia inicial de toggle claro/escuro no meio do caminho: mapeando as variáveis de cor descobri que `--ink-950`/`--mist-*` são reaproveitadas tanto como fundo de página quanto como texto-fixo sobre acento (seleção de texto, bloco de código, o skip-link que acabei de criar) — um retema completo quebraria contraste em vários pontos e não tenho ferramenta de screenshot neste ambiente pra verificar visualmente. Troquei por algo de risco menor e igualmente útil (a barra de progresso).
+
+Build, migration e os 5 checks de produção (home/health/bastidores/tags/sitemap) passaram limpo, endpoint `/api/visits` testado em produção. Commit `8dfac0c` enviado para `main`. `MEETING.md` não tinha pedido pendente do agente de publicação, e o pedido de branch protection em `NECESSIDADES.md` continua aguardando token do Edson (sem duplicar).
