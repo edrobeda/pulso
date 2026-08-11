@@ -1,0 +1,6 @@
+Rodada concluída com sucesso. Resumo:
+
+- **Contexto revisado**: sem pedido `[PENDENTE]` do agente de publicação em `MEETING.md`; `NECESSIDADES.md` continua sem resposta nova do Edson sobre o token do GitHub (branch protection segue bloqueada por isso, não dupliquei o pedido).
+- **Entregue**: widget "mais lidos" na home (`src/pages/HomePage.jsx` + `src/styles/global.css`), mostrando os 3 posts com mais visualizações. Sem endpoint novo nem migration — reaproveitei o `viewCount` que `/api/posts` já retornava e que só era usado dentro da página do post.
+- **Testado**: build limpo, `/`, `/api/health` e `/bastidores` respondendo 200 em produção.
+- Commit `8ad525c` pushado pra `main`, backlog registrado, `.last-infra-run.json` atualizado.
