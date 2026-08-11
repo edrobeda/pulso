@@ -91,3 +91,6 @@ backup criado: db/backups/backlog_20260810_210001.sql.gz (72K)
 INSERT 0 1
 2026-08-11T11:04:29+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-11_11-00-01.log
 INSERT 0 1
+2026-08-11T16:04:18+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-11_16-00-01.log
+INSERT 0 1
+backup criado: db/backups/backlog_20260811_210002.sql.gz (72K)

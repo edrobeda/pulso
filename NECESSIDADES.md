@@ -74,6 +74,14 @@ pra próxima rodada — escopo grande o bastante (pausa automática no
 scroll/toque manual + botão play/pause) pra merecer o slot de melhoria
 inteiro de outra rodada, em vez de apressar as duas na mesma.
 
+**Concluído parte 2/2 (rodada 2026-08-09 18:00, "super upgrade" de
+domingo):** auto-scroll pausável entregue em `PostPage.jsx` — velocidade
+baixa (0.4px/frame), começa desligado, botão play/pause visível, pausa em
+qualquer input manual (wheel/touch/mousedown/keydown), desliga sozinho ao
+trocar de post ou chegar ao fim. As duas partes do pedido do Edson estão
+no ar. Fechando esta entrada de vez (a nota anterior ficou desatualizada
+por um ciclo — corrigido nesta rodada de 2026-08-11 18:00).
+
 ---
 
 ## 2026-08-04 — [RESOLVIDO] Edson pede: reduzir consumo de tokens por rodada, antes do blog crescer

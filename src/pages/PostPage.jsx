@@ -3,7 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { usePosts, findPost, sortPosts } from '../content/posts'
 import { postDateTimeLabel, commentDateLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
-import { setDocumentMeta, setPostJsonLd, clearPostJsonLd } from '../lib/seo'
+import { setDocumentMeta, setPostJsonLd, clearPostJsonLd, SITE_URL } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
 function viewsLabel(count) {
@@ -76,6 +76,7 @@ export default function PostPage() {
 
   const [autoScroll, setAutoScroll] = useState(false)
   const [readProgress, setReadProgress] = useState(0)
+  const [copyState, setCopyState] = useState('idle')
 
   useEffect(() => {
     if (!post) return
@@ -200,6 +201,18 @@ export default function PostPage() {
       })
   }
 
+  function handleCopyLink() {
+    if (!post) return
+    const url = `${SITE_URL}/posts/${post.slug}`
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopyState('copied')
+        setTimeout(() => setCopyState('idle'), 2000)
+      })
+      .catch(() => {})
+  }
+
   function handleReact(emoji) {
     if (!post || reacted.includes(emoji)) return
     const nextReacted = [...reacted, emoji]
@@ -288,6 +301,30 @@ export default function PostPage() {
                 <span className="reaction-btn__count">{reactions[emoji] || 0}</span>
               </button>
             ))}
+          </div>
+          <div className="share" role="group" aria-label="Compartilhar este pulso">
+            <p className="share__label">compartilhar</p>
+            <div className="share__buttons">
+              <button type="button" className="share-btn" onClick={handleCopyLink}>
+                {copyState === 'copied' ? '✓ link copiado' : '🔗 copiar link'}
+              </button>
+              <a
+                className="share-btn"
+                href={`https://wa.me/?text=${encodeURIComponent(`${post.title} — ${SITE_URL}/posts/${post.slug}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp
+              </a>
+              <a
+                className="share-btn"
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`${SITE_URL}/posts/${post.slug}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                X
+              </a>
+            </div>
           </div>
           {related.length > 0 && (
             <div className="related-posts">
