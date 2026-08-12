@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { usePosts, findPost, sortPosts } from '../content/posts'
+import { usePosts, usePostBody, findPost, sortPosts } from '../content/posts'
 import { postDateTimeLabel, commentDateLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
 import { setDocumentMeta, setPostJsonLd, clearPostJsonLd, SITE_URL } from '../lib/seo'
@@ -56,6 +56,7 @@ export default function PostPage() {
   const { slug } = useParams()
   const { posts, loading } = usePosts()
   const post = findPost(posts, slug)
+  const { post: postBody } = usePostBody(post ? slug : null)
   const ordered = sortPosts(posts)
   const index = post ? ordered.findIndex((p) => p.slug === post.slug) : -1
   const newerPost = index > 0 ? ordered[index - 1] : null
@@ -283,9 +284,11 @@ export default function PostPage() {
             ))}
           </ul>
           <div className="prose">
-            {post.blocks.map((block, i) => (
-              <Block block={block} key={i} />
-            ))}
+            {postBody ? (
+              postBody.blocks.map((block, i) => <Block block={block} key={i} />)
+            ) : (
+              <p className="search-status">carregando pulso…</p>
+            )}
           </div>
           <div className="reactions" role="group" aria-label="Reagir a este pulso">
             {REACTION_EMOJIS.map((emoji) => (

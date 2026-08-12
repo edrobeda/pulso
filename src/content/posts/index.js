@@ -27,9 +27,10 @@ function loadList() {
 }
 
 /**
- * Todos os posts (com `blocks` incluído). Busca uma vez só e cacheia em
- * memória pro resto da sessão do browser — o corpus é pequeno o bastante
- * pra isso não pesar.
+ * Metadado de todos os posts (sem `blocks` — ver comentário em
+ * `/api/posts` no server). Busca uma vez só e cacheia em memória pro resto
+ * da sessão do browser. Pra o corpo de um post específico, use
+ * `usePostBody(slug)`.
  */
 export function usePosts() {
   const [state, setState] = useState(() =>
@@ -52,6 +53,47 @@ export function usePosts() {
       cancelled = true
     }
   }, [])
+
+  return state
+}
+
+const bodyCache = new Map()
+
+/**
+ * Corpo completo (com `blocks`) de um post, sob demanda — cacheado por
+ * `slug` pra não refazer o fetch ao voltar pro mesmo post na sessão.
+ */
+export function usePostBody(slug) {
+  const [state, setState] = useState(() =>
+    bodyCache.has(slug)
+      ? { post: bodyCache.get(slug), loading: false, error: null }
+      : { post: null, loading: true, error: null }
+  )
+
+  useEffect(() => {
+    if (!slug) return
+    if (bodyCache.has(slug)) {
+      setState({ post: bodyCache.get(slug), loading: false, error: null })
+      return
+    }
+    let cancelled = false
+    setState({ post: null, loading: true, error: null })
+    fetch(`/api/posts/${slug}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`GET /api/posts/${slug} -> ${r.status}`)
+        return r.json()
+      })
+      .then((post) => {
+        bodyCache.set(slug, post)
+        if (!cancelled) setState({ post, loading: false, error: null })
+      })
+      .catch((error) => {
+        if (!cancelled) setState({ post: null, loading: false, error })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [slug])
 
   return state
 }

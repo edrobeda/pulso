@@ -123,14 +123,15 @@ function toPost(row) {
   }
 }
 
-// Devolve tudo (incl. blocks) de uma vez, igual o app fazia antes disso ser
-// banco (todos os posts vinham juntos no bundle estático) — o corpus é
-// pequeno o bastante pra isso não pesar, e simplifica o frontend (um fetch
-// só, sem endpoint de busca separado pro corpo do post).
+// Lista leve (sem `blocks`) — usada pra home, tags, busca e relacionados,
+// que só precisam de metadado. Publica 2x/dia desde 2026-07-24, então esse
+// payload só cresce; antes trazia `blocks` (corpo inteiro) de todo post em
+// toda visita, o que ia ficar cada vez mais pesado sem limite. O corpo
+// completo de um post só é buscado sob demanda em `/api/posts/:slug`.
 app.get('/api/posts', async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT p.slug, p.title, p.excerpt, p.date, p.slot, p.tags, p.read_time, p.blocks,
+      `SELECT p.slug, p.title, p.excerpt, p.date, p.slot, p.tags, p.read_time,
               COALESCE(v.view_count, 0) AS view_count
        FROM posts p
        LEFT JOIN post_views v ON v.slug = p.slug
@@ -402,6 +403,40 @@ app.get('/prerender/posts/:slug', async (req, res) => {
     res.send(html)
   } catch (err) {
     res.status(500).send('error')
+  }
+})
+
+// Busca por substring (título, trecho, tags e corpo do post), acento-
+// insensível via extensão `unaccent` (ver db/migrations/0008). Título/trecho
+// pesam mais que o corpo na ordenação, mesmo critério que a busca client-side
+// usava antes de `/api/posts` parar de trazer `blocks` pra todo post em toda
+// visita — a busca virou o único lugar que precisa olhar o corpo do post,
+// então faz mais sentido fazer isso no banco do que baixar tudo pro cliente.
+app.get('/api/search', async (req, res) => {
+  try {
+    const q = String(req.query.q || '').trim()
+    if (!q) return res.json([])
+    const like = `%${q}%`
+    const { rows } = await pool.query(
+      `SELECT p.slug, p.title, p.excerpt, p.date, p.slot, p.tags, p.read_time,
+              COALESCE(v.view_count, 0) AS view_count
+       FROM posts p
+       LEFT JOIN post_views v ON v.slug = p.slug
+       WHERE unaccent(p.title) ILIKE unaccent($1)
+          OR unaccent(p.excerpt) ILIKE unaccent($1)
+          OR unaccent(array_to_string(p.tags, ' ')) ILIKE unaccent($1)
+          OR unaccent(p.blocks::text) ILIKE unaccent($1)
+       ORDER BY
+         (CASE WHEN unaccent(p.title) ILIKE unaccent($1) THEN 2 ELSE 0 END
+          + CASE WHEN unaccent(p.excerpt) ILIKE unaccent($1) THEN 1 ELSE 0 END) DESC,
+         p.date DESC, p.slot DESC
+       LIMIT 50`,
+      [like]
+    )
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(rows.map(toPost))
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
 })
 

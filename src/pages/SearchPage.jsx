@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { usePosts } from '../content/posts'
-import { searchPosts } from '../lib/search'
 import { dayLabel } from '../lib/format'
 import { setDocumentMeta, setRobotsNoIndex, clearRobotsNoIndex } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
 export default function SearchPage() {
-  const { posts, loading } = usePosts()
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
   const [input, setInput] = useState(query)
+  const [results, setResults] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setDocumentMeta({ title: 'Busca', path: '/busca' })
@@ -22,13 +21,35 @@ export default function SearchPage() {
     setInput(query)
   }, [query])
 
+  useEffect(() => {
+    const trimmed = query.trim()
+    if (!trimmed) {
+      setResults([])
+      return
+    }
+    let cancelled = false
+    setLoading(true)
+    fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        if (!cancelled) setResults(data)
+      })
+      .catch(() => {
+        if (!cancelled) setResults([])
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [query])
+
   function handleSubmit(e) {
     e.preventDefault()
     const trimmed = input.trim()
     setSearchParams(trimmed ? { q: trimmed } : {})
   }
-
-  const results = query.trim() && !loading ? searchPosts(posts, query) : []
 
   return (
     <>
