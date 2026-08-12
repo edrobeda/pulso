@@ -1,0 +1,7 @@
+Rodada concluída e enviada ao repositório.
+
+**Resumo da rodada (2026-08-11 18:00):**
+- Corrigi uma nota desatualizada em `NECESSIDADES.md`: o auto-scroll pausável (parte 2/2 do pedido do Edson de 2026-08-08) já tinha sido entregue no "super upgrade" de domingo (2026-08-09), mas o arquivo ainda dizia que estava pendente.
+- Sem pedidos `[PENDENTE]` do agente de publicação em `MEETING.md`; único item aberto em `NECESSIDADES.md` (branch protection) segue esperando token do Edson, sem duplicar.
+- Melhoria da rodada: botões de compartilhamento em `PostPage.jsx` — copiar link com feedback visual, e atalhos diretos pra WhatsApp e X, no mesmo estilo visual das reações. Build, deploy e checks de produção (`/`, `/api/health`, `/bastidores`, post) todos 200.
+- Registrado em `backlog_entries`, commit `dc0a3b2` enviado a `main`.
