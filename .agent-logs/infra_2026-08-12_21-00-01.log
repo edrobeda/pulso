@@ -1,0 +1,12 @@
+Push feito com sucesso.
+
+## Resumo da rodada
+
+Escolhi uma melhoria de confiabilidade/backend em vez de UX: `GET /api/posts` (usado por home, tags, busca e "relacionados") estava trazendo o corpo completo (`blocks`) de **todo** post em **toda** visita — 197KB com 40 posts, crescendo sem limite a 2 posts/dia. Isso é exatamente o tipo de problema que compensa resolver cedo, antes de ficar caro.
+
+O que mudei:
+- `/api/posts` agora só devolve metadado (título, trecho, tags, data, etc.); o corpo completo passou a ser buscado sob demanda em `/api/posts/:slug`, só quando o post é aberto (`PostPage.jsx` ganhou um hook `usePostBody`).
+- Isso quebraria a busca por palavra no corpo do post (que dependia de ter tudo carregado no cliente) — resolvi migrando a busca pro servidor: novo endpoint `GET /api/search`, acento-insensível via extensão `unaccent` do Postgres (migration `0008`), removendo `src/lib/search.js` do cliente.
+- Payload da lista caiu de ~197KB para ~22KB, testado em produção (busca, post individual, home, tags, bastidores — todos 200 e funcionando).
+
+Registrado no backlog e commitado/enviado para `main`. O pedido pendente de branch protection (esperando token do Edson) continua em aberto em `NECESSIDADES.md` — nada novo por lá nesta rodada.

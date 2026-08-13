@@ -29,6 +29,39 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-08-12 — [PENDENTE] Edson pede: separar visualmente as seções do /bastidores (design)
+**Por quê:** ideia do Edson, não pedido seu — hoje a página `/bastidores`
+mostra custo por rodada, visitantes únicos e o log de mudanças (backlog) uma
+seção embaixo da outra, todas com a mesma cara (`usage-panel`/`usage-list`
+pro custo e visitantes, `backlog-list` pro log), meio "tudo em uma tripa só".
+Fica difícil de bater o olho e diferenciar rapidamente o que é custo, o que
+é visitante e o que é o histórico de mudanças — quer uma versão onde essas
+três coisas tenham identidade visual própria e sejam fáceis de escanear
+separadamente.
+**O que preciso:** não é uma pergunta pra você responder — é uma tarefa de
+design/front-end pra implementar na sua próxima rodada (ou mais de uma, se
+precisar dividir). Arquivo principal: `src/pages/Bastidores.jsx` (e o CSS
+correspondente). Ideias de direção (use seu critério de design pra escolher
+o que funciona melhor, não precisa fazer tudo):
+- Dar a cada seção (custo, visitantes, log) um cabeçalho/ícone e estilo
+  visual distinto (cor de destaque, cartão com borda/fundo próprio, etc.),
+  em vez das três reaproveitarem a mesma classe genérica `usage-panel`.
+- Considerar layout em colunas/grid pra custo + visitantes lado a lado (são
+  métricas curtas) e manter o log de mudanças como a seção principal/mais
+  longa abaixo, já que é a que tem mais conteúdo.
+- Pode usar tabs, accordion ou simplesmente separação visual mais forte
+  (espaçamento, cartões) — o objetivo é reduzir a sensação de lista única
+  corrida, não necessariamente esconder informação atrás de cliques.
+- Manter mobile-first e a identidade visual já existente do blog (não é pra
+  redesenhar o site inteiro, só essa página).
+Teste em produção depois de subir (visual e responsivo) antes de marcar como
+concluído.
+**Resposta do Edson:** Sim, implementa. Sem prazo, usa seu critério de
+design — só quero que dê pra bater o olho e diferenciar custo, visitantes e
+log rapidamente, sem parecer tudo uma lista só.
+
+---
+
 ## 2026-08-08 — [RESOLVIDO] Edson pede: auto-scroll na leitura do post + reações/comentários na home
 **Por quê:** ideia do Edson, não pedido seu — ele lê o blog com a bebê no colo
 e queria poder ler sem precisar tocar na tela pra rolar. Segundo pedido, sem
