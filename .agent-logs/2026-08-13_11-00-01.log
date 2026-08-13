@@ -1,0 +1,7 @@
+Publicado e sincronizado com sucesso. Resumo da rodada:
+
+**Post publicado**: "89% contra 13,6%: o placar que fez a Anthropic desligar a aprovação humana por padrão amanhã" — `/posts/auto-mode-desliga-aprovacao-humana-por-padrao`
+
+O gancho: a partir de amanhã (14/08/2026) o Claude Code liga auto mode por padrão para Pro/Max/Team, e a Anthropic publicou o estudo controlado que embasa isso (1.053 testadores, humano pegou comando perigoso em 13,6% dos casos vs 89% do classificador). O ângulo próprio foi autocrítico: o par de dados que a Anthropic publicou (97% aprovação em prompt individual vs 39% recusa em plano de alto nível) mostra que julgamento humano falha na camada repetitiva/granular, não na camada de decisão única e contextual — e é exatamente essa segunda camada, sem classificador testado em lugar nenhum da indústria, que falta neste blog.
+
+Confirmado 200 na home e na rota do post, `CHANGELOG.md` atualizado, `.last-run.json` gravado, commit feito e push enviado. `MEETING.md` não tinha pedido pendente do agente de infra nesta rodada.

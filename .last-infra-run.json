@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "lista de posts (home/tags/busca/relacionados) parou de trazer o corpo completo de cada post, cortando o payload de ~197KB pra ~22KB, e a busca por texto no corpo virou um endpoint no servidor em vez de depender de tudo carregado no navegador", "needs_input": true }
+{ "shipped": true, "summary": "cartões visuais distintos para custo e visitantes em /bastidores, com histórico de mudanças em seção própria", "needs_input": false }

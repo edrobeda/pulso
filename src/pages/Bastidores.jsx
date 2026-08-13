@@ -125,67 +125,85 @@ export default function Bastidores() {
         </p>
       </div>
 
-      {usage.status === 'ready' && usage.rows.length > 0 && (
-        <div className="usage-panel">
-          <p className="usage-panel__label">custo real por rodada</p>
-          <ul className="usage-list">
-            {usage.rows.map((entry, i) => (
-              <li className="usage-item" key={i}>
-                <span className="usage-item__agent">
-                  {AGENT_LABEL[entry.agent] || entry.agent}
-                </span>
-                <span className="usage-item__when">{usageRunLabel(entry.run_at)}</span>
-                <span className="usage-item__tokens">{usageTokensLabel(entry)}</span>
-                <span className="usage-item__cost">{usageCostLabel(entry.cost_usd)}</span>
-              </li>
-            ))}
-          </ul>
+      {((usage.status === 'ready' && usage.rows.length > 0) ||
+        (visits.status === 'ready' && visits.rows.length > 0)) && (
+        <div className="metrics-grid">
+          {usage.status === 'ready' && usage.rows.length > 0 && (
+            <div className="metric-card metric-card--cost">
+              <p className="metric-card__label">
+                <span className="metric-card__icon" aria-hidden="true">$</span>
+                custo real por rodada
+              </p>
+              <ul className="usage-list">
+                {usage.rows.map((entry, i) => (
+                  <li className="usage-item" key={i}>
+                    <span className="usage-item__agent">
+                      {AGENT_LABEL[entry.agent] || entry.agent}
+                    </span>
+                    <span className="usage-item__when">{usageRunLabel(entry.run_at)}</span>
+                    <span className="usage-item__tokens">{usageTokensLabel(entry)}</span>
+                    <span className="usage-item__cost">{usageCostLabel(entry.cost_usd)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {visits.status === 'ready' && visits.rows.length > 0 && (
+            <div className="metric-card metric-card--visits">
+              <p className="metric-card__label">
+                <span className="metric-card__icon" aria-hidden="true">↗</span>
+                visitantes únicos por dia (analytics próprio, sem terceiros)
+              </p>
+              <ul className="usage-list">
+                {visits.rows.map((v) => (
+                  <li className="usage-item" key={v.date}>
+                    <span className="usage-item__agent">{visitDayLabel(v.date)}</span>
+                    <span className="usage-item__tokens">
+                      {v.count === 1 ? '1 visitante' : `${v.count} visitantes`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 
-      {visits.status === 'ready' && visits.rows.length > 0 && (
-        <div className="usage-panel">
-          <p className="usage-panel__label">visitantes únicos por dia (analytics próprio, sem terceiros)</p>
-          <ul className="usage-list">
-            {visits.rows.map((v) => (
-              <li className="usage-item" key={v.date}>
-                <span className="usage-item__agent">{visitDayLabel(v.date)}</span>
-                <span className="usage-item__tokens">
-                  {v.count === 1 ? '1 visitante' : `${v.count} visitantes`}
-                </span>
-              </li>
-            ))}
+      <div className="changelog-section">
+        <h2 className="section-heading">
+          <span className="section-heading__icon" aria-hidden="true">▤</span>
+          histórico de mudanças
+        </h2>
+
+        {state.status === 'loading' && <p className="backlog-empty">carregando…</p>}
+
+        {state.status === 'error' && (
+          <p className="backlog-empty">não foi possível carregar o backlog agora.</p>
+        )}
+
+        {state.status === 'ready' && state.entries.length === 0 && (
+          <p className="backlog-empty">nenhum registro ainda — o primeiro ciclo roda às 18:00.</p>
+        )}
+
+        {state.status === 'ready' && state.entries.length > 0 && (
+          <ul className="backlog-list">
+            {state.entries.map((entry) => {
+              const meta = STATUS_META[entry.status] || STATUS_META.analyzing
+              return (
+                <li className="backlog-item" key={entry.id}>
+                  <div className="backlog-item__head">
+                    <span className="backlog-item__date">{dayLabel(entry.entry_date)}</span>
+                    <span className={`backlog-badge ${meta.className}`}>{meta.label}</span>
+                  </div>
+                  <h3 className="backlog-item__title">{entry.title}</h3>
+                  <p className="backlog-item__desc">{entry.description}</p>
+                </li>
+              )
+            })}
           </ul>
-        </div>
-      )}
-
-      {state.status === 'loading' && <p className="backlog-empty">carregando…</p>}
-
-      {state.status === 'error' && (
-        <p className="backlog-empty">não foi possível carregar o backlog agora.</p>
-      )}
-
-      {state.status === 'ready' && state.entries.length === 0 && (
-        <p className="backlog-empty">nenhum registro ainda — o primeiro ciclo roda às 18:00.</p>
-      )}
-
-      {state.status === 'ready' && state.entries.length > 0 && (
-        <ul className="backlog-list">
-          {state.entries.map((entry) => {
-            const meta = STATUS_META[entry.status] || STATUS_META.analyzing
-            return (
-              <li className="backlog-item" key={entry.id}>
-                <div className="backlog-item__head">
-                  <span className="backlog-item__date">{dayLabel(entry.entry_date)}</span>
-                  <span className={`backlog-badge ${meta.className}`}>{meta.label}</span>
-                </div>
-                <h2 className="backlog-item__title">{entry.title}</h2>
-                <p className="backlog-item__desc">{entry.description}</p>
-              </li>
-            )
-          })}
-        </ul>
-      )}
+        )}
+      </div>
     </section>
   )
 }

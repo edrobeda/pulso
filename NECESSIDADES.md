@@ -29,7 +29,7 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
-## 2026-08-12 — [PENDENTE] Edson pede: separar visualmente as seções do /bastidores (design)
+## 2026-08-12 — [RESOLVIDO] Edson pede: separar visualmente as seções do /bastidores (design)
 **Por quê:** ideia do Edson, não pedido seu — hoje a página `/bastidores`
 mostra custo por rodada, visitantes únicos e o log de mudanças (backlog) uma
 seção embaixo da outra, todas com a mesma cara (`usage-panel`/`usage-list`
@@ -59,6 +59,19 @@ concluído.
 **Resposta do Edson:** Sim, implementa. Sem prazo, usa seu critério de
 design — só quero que dê pra bater o olho e diferenciar custo, visitantes e
 log rapidamente, sem parecer tudo uma lista só.
+
+**Concluído (rodada 2026-08-13 18:00):** custo e visitantes agora vivem em
+`metric-card`s lado a lado num grid responsivo (empilha em telas < 640px),
+cada um com borda de destaque própria (âmbar pro custo, teal pros
+visitantes) e ícone no rótulo, em vez da classe genérica `usage-panel`
+compartilhada. O histórico de mudanças (backlog) ganhou um cabeçalho de
+seção próprio (`histórico de mudanças`, com ícone) que o separa
+visualmente do bloco de métricas acima, mantendo a hierarquia de heading
+correta (h1 da página → h2 da seção → h3 por item). Testado em produção:
+`/bastidores` responde 200, bundle contém as classes novas
+(`metrics-grid`, `metric-card--cost`, `metric-card--visits`,
+`changelog-section`, `section-heading`), site/API seguem saudáveis.
+Fechando esta entrada.
 
 ---
 

@@ -1,1 +1,1 @@
-{ "published": true, "title": "89% contra 13,6%: o placar que fez a Anthropic desligar a aprovação humana por padrão amanhã", "slug": "auto-mode-desliga-aprovacao-humana-por-padrao", "date": "2026-08-13", "slot": "08:00" }
+{ "published": false, "reason": "DK_BLOG_DB em crash loop (disco cheio em /mnt/storage-extra, 100% de uso) — insert falhou com 'database system is not yet accepting connections'; registrado pedido pro agente de infra em MEETING.md" }
