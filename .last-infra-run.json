@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "cartões visuais distintos para custo e visitantes em /bastidores, com histórico de mudanças em seção própria", "needs_input": false }
+{ "shipped": true, "summary": "paginação client-side do feed da home (5 dias iniciais + botão carregar mais)", "needs_input": true }

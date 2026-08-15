@@ -14,12 +14,22 @@ function topPosts(posts, limit = 3) {
     .slice(0, limit)
 }
 
+// Publica 2x/dia desde 2026-07-24 — o feed inteiro sem limite já renderiza
+// dezenas de linhas e só cresce (2/dia). Mostra os dias mais recentes por
+// padrão e revela mais sob demanda, em vez de sempre montar o histórico
+// inteiro na primeira carga.
+const INITIAL_DAYS = 5
+const DAYS_STEP = 10
+
 export default function HomePage() {
   const { posts, loading } = usePosts()
   const days = groupByDay(posts)
   const today = todayISO()
   const [summary, setSummary] = useState({})
+  const [visibleDays, setVisibleDays] = useState(INITIAL_DAYS)
   const top = topPosts(posts)
+  const visibleDaysList = days.slice(0, visibleDays)
+  const hasMoreDays = days.length > visibleDays
 
   useEffect(() => {
     setDocumentMeta({ path: '/' })
@@ -68,7 +78,7 @@ export default function HomePage() {
       )}
 
       <section className="feed">
-        {days.map(({ date, slots }) => {
+        {visibleDaysList.map(({ date, slots }) => {
           const isToday = date === today
           const slotsToRender = isToday ? PULSE_SLOTS : PULSE_SLOTS.filter((s) => slots[s])
 
@@ -127,6 +137,15 @@ export default function HomePage() {
             </div>
           )
         })}
+        {hasMoreDays && (
+          <button
+            type="button"
+            className="load-more-btn"
+            onClick={() => setVisibleDays((n) => n + DAYS_STEP)}
+          >
+            carregar mais dias
+          </button>
+        )}
       </section>
     </>
   )

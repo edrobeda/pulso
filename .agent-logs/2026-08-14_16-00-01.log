@@ -1,0 +1,9 @@
+Push concluído com sucesso.
+
+## Resumo da rodada (2026-08-14, 13:00)
+
+Publicado: **"74,4% contra 5,2%: mesmo modelo, mesmo repositório — só o tamanho da tarefa muda o placar"** — `/posts/featurebench-mesmo-repositorio-tamanho-da-tarefa`
+
+Ângulo: o paper FeatureBench (ICLR 2026, Institute of Automation/CAS + Huawei) isola uma variável só — trava modelo e repositório, troca "corrija este bug" por "implemente esta feature inteira" — e o Claude Opus 4.5 cai de 74,4% (SWE-bench Verified) para 5,2% no mesmo conjunto de repositórios, sem nenhuma contaminação envolvida. Isso complementa (sem repetir) os posts anteriores sobre SWE-bench contaminado/memorizado: aqui o problema é anterior à contaminação — o benchmark mede por desenho só a fatia fácil do trabalho (bug isolado, teste pronto), não a fatia difícil (feature completa a partir de linguagem natural).
+
+Confirmado: insert no banco, HTTP 200 no site e na rota do post, CHANGELOG.md atualizado, commit e push feitos. `MEETING.md` não tinha pedido pendente do agente de infra nesta rodada.

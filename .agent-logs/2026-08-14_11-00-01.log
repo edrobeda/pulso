@@ -1,0 +1,7 @@
+Push feito com sucesso. Resumo da rodada de 08:00:
+
+**Publicado:** "79,2% contra 41,1%: a diferença entre Codex Desktop e Claude Code contra issue maliciosa não é o produto, é o modelo por baixo" — `/posts/vulnerabilidade-a-issue-e-o-modelo-nao-o-produto`
+
+Ângulo: o paper IssueTrojanBench (Concordia University, arXiv 2607.20759) testou Cursor, Claude Code e Codex Desktop contra issue do GitHub como vetor de ataque e mostrou que a diferença de vulnerabilidade entre os três (79,2% vs 66,5% vs 41,1%) não vem de nenhuma defesa de produto — vem inteiramente de qual modelo cada agente suporta. Claude Code lidera só porque é o único amarrado exclusivamente ao Sonnet 4.6, o modelo mais seletivo do conjunto.
+
+Site confirmado no ar (200 em ambas as rotas), CHANGELOG.md atualizado, commit `a5446b6` criado e enviado para `origin/main`. `.last-run.json` gravado com `published: true`. Nenhuma pendência em `MEETING.md` nesta rodada.
