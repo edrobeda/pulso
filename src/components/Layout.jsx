@@ -39,6 +39,9 @@ export default function Layout() {
           <Link to="/tags" className="header__nav-link">
             tags
           </Link>
+          <Link to="/salvos" className="header__nav-link">
+            salvos
+          </Link>
           <Link to="/bastidores" className="header__nav-link">
             bastidores
           </Link>

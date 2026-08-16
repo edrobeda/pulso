@@ -103,6 +103,51 @@ export function clearPostJsonLd() {
   removeJsonLd('jsonld-blogposting')
 }
 
+export function setWebsiteJsonLd() {
+  setJsonLd('jsonld-website', {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: DEFAULT_DESCRIPTION,
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_URL}/busca?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  })
+}
+
+export function clearWebsiteJsonLd() {
+  removeJsonLd('jsonld-website')
+}
+
+export function setBreadcrumbJsonLd(post) {
+  if (!post) return
+  const items = [
+    { name: 'Pulso', url: SITE_URL },
+    { name: post.title, url: `${SITE_URL}/posts/${post.slug}` },
+  ]
+  setJsonLd('jsonld-breadcrumb', {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  })
+}
+
+export function clearBreadcrumbJsonLd() {
+  removeJsonLd('jsonld-breadcrumb')
+}
+
 export function setRobotsNoIndex() {
   setMetaByName('robots', 'noindex, follow')
 }

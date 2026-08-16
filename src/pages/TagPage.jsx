@@ -27,6 +27,9 @@ export default function TagPage() {
       <div className="intro">
         <p className="intro__eyebrow">tag</p>
         <h1>{label}</h1>
+        <a href={`/api/feed/tags/${tag}`} className="tag-feed-link">
+          RSS desta tag
+        </a>
       </div>
       <div className="day-group">
         {posts.map((post) => (

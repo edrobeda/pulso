@@ -3,8 +3,16 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { usePosts, usePostBody, findPost, sortPosts } from '../content/posts'
 import { postDateTimeLabel, commentDateLabel } from '../lib/format'
 import PulseSignature from '../components/PulseSignature'
-import { setDocumentMeta, setPostJsonLd, clearPostJsonLd, SITE_URL } from '../lib/seo'
+import {
+  setDocumentMeta,
+  setPostJsonLd,
+  clearPostJsonLd,
+  setBreadcrumbJsonLd,
+  clearBreadcrumbJsonLd,
+  SITE_URL,
+} from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
+import { isSaved, toggleSaved } from '../lib/saved'
 
 function viewsLabel(count) {
   return count === 1 ? '1 leitura' : `${count} leituras`
@@ -35,18 +43,46 @@ function relatedPosts(allPosts, post) {
     .map((entry) => entry.post)
 }
 
-function Block({ block }) {
+// Ids de seção pro sumário (Table of Contents) — mesmo slugify de tags,
+// serve bem pra texto livre também. Sufixo de índice evita colisão entre
+// dois h2 com o mesmo texto no mesmo post.
+function headingId(text, index) {
+  return `s-${slugifyTag(text)}-${index}`
+}
+
+function CodeBlock({ text }) {
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      })
+      .catch(() => {})
+  }
+
+  return (
+    <div className="code-block">
+      <button type="button" className="code-block__copy" onClick={handleCopy}>
+        {copied ? '✓ copiado' : 'copiar'}
+      </button>
+      <pre>
+        <code>{text}</code>
+      </pre>
+    </div>
+  )
+}
+
+function Block({ block, headingIndex }) {
   switch (block.type) {
     case 'h2':
-      return <h2>{block.text}</h2>
+      return <h2 id={headingId(block.text, headingIndex)}>{block.text}</h2>
     case 'quote':
       return <blockquote>{block.text}</blockquote>
     case 'code':
-      return (
-        <pre>
-          <code>{block.text}</code>
-        </pre>
-      )
+      return <CodeBlock text={block.text} />
     default:
       return <p>{block.text}</p>
   }
@@ -67,6 +103,7 @@ export default function PostPage() {
 
   const [reactions, setReactions] = useState({})
   const [reacted, setReacted] = useState([])
+  const [saved, setSaved] = useState(false)
 
   const [comments, setComments] = useState([])
   const [commentName, setCommentName] = useState('')
@@ -98,7 +135,11 @@ export default function PostPage() {
     if (!post) return
     setDocumentMeta({ title: post.title, description: post.excerpt, path: `/posts/${post.slug}`, type: 'article' })
     setPostJsonLd(post)
-    return clearPostJsonLd
+    setBreadcrumbJsonLd(post)
+    return () => {
+      clearPostJsonLd()
+      clearBreadcrumbJsonLd()
+    }
   }, [post])
 
   useEffect(() => {
@@ -112,6 +153,11 @@ export default function PostPage() {
         if (data) setViewCount(data.viewCount)
       })
       .catch(() => {})
+  }, [post])
+
+  useEffect(() => {
+    if (!post) return
+    setSaved(isSaved(post.slug))
   }, [post])
 
   useEffect(() => {
@@ -202,6 +248,12 @@ export default function PostPage() {
       })
   }
 
+  function handleToggleSaved() {
+    if (!post) return
+    const next = toggleSaved(post.slug)
+    setSaved(next.includes(post.slug))
+  }
+
   function handleCopyLink() {
     if (!post) return
     const url = `${SITE_URL}/posts/${post.slug}`
@@ -236,6 +288,11 @@ export default function PostPage() {
   if (!post) return <Navigate to="/404" replace />
 
   const related = relatedPosts(posts, post)
+  const toc = postBody
+    ? postBody.blocks
+        .map((block, i) => (block.type === 'h2' ? { id: headingId(block.text, i), text: block.text } : null))
+        .filter(Boolean)
+    : []
 
   return (
     <div className="post-shell">
@@ -283,9 +340,21 @@ export default function PostPage() {
               </li>
             ))}
           </ul>
+          {toc.length >= 3 && (
+            <nav className="toc" aria-label="Sumário do pulso">
+              <p className="toc__label">nesse pulso</p>
+              <ol className="toc__list">
+                {toc.map((item) => (
+                  <li key={item.id}>
+                    <a href={`#${item.id}`}>{item.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
           <div className="prose">
             {postBody ? (
-              postBody.blocks.map((block, i) => <Block block={block} key={i} />)
+              postBody.blocks.map((block, i) => <Block block={block} headingIndex={i} key={i} />)
             ) : (
               <p className="search-status">carregando pulso…</p>
             )}
@@ -308,6 +377,14 @@ export default function PostPage() {
           <div className="share" role="group" aria-label="Compartilhar este pulso">
             <p className="share__label">compartilhar</p>
             <div className="share__buttons">
+              <button
+                type="button"
+                className={`share-btn${saved ? ' share-btn--active' : ''}`}
+                onClick={handleToggleSaved}
+                aria-pressed={saved}
+              >
+                {saved ? '✓ salvo' : '🔖 salvar pra depois'}
+              </button>
               <button type="button" className="share-btn" onClick={handleCopyLink}>
                 {copyState === 'copied' ? '✓ link copiado' : '🔗 copiar link'}
               </button>

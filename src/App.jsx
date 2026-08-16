@@ -11,6 +11,7 @@ const TagPage = lazy(() => import('./pages/TagPage'))
 const TagsIndexPage = lazy(() => import('./pages/TagsIndexPage'))
 const Bastidores = lazy(() => import('./pages/Bastidores'))
 const SearchPage = lazy(() => import('./pages/SearchPage'))
+const SavedPage = lazy(() => import('./pages/SavedPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function withSuspense(element) {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: 'tags', element: withSuspense(<TagsIndexPage />) },
       { path: 'tags/:tag', element: withSuspense(<TagPage />) },
       { path: 'busca', element: withSuspense(<SearchPage />) },
+      { path: 'salvos', element: withSuspense(<SavedPage />) },
       { path: 'bastidores', element: withSuspense(<Bastidores />) },
       { path: '*', element: withSuspense(<NotFoundPage />) },
     ],

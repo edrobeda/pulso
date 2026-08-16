@@ -492,6 +492,56 @@ ${items}
   }
 })
 
+// RSS filtrado por tag — mesmo shape de /feed.xml, mas só com os posts que
+// carregam essa tag (slug de tag, mesmo formato de /tags/:tag no frontend).
+// Fica sob /api/* de propósito (diferente de /feed.xml e /sitemap.xml, que
+// vivem na raiz): só /api/* tem rota garantida no Caddy sem exigir mudança
+// de infra fora do escopo deste agente.
+app.get('/api/feed/tags/:tagSlug', async (req, res) => {
+  try {
+    const { tagSlug } = req.params
+    const { rows } = await pool.query(
+      `SELECT slug, title, excerpt, date, slot, tags FROM posts ORDER BY date DESC, slot DESC`
+    )
+    const matching = rows.filter((p) => p.tags.some((t) => slugifyTag(t) === tagSlug))
+    if (matching.length === 0) return res.status(404).send('tag não encontrada')
+
+    const tagLabel = matching[0].tags.find((t) => slugifyTag(t) === tagSlug)
+    const items = matching
+      .map((p) => {
+        const link = `${SITE_URL}/posts/${p.slug}`
+        const pubDate = new Date(`${p.date}T${p.slot}:00-03:00`).toUTCString()
+        return `    <item>
+      <title>${escapeXml(p.title)}</title>
+      <link>${link}</link>
+      <guid isPermaLink="true">${link}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <description>${escapeXml(p.excerpt || '')}</description>
+    </item>`
+      })
+      .join('\n')
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>${SITE_NAME} — ${escapeXml(tagLabel)}</title>
+    <link>${SITE_URL}/tags/${tagSlug}</link>
+    <description>Pulsos de ${SITE_NAME} sob a tag "${escapeXml(tagLabel)}"</description>
+    <language>pt-BR</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="${SITE_URL}/api/feed/tags/${tagSlug}" rel="self" type="application/rss+xml" />
+${items}
+  </channel>
+</rss>
+`
+    res.set('Content-Type', 'application/rss+xml; charset=utf-8')
+    res.set('Cache-Control', 'public, max-age=300')
+    res.send(xml)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 app.get('/sitemap.xml', async (_req, res) => {
   try {
     const { rows } = await pool.query(`SELECT slug, date, tags FROM posts ORDER BY date DESC`)

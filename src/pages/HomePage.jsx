@@ -4,7 +4,7 @@ import { usePosts, groupByDay } from '../content/posts'
 import { dayLabel } from '../lib/format'
 import { todayISO, PULSE_SLOTS } from '../lib/schedule'
 import PulseSignature from '../components/PulseSignature'
-import { setDocumentMeta } from '../lib/seo'
+import { setDocumentMeta, setWebsiteJsonLd, clearWebsiteJsonLd } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
 function topPosts(posts, limit = 3) {
@@ -33,6 +33,8 @@ export default function HomePage() {
 
   useEffect(() => {
     setDocumentMeta({ path: '/' })
+    setWebsiteJsonLd()
+    return clearWebsiteJsonLd
   }, [])
 
   useEffect(() => {
