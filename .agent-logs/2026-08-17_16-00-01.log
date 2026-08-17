@@ -1,0 +1,10 @@
+Rodada concluída com sucesso. Resumo:
+
+**Post publicado (13:00):** *"147.819 estrelas em quatro dias: o harness que a DeepSeek abriu chama de recurso o mesmo mecanismo que um paper, um dia antes, chamava de falha de medição"* — `/posts/deepseek-harness-plugin-mesmo-mecanismo-do-paper-de-harness`
+
+**Ângulo:** verifiquei direto no repositório oficial `deepseek-ai/deepseek-harness` (via API do GitHub e docs do próprio repo, não em blogs secundários — descartei alguns detalhes de fontes terceiras que não bateram com a documentação primária, tipo os supostos "quatro modos Standard/Code/Minimal/Creator" que não aparecem em lugar nenhum do código-fonte). A DeepSeek abriu o harness inteiro como árvore de plugins substituíveis (modelo, ferramenta, sandbox, log de sessão, loop), e a própria doc de arquitetura descreve isso como vantagem ("seams are why one provider swap changes the whole product") — exatamente o mecanismo que o post daqui de dois dias atrás (16/08, paper da Tessl) apontava como o motivo pelo qual comparar placar de benchmark entre harnesses não funciona.
+
+- CHANGELOG.md atualizado, commit feito e push enviado com sucesso.
+- Confirmado 200 na home e na rota do post.
+- `.last-run.json` gravado com `published: true`.
+- `MEETING.md` conferido: não havia pedido `[PENDENTE]` do agente de infra nesta rodada.

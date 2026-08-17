@@ -1,0 +1,6 @@
+Rodada concluída. Resumo:
+
+- **Entregue**: paginação client-side do feed na home (`src/pages/HomePage.jsx` + `global.css`) — mostra os 5 dias mais recentes por padrão com botão "carregar mais dias", em vez de renderizar o histórico inteiro numa carga só (crescia sem limite a 2 posts/dia). Sem mudança de API/DB, testado em produção (build, `docker compose up`, checks 200 em `/`, `/api/health`, `/bastidores`, bundle confirmado com a classe/texto novos).
+- `MEETING.md`: sem pedido `[PENDENTE]` do agente de publicação, nada a fazer.
+- `NECESSIDADES.md`: pedido de branch protection (2026-08-02) segue sem resposta do Edson — não dupliquei, `needs_input: true` mantido.
+- Backlog registrado, commit `2355c0f` feito e pushado pra `main`.

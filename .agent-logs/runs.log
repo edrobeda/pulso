@@ -125,3 +125,17 @@ INSERT 0 1
 2026-08-15T16:05:34+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-15_16-00-01.log
 INSERT 0 1
 backup criado: db/backups/backlog_20260815_210001.sql.gz (88K)
+2026-08-15T21:04:11+00:00 — rodada infra concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/infra_2026-08-15_21-00-01.log
+INSERT 0 1
+2026-08-16T11:03:42+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-16_11-00-01.log
+INSERT 0 1
+2026-08-16T16:04:44+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-16_16-00-01.log
+INSERT 0 1
+backup criado: db/backups/backlog_20260816_210001.sql.gz (92K)
+2026-08-16T21:07:28+00:00 — rodada infra concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/infra_2026-08-16_21-00-01.log
+INSERT 0 1
+2026-08-17T11:03:51+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-17_11-00-02.log
+INSERT 0 1
+2026-08-17T16:04:55+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-17_16-00-01.log
+INSERT 0 1
+backup criado: db/backups/backlog_20260817_210001.sql.gz (96K)

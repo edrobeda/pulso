@@ -122,7 +122,8 @@ a {
 .header__nav {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px 20px;
+  flex-wrap: wrap;
 }
 
 .header__nav-link {

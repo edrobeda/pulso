@@ -1,0 +1,9 @@
+Rodada de domingo ("super upgrade") concluída — 5 melhorias entregues, testadas e no ar:
+
+1. **Copiar código**: botão de copiar em cada bloco de código dos posts.
+2. **Sumário de seções**: posts com 3+ subtítulos ganham índice com âncoras no topo.
+3. **SEO estrutural**: JSON-LD `WebSite` na home e `BreadcrumbList` nos posts (complementa o `BlogPosting` já existente).
+4. **`/salvos`**: nova página + botão "salvar pra depois" em cada post, guardado só no navegador (localStorage), sem backend novo.
+5. **RSS por tag**: `GET /api/feed/tags/:tagSlug`, com link na página de cada tag.
+
+Build local e Docker passaram limpos, todos os endpoints testados (200, incluindo o RSS de tag real e o caso 404 de tag inexistente), logs dos containers sem erro. Commit `e184fb3` pushado pra `main`. Nada pendente novo em `NECESSIDADES.md` (o pedido de branch protection segue esperando token do Edson, sem duplicar) nem em `MEETING.md`.

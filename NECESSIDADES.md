@@ -29,6 +29,52 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-08-16 — [PENDENTE] Edson pede: área de bug report + corrigir mobile quebrado (tamanho de tela)
+**Por quê:** ideia do Edson, não pedido seu — ele quer que os leitores tenham
+como reportar problemas no blog. E tem um bug concreto agora mesmo: a parte
+mobile está incorreta/quebrada por causa do tamanho da tela.
+**O que preciso:** não é uma pergunta pra você responder — são duas tarefas
+pra implementar na sua próxima rodada (ou nas próximas, se precisar
+dividir):
+1. **Área de bug report:** criar um jeito simples do visitante reportar
+   problemas — ex.: botão/formulário "reportar problema" (pode ser discreto,
+   tipo rodapé ou canto da página) que grava num endpoint novo (ex.: `POST
+   /api/bug-reports`), numa tabela nova (ex.: `bug_reports`: id, mensagem,
+   url_pagina, user_agent, created_at) e aparece no `/bastidores` como uma
+   seção própria (parecido com o histórico de mudanças), pra você ver o que
+   os leitores reportaram. Não precisa de autenticação, mas considere um
+   rate limit básico pra evitar spam. Use seu critério de design/engenharia
+   pros detalhes.
+2. **Corrigir bug mobile:** não especifiquei a página exata — investigue
+   home, página de post e `/bastidores` em breakpoints mobile comuns, ache
+   o que está estourando/quebrando por causa do tamanho da tela e corrija.
+   Priorize esta parte primeiro, já que é algo quebrado agora, antes da área
+   de bug report.
+Teste em produção (viewport mobile real, não só redimensionar desktop) antes
+de marcar como concluído.
+**Resposta do Edson:** Sim, implementa os dois. Sem prazo, mas corrige o
+mobile primeiro já que é algo quebrado agora; pra área de bug report usa seu
+critério.
+
+**Concluído parte 1/2 (rodada 2026-08-17 18:00):** achei e corrigi o bug
+mobile. `.header__nav` (em `src/styles/global.css`, usado pelo `Layout.jsx`
+compartilhado por todas as páginas) tinha `display: flex` com 4 links de
+navegação + o texto do countdown "próximo pulso em HH:MM:SS", sem
+`flex-wrap` — em viewport estreito isso não cabe numa linha e estoura a
+largura da página inteira. Confirmei o bug em produção com Playwright
+(Chromium headless, viewport 375×800): `scrollWidth` de 455px contra
+`clientWidth` de 375px (overflow horizontal) em `/`, `/bastidores` e numa
+página de post — todas herdam o mesmo header. Corrigi adicionando
+`flex-wrap: wrap` (e ajustando o `gap` pra ficar bom em duas linhas) em
+`.header__nav`; testei o build local (`vite preview`) com o mesmo script:
+`scrollWidth` igual a `clientWidth` (375px) em `/` e `/bastidores`, sem
+overflow. Build/deploy desta rodada confirma em produção antes de fechar.
+Parte 2 (área de bug report) fica pra próxima rodada, como já avisado
+acima — é uma feature nova (tabela + endpoint + UI em `/bastidores`) grande
+o bastante pra merecer o slot de melhoria inteiro de outra rodada.
+
+---
+
 ## 2026-08-12 — [RESOLVIDO] Edson pede: separar visualmente as seções do /bastidores (design)
 **Por quê:** ideia do Edson, não pedido seu — hoje a página `/bastidores`
 mostra custo por rodada, visitantes únicos e o log de mudanças (backlog) uma
