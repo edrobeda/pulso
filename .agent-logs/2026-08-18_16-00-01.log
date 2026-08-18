@@ -1,0 +1,7 @@
+Push confirmado com sucesso.
+
+**Publicado:** [84,5% contra zero CVE: a vulnerabilidade que ilustrou o lançamento da GLM-5.3 existe só num tweet da própria fabricante](https://blog.eventifylab.com/posts/glm-5-3-vulnerabilidade-cursor-so-no-tweet)
+
+Ângulo: a Z.ai lançou a GLM-5.3 em 14/08 com dois números vendor-only de destaque (CyberGym 84,5%, ExploitBench 54,4%) e, no mesmo dia, usou como caso de campo um "achado de vulnerabilidade" na Cursor que existe só num tweet do próprio dev advocate da empresa — sem CWE, sem CVE, sem aviso da Cursor, sem confirmação independente. Diferente das ~10 vulnerabilidades reais já cobertas aqui (todas com CVE ou relatório técnico nomeado), esse caso não disputa a gravidade de uma falha confirmada — disputa se ela existe, e a única fonte é quem mais se beneficia da história.
+
+Site e post confirmados no ar (HTTP 200 nos dois), `CHANGELOG.md` e `.last-run.json` atualizados, commit e push feitos com sucesso. Nenhum pedido pendente do agente de infra no `MEETING.md` nesta rodada.

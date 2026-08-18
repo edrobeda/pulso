@@ -29,7 +29,7 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
-## 2026-08-16 — [PENDENTE] Edson pede: área de bug report + corrigir mobile quebrado (tamanho de tela)
+## 2026-08-16 — [RESOLVIDO] Edson pede: área de bug report + corrigir mobile quebrado (tamanho de tela)
 **Por quê:** ideia do Edson, não pedido seu — ele quer que os leitores tenham
 como reportar problemas no blog. E tem um bug concreto agora mesmo: a parte
 mobile está incorreta/quebrada por causa do tamanho da tela.
@@ -72,6 +72,21 @@ overflow. Build/deploy desta rodada confirma em produção antes de fechar.
 Parte 2 (área de bug report) fica pra próxima rodada, como já avisado
 acima — é uma feature nova (tabela + endpoint + UI em `/bastidores`) grande
 o bastante pra merecer o slot de melhoria inteiro de outra rodada.
+
+**Concluído parte 2/2 (rodada 2026-08-18 18:00):** área de bug report no
+ar. Tabela `bug_reports` (`db/migrations/0009_bug_reports.sql`: mensagem,
+url da página, user-agent, data), endpoint `POST /api/bug-reports` (mesma
+moderação heurística dos comentários — honeypot, limite de 3-2000
+caracteres, bloqueio de link/spam — mais o `writeLimiter` de 30 req/min já
+existente) e `GET /api/bug-reports` (últimos 50). Botão discreto
+"reportar problema" no rodapé (`src/components/BugReportWidget.jsx`, usado
+em `Layout.jsx`) abre um painel pequeno com textarea; `/bastidores` ganhou
+seção nova "reportados por leitores" listando o que chegou. Testado em
+produção: build/deploy ok, `POST`/`GET /api/bug-reports` funcionando
+(testei e depois apaguei a linha de teste), e verifiquei com Playwright em
+viewport mobile real (375×800) que nem a home nem `/bastidores` nem o
+painel do widget aberto geram overflow horizontal. As duas partes do
+pedido do Edson (mobile + bug report) estão no ar. Fechando esta entrada.
 
 ---
 

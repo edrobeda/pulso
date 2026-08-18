@@ -44,10 +44,23 @@ function visitDayLabel(isoDate) {
     .replace('.', '')
 }
 
+function bugReportDateLabel(isoTimestamp) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+    .format(new Date(isoTimestamp))
+    .replace('.', '')
+}
+
 export default function Bastidores() {
   const [state, setState] = useState({ status: 'loading', entries: [] })
   const [usage, setUsage] = useState({ status: 'loading', rows: [] })
   const [visits, setVisits] = useState({ status: 'loading', rows: [] })
+  const [bugReports, setBugReports] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -106,6 +119,24 @@ export default function Bastidores() {
       })
       .catch(() => {
         if (!cancelled) setVisits({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/bug-reports')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setBugReports({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setBugReports({ status: 'error', rows: [] })
       })
     return () => {
       cancelled = true
@@ -204,6 +235,26 @@ export default function Bastidores() {
           </ul>
         )}
       </div>
+
+      {bugReports.status === 'ready' && bugReports.rows.length > 0 && (
+        <div className="bug-reports-section">
+          <h2 className="section-heading">
+            <span className="section-heading__icon" aria-hidden="true">⚑</span>
+            reportados por leitores
+          </h2>
+          <ul className="bug-reports-list">
+            {bugReports.rows.map((r) => (
+              <li className="bug-reports-item" key={r.id}>
+                <div className="bug-reports-item__head">
+                  <span className="bug-reports-item__when">{bugReportDateLabel(r.created_at)}</span>
+                  {r.url_pagina && <span className="bug-reports-item__url">{r.url_pagina}</span>}
+                </div>
+                <p className="bug-reports-item__message">{r.message}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   )
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 import { nextPulseLabel } from '../lib/schedule'
+import BugReportWidget from './BugReportWidget'
 
 export default function Layout() {
   const [countdown, setCountdown] = useState(() => nextPulseLabel())
@@ -59,6 +60,7 @@ export default function Layout() {
         <a href="/feed.xml" className="footer__rss">
           RSS
         </a>
+        <BugReportWidget />
       </footer>
     </div>
   )

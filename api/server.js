@@ -322,6 +322,55 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
   }
 })
 
+// Reports de problema enviados por visitante (pedido do Edson, ver
+// NECESSIDADES.md 2026-08-16) — mesma filosofia de moderação heurística dos
+// comentários (honeypot + limite de tamanho + bloqueio de link/spam) em vez
+// de fila manual, já que também não tem autenticação.
+const BUG_REPORT_MIN_LEN = 3
+const BUG_REPORT_MAX_LEN = 2000
+
+app.post('/api/bug-reports', writeLimiter, async (req, res) => {
+  try {
+    if (req.body?.website) return res.status(400).json({ error: 'invalid' })
+
+    const message = String(req.body?.message || '').trim()
+    if (message.length < BUG_REPORT_MIN_LEN || message.length > BUG_REPORT_MAX_LEN) {
+      return res.status(400).json({ error: 'mensagem precisa ter entre 3 e 2000 caracteres' })
+    }
+    if (COMMENT_BLOCK_PATTERN.test(message)) {
+      return res.status(400).json({ error: 'mensagem rejeitada (link ou termo bloqueado)' })
+    }
+
+    const urlPagina = String(req.body?.urlPagina || '').trim().slice(0, 300)
+    const userAgent = String(req.headers['user-agent'] || '').slice(0, 300)
+
+    const { rows } = await pool.query(
+      `INSERT INTO bug_reports (message, url_pagina, user_agent)
+       VALUES ($1, $2, $3)
+       RETURNING id, message, url_pagina, created_at`,
+      [message, urlPagina, userAgent]
+    )
+    res.status(201).json(rows[0])
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.get('/api/bug-reports', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, message, url_pagina, created_at
+       FROM bug_reports
+       ORDER BY created_at DESC
+       LIMIT 50`
+    )
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(rows)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 const SITE_URL = 'https://blog.eventifylab.com'
 const SITE_NAME = 'Pulso'
 const SITE_DESCRIPTION =
