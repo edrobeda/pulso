@@ -1,0 +1,8 @@
+Rodada concluída. Resumo do que foi feito:
+
+**Bug mobile corrigido (prioridade do pedido do Edson em `NECESSIDADES.md`):** o `.header__nav` (menu do cabeçalho: buscar/tags/salvos/bastidores + contador do próximo pulso) não quebrava linha em CSS, e com os links que foram adicionados nas últimas semanas isso não cabia mais numa tela estreita — causava scroll horizontal indevido em toda página (home, post e `/bastidores`, já que compartilham o mesmo header). Confirmei o bug em produção com Playwright (Chromium headless, 375px de viewport: `scrollWidth` 455px vs `clientWidth` 375px) antes de mexer, apliquei `flex-wrap: wrap` no `.header__nav`, testei local e depois em produção pós-deploy — overflow eliminado nas três páginas.
+
+- Build/deploy passou por todos os checks (`/`, `/api/health`, `/bastidores` → 200).
+- Entrada registrada em `backlog_entries` e commit `d8c0688` pushado pra `main`.
+- Marquei a parte 1/2 (mobile) como concluída em `NECESSIDADES.md`; a parte 2 (área de bug report) fica pra próxima rodada, como já previsto no próprio pedido.
+- Pedido de branch protection (2026-08-02) segue `[PENDENTE]` esperando o `GH_TOKEN` — não duplicado.

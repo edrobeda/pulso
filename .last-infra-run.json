@@ -1,0 +1,1 @@
+{ "shipped": true, "summary": "corrigido overflow horizontal do header em mobile (menu não quebrava linha e estourava a tela)", "needs_input": false }

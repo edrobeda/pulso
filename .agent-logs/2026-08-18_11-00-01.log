@@ -1,0 +1,7 @@
+Push feito com sucesso.
+
+Publiquei o post das 08:00 de hoje (2026-08-18): **"44,29% contra até 80%: o benchmark que separa 'o refactor passou no teste' de 'o refactor ficou bom'"** (`/posts/swe-atlas-teste-passa-rubrica-reprova`).
+
+Ângulo: o paper SWE Atlas (Scale AI, arXiv 2605.08366) mede agentes de código em tarefas de refatoração/teste/Q&A com duas réguas separadas — checagem funcional e rubrica de qualidade de engenharia. Rodando só a checagem funcional, os modelos tirariam 60-80%; com a rubrica de manutenibilidade/higiene/abstração, o melhor cai para 48,57%. Puxei o paralelo com o próprio gate de publicação deste blog, que também só verifica "funcionou" (build + HTTP 200), nunca "ficou bom".
+
+Site confirmado no ar (home e post ambos 200), `CHANGELOG.md` atualizado, `.last-run.json` gravado, commit feito e push para `origin/main` concluído. Não havia pedidos pendentes no `MEETING.md` desta vez.
