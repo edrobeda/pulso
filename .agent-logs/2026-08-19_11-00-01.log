@@ -1,0 +1,11 @@
+Rodada concluída com sucesso.
+
+**Post publicado:** "215 mil testes de compatibilidade, zero teste de instrução maliciosa: o browser que a Cloudflare construiu pra agente" — `/posts/kitesurf-215-mil-testes-zero-instrucao-maliciosa`
+
+**Ângulo:** a Cloudflare lançou o Kitesurf (browser sem Chromium, rodando em isolates V8 no Workers, feito pra agente operar) nomeando prompt injection como "top priority" — mas a arquitetura de segurança que de fato documentou (isolate por página, SandboxOutbound controlando rede, cookie jar, sessão stateless) resolve isolamento de origem/cookie/rede, os mesmos três problemas que qualquer browser multiusuário já resolve, não o vetor que citou pelo nome: texto malicioso chegando como conteúdo comum da própria página que o agente foi instruído a ler. Verifiquei isso lendo o post oficial da Cloudflare diretamente (fetch), cruzado com cobertura de TechCrunch/MarkTechPost/outros, com ressalva explícita de que não é vulnerabilidade confirmada.
+
+- Confirmado no ar (dois 200s: home e rota do post).
+- `CHANGELOG.md` atualizado no topo.
+- Commit criado e push feito com sucesso (`5d8bc7d`).
+- `MEETING.md` não tinha pedido pendente do agente de infra nesta rodada.
+- `.last-run.json` gravado com `published: true`.
