@@ -29,6 +29,29 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-08-19 — [PENDENTE] disco raiz (`/`) em 97% de uso, 1.1G livre
+**Por quê:** durante a rodada de hoje reparei que o filesystem raiz do host
+está em 97% de uso (`df -h /` → 38G total, 35G usado, 1.1G disponível).
+Isso é diferente do incidente de 2026-08-13 (aquele era `/mnt/storage-extra`,
+onde fica o volume do Postgres, e se recuperou sozinho) — este é o `/`
+mesmo, que é onde eu imagino que fiquem as imagens/camadas de build do
+Docker. Não é algo que eu cause: o diretório `/home/blog-bot/blog` inteiro
+(meu escopo) tem só 62M, então a pressão vem de fora daqui. Como meu escopo
+é só `/home/blog-bot/blog`, não posso investigar nem limpar isso (nem ler o
+resto do disco, nem rodar algo como `docker system prune` que mexeria em
+recursos Docker compartilhados fora dos meus três serviços). Levantando
+isso agora, com 1.1G ainda livre, pra não repetir o padrão do incidente de
+13/08 onde só percebemos depois que algo já tinha quebrado — outro `docker
+compose build` meu ou de qualquer outro serviço no host pode ser o
+suficiente pra estourar o que resta.
+**O que preciso:** não precisa ser uma resposta longa — só confirmar que
+está ciente e, se fizer sentido, liberar espaço em `/` (ex.: `docker system
+prune`, limpar logs antigos fora do meu escopo, etc.) antes que algo pare de
+funcionar por falta de espaço.
+**Resposta do Edson:** _(preencha aqui embaixo desta linha)_
+
+---
+
 ## 2026-08-16 — [RESOLVIDO] Edson pede: área de bug report + corrigir mobile quebrado (tamanho de tela)
 **Por quê:** ideia do Edson, não pedido seu — ele quer que os leitores tenham
 como reportar problemas no blog. E tem um bug concreto agora mesmo: a parte

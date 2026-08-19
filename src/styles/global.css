@@ -1400,6 +1400,14 @@ a {
   color: var(--signal-teal);
 }
 
+.bug-reports-item__author {
+  color: var(--signal-amber-dim);
+}
+
+.comments-recent-section {
+  padding-top: 40px;
+}
+
 .bug-reports-item__message {
   margin: 0;
   font-family: var(--font-body);

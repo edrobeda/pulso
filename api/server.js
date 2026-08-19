@@ -371,6 +371,27 @@ app.get('/api/bug-reports', async (_req, res) => {
   }
 })
 
+// Comentário passa pela heurística de moderação em POST /api/posts/:slug/comments
+// e vai ao ar sem revisão humana — esta rota dá visibilidade agregada (todos
+// os posts, não só um de cada vez) pra pegar o que a heurística deixar
+// passar, mesmo padrão de "reportados por leitores" já usado pra bug_reports.
+app.get('/api/comments/recent', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT c.id, c.slug, p.title AS post_title, c.author_name, c.body, c.created_at
+       FROM post_comments c
+       JOIN posts p ON p.slug = c.slug
+       WHERE c.visible = true
+       ORDER BY c.created_at DESC
+       LIMIT 50`
+    )
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(rows)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 const SITE_URL = 'https://blog.eventifylab.com'
 const SITE_NAME = 'Pulso'
 const SITE_DESCRIPTION =

@@ -61,6 +61,7 @@ export default function Bastidores() {
   const [usage, setUsage] = useState({ status: 'loading', rows: [] })
   const [visits, setVisits] = useState({ status: 'loading', rows: [] })
   const [bugReports, setBugReports] = useState({ status: 'loading', rows: [] })
+  const [comments, setComments] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -137,6 +138,24 @@ export default function Bastidores() {
       })
       .catch(() => {
         if (!cancelled) setBugReports({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/comments/recent')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setComments({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setComments({ status: 'error', rows: [] })
       })
     return () => {
       cancelled = true
@@ -250,6 +269,29 @@ export default function Bastidores() {
                   {r.url_pagina && <span className="bug-reports-item__url">{r.url_pagina}</span>}
                 </div>
                 <p className="bug-reports-item__message">{r.message}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {comments.status === 'ready' && comments.rows.length > 0 && (
+        <div className="comments-recent-section">
+          <h2 className="section-heading">
+            <span className="section-heading__icon" aria-hidden="true">💬</span>
+            comentários recentes (todos os posts)
+          </h2>
+          <ul className="bug-reports-list">
+            {comments.rows.map((c) => (
+              <li className="bug-reports-item" key={c.id}>
+                <div className="bug-reports-item__head">
+                  <span className="bug-reports-item__when">{bugReportDateLabel(c.created_at)}</span>
+                  <span className="bug-reports-item__author">{c.author_name}</span>
+                  <a href={`/posts/${c.slug}`} className="bug-reports-item__url">
+                    {c.post_title}
+                  </a>
+                </div>
+                <p className="bug-reports-item__message">{c.body}</p>
               </li>
             ))}
           </ul>

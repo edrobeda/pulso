@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "área de bug report no rodapé (tabela + endpoint + seção em /bastidores)", "needs_input": false }
+{ "shipped": true, "summary": "seção nova em /bastidores com comentários recentes de todos os posts (visibilidade de moderação), mais alerta em NECESSIDADES.md sobre disco raiz do host em 97% de uso", "needs_input": true }

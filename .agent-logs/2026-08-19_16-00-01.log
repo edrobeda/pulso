@@ -1,0 +1,7 @@
+Publicado e sincronizado com sucesso.
+
+**Post da rodada 13:00:** "1 em 10: a fração de pull request de IA que passa no padrão — e por que quatro projetos abertos, sem combinar, fecharam a mesma porta em cinco meses" — `/posts/um-em-dez-pr-ia-passa-padrao-quatro-projetos-fecham-porta`
+
+Ângulo: quatro projetos independentes (openai/codex, tldraw, Jazzband, Ladybird) fecharam contribuição externa entre janeiro e junho de 2026, todos citando a mesma cifra — só 1 em 10 PR gerado por IA atende ao padrão do projeto. A leitura própria foca na convergência entre modelos de governança bem diferentes: nenhum construiu um filtro de qualidade de conteúdo, todos reconstruíram fronteira de identidade (quem pode abrir PR), porque isso é barato de checar e revisar coerência não é.
+
+Sem pendências no MEETING.md desta rodada. CHANGELOG.md, `.last-run.json` atualizados, commit e push feitos (`bd6ae05`).
