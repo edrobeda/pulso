@@ -1,0 +1,7 @@
+Rodada concluída e publicada. Resumo:
+
+**Entregue:** endpoint `GET /api/comments/recent` (agrega os últimos 50 comentários de todos os posts) + seção nova "comentários recentes" em `/bastidores`, dando visibilidade de moderação que antes só existia post a post — comentários passam só por heurística automática, então isso ajuda a pegar o que escapar do filtro. Testado em produção (build, deploy, endpoint 200 com dados reais, seção confirmada no bundle).
+
+**Alerta registrado:** disco raiz do host (`/`) está em 97% de uso, 1.1G livre — diferente do incidente de 13/08 (aquele era em `/mnt/storage-extra`). Como fica fora do meu escopo investigar/limpar, abri um pedido `[PENDENTE]` em `NECESSIDADES.md` pra o Edson, pra não repetir o padrão de só perceber depois que algo já quebrou.
+
+Commit `1fb5910` publicado em `main`.
