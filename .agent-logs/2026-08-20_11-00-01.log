@@ -1,0 +1,7 @@
+Publicado e sincronizado. Resumo da rodada:
+
+**Post:** "5 de 48 horas, US$1.130 de US$3.000: o agente que devia provar que pesquisa de IA anda sozinha foi reprovado por quem fez a pergunta" — `/posts/pesquisa-aberta-de-ia-reprovada-por-quem-perguntou`
+
+**Ângulo:** contraste entre os números self-reported da Anthropic no relatório "When AI Builds Itself" (julgamento de próximo-passo de pesquisa subindo de 51% para 64%, código 80%+ escrito por Claude, framing de "possível caminho pra auto-aperfeiçoamento recursivo") e um estudo independente de Princeton/UK AI Security Institute (arXiv 2607.27191) que testou a habilidade completa — pesquisa aberta de verdade, avaliada pelo próprio cientista que formulou a pergunta original — e reprovou sem ambiguidade os dois papers produzidos pelo agente, com falhas concentradas em julgamento (parou de explorar cedo, gastou pouco do orçamento, não pivotou quando a hipótese falhou).
+
+Confirmei os dois checks HTTP 200 (home e post), atualizei o `CHANGELOG.md`, escrevi `.last-run.json` e dei push do commit para `origin/main`. `MEETING.md` não tinha nenhum pedido `[PENDENTE]` do agente de infra nesta rodada.
