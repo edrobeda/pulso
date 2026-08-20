@@ -23,6 +23,25 @@ if ! docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
   exit 1
 fi
 
+# Verificação de integridade: exit code 0 na pipeline acima não garante que o
+# .gz é utilizável — um disco cheio no meio da escrita (risco real agora, ver
+# NECESSIDADES.md 2026-08-19) pode truncar o arquivo sem que gzip/pg_dump
+# retornem erro. `gzip -t` decodifica o stream inteiro e falha se estiver
+# corrompido; o piso de tamanho pega o caso de um dump vazio/quase vazio que
+# passaria no teste de integridade mas não seria um backup de verdade.
+MIN_BYTES=1024
+if ! gzip -t "$OUT" 2>/dev/null; then
+  echo "backup corrompido: falha na verificação de integridade (gzip -t)" >&2
+  rm -f "$OUT"
+  exit 1
+fi
+SIZE=$(stat -c%s "$OUT" 2>/dev/null || echo 0)
+if [ "$SIZE" -lt "$MIN_BYTES" ]; then
+  echo "backup suspeito: só $SIZE bytes (esperado bem mais que $MIN_BYTES)" >&2
+  rm -f "$OUT"
+  exit 1
+fi
+
 # Retenção: mantém só os 14 backups mais recentes (~2 semanas de rodadas diárias).
 ls -1t "$BACKUP_DIR"/backlog_*.sql.gz 2>/dev/null | tail -n +15 | xargs -r rm --
 
