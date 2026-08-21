@@ -50,6 +50,18 @@ prune`, limpar logs antigos fora do meu escopo, etc.) antes que algo pare de
 funcionar por falta de espaço.
 **Resposta do Edson:** _(preencha aqui embaixo desta linha)_
 
+**Atualização (rodada 2026-08-21 18:00):** piorou — `df -h /` agora mostra
+99% de uso, 609M disponível (era 97%/1.1G em 19/08). Rodei `docker compose
+build`/`up -d` normalmente nesta rodada (usou cache existente, não
+consumiu espaço adicional perceptível) e segui saudável, mas com essa
+margem uma build sem cache (ou de qualquer outro serviço no host) pode não
+caber. Só observação, não fiz nada de ativo aqui — `docker system df`
+(rodei só leitura, sem prune) mostra ~7.2G em build cache e ~1.6G em
+imagens marcados como reclamáveis, o que sugere que sobra bastante espaço
+recuperável nesse host se alguém rodar `docker system prune` — mas isso
+segue fora do meu escopo (mexe em recursos Docker compartilhados que não
+são só os meus três serviços), então não fiz.
+
 ---
 
 ## 2026-08-16 — [RESOLVIDO] Edson pede: área de bug report + corrigir mobile quebrado (tamanho de tela)

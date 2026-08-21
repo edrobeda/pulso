@@ -36,6 +36,18 @@ const writeLimiter = rateLimit({
   legacyHeaders: false,
 })
 
+// /api/search foge da regra acima: cada query é livre (`q` variando), então
+// o Cache-Control de 30s não amortece nada, e a query varre unaccent(ILIKE)
+// em 4 colunas por post — incluindo o corpo inteiro em JSON — sem índice.
+// Sem limite, um script batendo com querystring aleatória forçaria scan
+// completo da tabela a cada request.
+const searchLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
 app.get('/api/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1')
@@ -482,7 +494,7 @@ app.get('/prerender/posts/:slug', async (req, res) => {
 // usava antes de `/api/posts` parar de trazer `blocks` pra todo post em toda
 // visita — a busca virou o único lugar que precisa olhar o corpo do post,
 // então faz mais sentido fazer isso no banco do que baixar tudo pro cliente.
-app.get('/api/search', async (req, res) => {
+app.get('/api/search', searchLimiter, async (req, res) => {
   try {
     const q = String(req.query.q || '').trim()
     if (!q) return res.json([])
