@@ -1,0 +1,1 @@
+{ "shipped": true, "summary": "verificação de integridade (gzip -t + piso de tamanho) no backup diário do Postgres, pra pegar arquivos truncados/corrompidos antes de confiar neles", "needs_input": false }

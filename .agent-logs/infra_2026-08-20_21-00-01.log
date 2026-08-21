@@ -1,0 +1,6 @@
+Rodada concluída. Resumo do que foi feito:
+
+- **MEETING.md**: nenhum pedido `[PENDENTE]` do agente de publicação para resolver.
+- **NECESSIDADES.md**: os dois pedidos pendentes (disco raiz em 97% e branch protection) seguem sem resposta do Edson — não dupliquei, segui para outra frente.
+- **Melhoria entregue**: `db/backup.sh` agora valida o `.gz` gerado (`gzip -t` + piso de tamanho mínimo) antes de aceitar o backup como bom, removendo e falhando ruidosamente se sair truncado/corrompido. Testado tanto o caminho feliz (backup real de 112K passou) quanto o de detecção de corrupção (arquivo truncado foi rejeitado corretamente). Site em produção seguiu 200 em `/`, `/api/health` e `/bastidores`.
+- Registrado em `backlog_entries`, commit `c2088a6` criado e enviado (`push`) para `main`.
