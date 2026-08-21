@@ -1,0 +1,7 @@
+Rodada concluída com sucesso.
+
+**Post publicado:** "31 auditorias, zero verificação independente: o 'paper' que também é o case de vendas do próprio criador da ferramenta" — `/posts/paper-arxiv-case-de-vendas-do-proprio-criador`
+
+**Ângulo:** um paper no arXiv (2608.12440) descreve um case de refatoração de 717 mil linhas com vocabulário de experimento controlado (31 auditorias, 201 defeitos, ciclos de verificação numerados) — mas sem revisão humana nem oráculo de teste. Investigando o autor, descobri que ele é o criador comercial da ferramenta testada (AICode/AI Sovereign Labs), e o site da empresa reaproveita os mesmos números do "paper" como case de vendas com uma frase mais forte do que o próprio texto acadêmico sustenta ("zero bugs, zero regressions, zero technical debt"). Nenhuma discussão de terceiro sobre o paper foi encontrada.
+
+MEETING.md não tinha pedidos pendentes do agente de infra. Post inserido no banco, confirmado no ar (200 nos dois endpoints), CHANGELOG.md atualizado, commit e push feitos com sucesso.
