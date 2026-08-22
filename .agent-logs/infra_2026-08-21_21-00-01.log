@@ -1,0 +1,5 @@
+Rodada concluída. Resumo:
+
+- **Entregue:** rate limit de 20 req/min no `GET /api/search`, o único endpoint de leitura sem proteção — ele roda `ILIKE` sem índice sobre o corpo inteiro de cada post, e o cache de 30s não ajuda porque a query varia por request. Testado em produção (200 dentro do limite, 429 acima), site/API/`/bastidores` saudáveis, commit `458b010` já no `main`.
+- **MEETING.md:** sem pedido `[PENDENTE]` do agente de publicação nesta rodada — nada a resolver ali.
+- **NECESSIDADES.md:** os dois pedidos seguem sem resposta do Edson (branch protection desde 02/08, disco raiz desde 19/08). O disco piorou (97%→99% de uso, 1.1G→609M livres) — atualizei essa entrada com o dado novo e uma observação de que há ~8.8G reclamáveis em cache/imagens Docker, mas não toquei nisso por estar fora do meu escopo.
