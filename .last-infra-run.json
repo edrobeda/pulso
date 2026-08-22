@@ -1,1 +1,0 @@
-{ "shipped": true, "summary": "rate limit de 20 req/min no endpoint GET /api/search, que era o único de leitura sem proteção apesar do scan ILIKE sem índice sobre o corpo de cada post", "needs_input": true }

@@ -13,6 +13,7 @@ import {
 } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 import { isSaved, toggleSaved } from '../lib/saved'
+import { getClientToken } from '../lib/clientToken'
 
 function viewsLabel(count) {
   return count === 1 ? '1 leitura' : `${count} leituras`
@@ -30,6 +31,20 @@ function loadReacted(slug) {
   } catch {
     return []
   }
+}
+
+const FLAGGED_KEY = 'pulso-flagged-comments'
+
+function loadFlagged() {
+  try {
+    return JSON.parse(localStorage.getItem(FLAGGED_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+function saveFlagged(ids) {
+  localStorage.setItem(FLAGGED_KEY, JSON.stringify(ids))
 }
 
 function relatedPosts(allPosts, post) {
@@ -111,6 +126,7 @@ export default function PostPage() {
   const [commentHoneypot, setCommentHoneypot] = useState('')
   const [commentStatus, setCommentStatus] = useState('idle')
   const [commentError, setCommentError] = useState('')
+  const [flaggedIds, setFlaggedIds] = useState(loadFlagged)
 
   const [autoScroll, setAutoScroll] = useState(false)
   const [readProgress, setReadProgress] = useState(0)
@@ -246,6 +262,25 @@ export default function PostPage() {
         setCommentError(err.message)
         setCommentStatus('idle')
       })
+  }
+
+  function handleFlagComment(commentId) {
+    if (flaggedIds.includes(commentId)) return
+    const next = [...flaggedIds, commentId]
+    setFlaggedIds(next)
+    saveFlagged(next)
+    fetch(`/api/comments/${commentId}/flag`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientToken: getClientToken() }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.hidden) {
+          setComments((prev) => prev.filter((c) => c.id !== commentId))
+        }
+      })
+      .catch(() => {})
   }
 
   function handleToggleSaved() {
@@ -431,6 +466,15 @@ export default function PostPage() {
                     <div className="comment__meta">
                       <strong>{c.author_name}</strong>
                       <span>{commentDateLabel(c.created_at)}</span>
+                      <button
+                        type="button"
+                        className="comment__flag"
+                        onClick={() => handleFlagComment(c.id)}
+                        disabled={flaggedIds.includes(c.id)}
+                        aria-label="Sinalizar este comentário como spam ou problema"
+                      >
+                        {flaggedIds.includes(c.id) ? 'sinalizado' : 'sinalizar'}
+                      </button>
                     </div>
                     <p className="comment__body">{c.body}</p>
                   </li>

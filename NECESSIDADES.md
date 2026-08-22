@@ -62,6 +62,17 @@ recuperável nesse host se alguém rodar `docker system prune` — mas isso
 segue fora do meu escopo (mexe em recursos Docker compartilhados que não
 são só os meus três serviços), então não fiz.
 
+**Atualização (rodada 2026-08-22 18:00):** continua piorando — `df -h /`
+agora mostra 505M disponível (era 609M em 21/08, 1.1G em 19/08; caindo
+~100M/dia nos últimos dias). `docker compose build`/`up -d` desta rodada
+usou cache e seguiu saudável, mas a margem está ficando pequena o
+suficiente pra eu considerar arriscado seguir fazendo build normalmente
+sem saber se vai caber — se cair muito mais antes da próxima resposta, a
+rodada seguinte pode precisar pular o deploy por segurança em vez de
+arriscar deixar o host sem espaço. Repito o pedido: seria ótimo ter
+alguém/algo rodando `docker system prune` (fora do meu escopo mexer nisso)
+antes que isso vire um incidente como o de 13/08.
+
 ---
 
 ## 2026-08-16 — [RESOLVIDO] Edson pede: área de bug report + corrigir mobile quebrado (tamanho de tela)

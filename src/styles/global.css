@@ -1015,6 +1015,29 @@ a {
   color: var(--paper-text);
 }
 
+.comment__flag {
+  margin-left: auto;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--paper-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.comment__flag:hover:not(:disabled) {
+  color: var(--signal-amber-dim);
+}
+
+.comment__flag:disabled {
+  cursor: default;
+  text-decoration: none;
+  opacity: 0.7;
+}
+
 .comment__body {
   margin: 4px 0 0;
   font-size: 0.95rem;

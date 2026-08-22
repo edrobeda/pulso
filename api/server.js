@@ -334,6 +334,52 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
   }
 })
 
+// Sinalizar comentário como spam/problema (sem autenticação, ver
+// db/migrations/0010_comment_flags.sql). `clientToken` é gerado e guardado
+// no localStorage do navegador de quem sinaliza (mesmo padrão das reações),
+// impedindo re-envio infinito do mesmo cliente via UNIQUE(comment_id,
+// client_token); depois de FLAG_HIDE_THRESHOLD clientes distintos
+// sinalizarem o mesmo comentário, ele vira invisible automaticamente —
+// mesma coluna `visible` que já serve de válvula de escape manual.
+const FLAG_HIDE_THRESHOLD = 3
+
+app.post('/api/comments/:id/flag', writeLimiter, async (req, res) => {
+  try {
+    const commentId = Number(req.params.id)
+    if (!Number.isInteger(commentId)) return res.status(400).json({ error: 'invalid comment id' })
+
+    const clientToken = String(req.body?.clientToken || '').trim().slice(0, 100)
+    if (!clientToken) return res.status(400).json({ error: 'clientToken required' })
+
+    const { rows: commentRows } = await pool.query(
+      'SELECT id FROM post_comments WHERE id = $1 AND visible = true',
+      [commentId]
+    )
+    if (commentRows.length === 0) return res.status(404).json({ error: 'not found' })
+
+    await pool.query(
+      `INSERT INTO comment_flags (comment_id, client_token)
+       VALUES ($1, $2)
+       ON CONFLICT (comment_id, client_token) DO NOTHING`,
+      [commentId, clientToken]
+    )
+
+    const { rows: countRows } = await pool.query(
+      'SELECT count(*)::int AS count FROM comment_flags WHERE comment_id = $1',
+      [commentId]
+    )
+    const flagCount = countRows[0].count
+
+    if (flagCount >= FLAG_HIDE_THRESHOLD) {
+      await pool.query('UPDATE post_comments SET visible = false WHERE id = $1', [commentId])
+    }
+
+    res.json({ flagCount, hidden: flagCount >= FLAG_HIDE_THRESHOLD })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 // Reports de problema enviados por visitante (pedido do Edson, ver
 // NECESSIDADES.md 2026-08-16) — mesma filosofia de moderação heurística dos
 // comentários (honeypot + limite de tamanho + bloqueio de link/spam) em vez

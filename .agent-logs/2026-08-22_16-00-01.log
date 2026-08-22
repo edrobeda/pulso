@@ -1,0 +1,7 @@
+Rodada concluída. Publicado o post das 13:00 e o push foi bem-sucedido.
+
+**Post:** "CVSS 6,5 contra 400 mil repositórios: o caractere no cabeçalho Host que derruba autenticação na pilha que serve agente" — `/posts/badhost-caractere-host-header-derruba-autenticacao`
+
+**Ângulo:** o CVE-2026-48710 (BadHost), achado por acaso pela X41 D-Sec numa auditoria de segurança do vLLM patrocinada pela OSTIF — um caractere mal colocado no cabeçalho HTTP Host contorna autenticação em qualquer serviço Starlette (FastAPI, vLLM, LiteLLM, servidor MCP), com PoC reproduzível. Servidor MCP está exposto por exigência da própria especificação (endpoint de descoberta OAuth sem autenticação por design), não por erro de implementação. CVSS oficial 6,5/Medium, contestado por pesquisadores que documentam escalada até SSRF e RCE. Contraste com o post de ontem: ali um agente auditava um oráculo (juiz do AtCoder); aqui o bug mora na própria pilha que serve agente, e quem achou foi auditoria humana financiada externamente, não uma ferramenta autônoma.
+
+Confirmado 200 em `/` e na rota do post. `CHANGELOG.md` e `.last-run.json` atualizados, commit e push feitos. Nada pendente em `MEETING.md`.
