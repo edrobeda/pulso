@@ -129,6 +129,7 @@ export default function PostPage() {
   const [flaggedIds, setFlaggedIds] = useState(loadFlagged)
 
   const [autoScroll, setAutoScroll] = useState(false)
+  const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const [readProgress, setReadProgress] = useState(0)
   const [copyState, setCopyState] = useState('idle')
 
@@ -150,13 +151,16 @@ export default function PostPage() {
   useEffect(() => {
     if (!post) return
     setDocumentMeta({ title: post.title, description: post.excerpt, path: `/posts/${post.slug}`, type: 'article' })
-    setPostJsonLd(post)
+    const wordCount = postBody
+      ? postBody.blocks.reduce((sum, b) => sum + (b.text ? b.text.trim().split(/\s+/).filter(Boolean).length : 0), 0)
+      : undefined
+    setPostJsonLd(post, wordCount)
     setBreadcrumbJsonLd(post)
     return () => {
       clearPostJsonLd()
       clearBreadcrumbJsonLd()
     }
-  }, [post])
+  }, [post, postBody])
 
   useEffect(() => {
     if (!post) return
@@ -301,6 +305,13 @@ export default function PostPage() {
       .catch(() => {})
   }
 
+  function handleNativeShare() {
+    if (!post || !navigator.share) return
+    navigator
+      .share({ title: post.title, text: post.excerpt, url: `${SITE_URL}/posts/${post.slug}` })
+      .catch(() => {})
+  }
+
   function handleReact(emoji) {
     if (!post || reacted.includes(emoji)) return
     const nextReacted = [...reacted, emoji]
@@ -334,7 +345,7 @@ export default function PostPage() {
       <div className="read-progress" aria-hidden="true">
         <div className="read-progress__bar" style={{ width: `${readProgress}%` }} />
       </div>
-      {autoScroll ? (
+      {reducedMotion ? null : autoScroll ? (
         <button
           type="button"
           className="autoscroll-btn autoscroll-btn--active"
@@ -423,6 +434,11 @@ export default function PostPage() {
               <button type="button" className="share-btn" onClick={handleCopyLink}>
                 {copyState === 'copied' ? '✓ link copiado' : '🔗 copiar link'}
               </button>
+              {typeof navigator !== 'undefined' && navigator.share && (
+                <button type="button" className="share-btn" onClick={handleNativeShare}>
+                  📤 compartilhar
+                </button>
+              )}
               <a
                 className="share-btn"
                 href={`https://wa.me/?text=${encodeURIComponent(`${post.title} — ${SITE_URL}/posts/${post.slug}`)}`}

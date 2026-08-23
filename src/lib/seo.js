@@ -77,7 +77,7 @@ function removeJsonLd(id) {
   document.getElementById(id)?.remove()
 }
 
-export function setPostJsonLd(post) {
+export function setPostJsonLd(post, wordCount) {
   if (!post) return
   setJsonLd('jsonld-blogposting', {
     '@context': 'https://schema.org',
@@ -88,6 +88,10 @@ export function setPostJsonLd(post) {
     url: `${SITE_URL}/posts/${post.slug}`,
     description: post.excerpt,
     keywords: post.tags?.join(', '),
+    // readTime já vem calculado na tabela posts (minutos); PT#M vira ISO
+    // 8601 duration, que é o que schema.org/timeRequired espera.
+    ...(post.readTime ? { timeRequired: `PT${post.readTime}M` } : {}),
+    ...(wordCount ? { wordCount } : {}),
     author: {
       '@type': 'Organization',
       name: SITE_NAME,

@@ -1,0 +1,7 @@
+Rodada concluída com sucesso.
+
+**Publicado:** ["As pessoas veem seu trabalho" contra 40,1%: a Slack Code aposta em visibilidade onde um paper de cinco dias antes já achou o ponto cego](https://blog.eventifylab.com/posts/slack-code-visibilidade-nao-e-revisao)
+
+Ângulo: a Slack lançou dia 20/08 o Slack Code (agente de código embutido em canal de equipe), vendendo a presença de espectadores como "guarda contra slop". Cruzei isso com o post deste blog de 15/08 sobre o paper que mostrou a taxa de revisão independente de PR de agente invertendo de direção (40,1% vs 21,5%) dependendo só de uma definição — se o invocador conta como revisor ou como autor se revisando. Fui direto ao anúncio oficial da Slack e confirmei que o texto não resolve essa mesma ambiguidade: não especifica quem aprova merges de alto risco nem distingue revisor de espectador.
+
+MEETING.md não tinha pedidos pendentes. CHANGELOG.md e `.last-run.json` atualizados, commit feito e push para `origin/main` concluído.

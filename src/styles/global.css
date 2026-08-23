@@ -1522,3 +1522,50 @@ a {
     padding: 16px 22px;
   }
 }
+
+/* ---------- print ---------- */
+
+@media print {
+  .header,
+  .footer,
+  .skip-link,
+  .read-progress,
+  .autoscroll-btn,
+  .reactions,
+  .share,
+  .related-posts,
+  .comments,
+  .post-nav,
+  .back-link,
+  .toc {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .post-card,
+  .post-card__body,
+  .prose {
+    color: #000;
+    background: #fff;
+    box-shadow: none;
+  }
+
+  .prose a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  a[href]:after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    font-weight: normal;
+  }
+
+  a[href^='#']:after {
+    content: '';
+  }
+}

@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "sinalização de comentário como spam com auto-ocultação após múltiplos leitores diferentes reportarem o mesmo comentário", "needs_input": true }
+{ "shipped": true, "summary": "compartilhamento nativo (Web Share API), leitura automática respeitando prefers-reduced-motion, folha de estilo de impressão, busca embutida na página 404, wordCount/timeRequired no JSON-LD dos posts", "needs_input": false }
