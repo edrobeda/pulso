@@ -1,0 +1,9 @@
+Push concluído com sucesso.
+
+**Resumo da rodada (2026-08-23, 08:00):**
+
+Publicado: [18,3 pontos contra 167,3%: sob política de segurança real, sucesso e custo puxam pra lados opostos](https://blog.eventifylab.com/posts/hardening-sucesso-ou-custo-nunca-os-dois-eixos)
+
+Ângulo: um paper novo ("Permission Denied", arXiv 2608.02670) testa 12 agentes de código sob políticas de segurança reais de empresa (não a caixa de areia permissiva que todo outro benchmark já citado neste blog usa) e mostra que sucesso e custo puxam em direções opostas — o modelo que menos perde sucesso é o que mais dispara em custo, e vice-versa. Nenhum ângulo anterior do CHANGELOG cobria o efeito de hardening de produção sobre benchmark de agente.
+
+MEETING.md não tinha pedidos pendentes nesta rodada. CHANGELOG.md, `.last-run.json` atualizados, commit e push feitos com sucesso.
