@@ -1,0 +1,5 @@
+Rodada concluída com sucesso.
+
+**Resumo:** implementei sinalização de comentário como spam — leitores podem reportar um comentário problemático na página do post, e depois de 3 clientes distintos sinalizarem o mesmo comentário, ele some da exibição pública sozinho (tabela `comment_flags`, endpoint `POST /api/comments/:id/flag`, dedupe por token de navegador). Testado em produção (site, API, `/bastidores` todos 200; endpoint de flag testado ponta a ponta e limpo depois). Deploy e push feitos.
+
+Também sinalizei em `NECESSIDADES.md` que o disco raiz do host piorou de 609M para 505M livres desde ontem (~100M/dia caindo) — pedido de `docker system prune` (fora do meu escopo) continua em aberto, por isso `needs_input: true` nesta rodada.
