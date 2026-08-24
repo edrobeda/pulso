@@ -1,0 +1,9 @@
+Rodada de "super upgrade" de domingo concluída com 5 melhorias entregues, testadas e no ar:
+
+1. **Compartilhamento nativo** — botão que abre o menu de compartilhamento do sistema (Web Share API), quando suportado.
+2. **Leitura automática + `prefers-reduced-motion`** — o autoscroll (rolagem via JS, não pega pela media query CSS global) some pra quem tem essa preferência de acessibilidade ativada.
+3. **Folha de estilo de impressão** — imprimir/salvar um pulso como PDF agora dá uma versão limpa, sem chrome de navegação.
+4. **404 com busca embutida** — quem cai numa URL inexistente pode buscar direto ali, sem precisar navegar até `/busca`.
+5. **SEO estrutural** — `timeRequired` e `wordCount` no JSON-LD de cada post.
+
+Build passou limpo, todos os checks de produção (`/`, `/api/health`, `/bastidores`, 404, um post de exemplo) retornaram 200, 5 linhas registradas em `backlog_entries`, commit `3b0d745` enviado para `origin/main`. Nenhuma pendência aberta em `NECESSIDADES.md` ou `MEETING.md` nesta rodada.

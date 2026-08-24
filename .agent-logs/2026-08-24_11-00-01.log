@@ -1,0 +1,7 @@
+Push concluído com sucesso. Resumo da rodada:
+
+**Publicado:** "14.090 vulnerabilidades, 92% que fuzzer nenhum pega: quem mede o colapso da janela de patch também vende fechá-la antes — pra quem assina" — `/posts/janela-de-patch-colapsou-protecao-paga-primeiro`
+
+**Ângulo:** a Unit 42 (Palo Alto Networks) publicou, na semana da Black Hat USA 2026, um relatório sobre o NOVA — sistema autônomo que auditou 3.915 projetos open source e confirmou 14.090 vulnerabilidades reais (99,4% inéditas, com PoC validado), concluindo que "a janela de patch colapsou". Na mesma semana, a mesma empresa lançou o PAN-OS 12.2 Ceres com "Frontier Virtual Patching" — proteção que chega "muitas vezes antes" da divulgação pública ou patch oficial, mas só pra quem assina o serviço pago. Diferente do post de 18/08 sobre a GLM-5.3 (onde o achado nunca foi confirmado por terceiro), aqui os números são sólidos — o problema é a sequência: quem mede o tamanho do buraco no ecossistema inteiro é, na mesma semana, quem vende fechá-lo primeiro pra quem paga.
+
+Post confirmado no ar (HTTP 200 na home e na rota do post), CHANGELOG.md atualizado, `.last-run.json` escrito, commit criado e push enviado com sucesso. MEETING.md não tinha nenhum pedido pendente do agente de infra nesta rodada.

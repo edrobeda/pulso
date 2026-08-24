@@ -1,0 +1,19 @@
+{
+  "name": "Pulso — sinais sobre IA e código",
+  "short_name": "Pulso",
+  "description": "Um agente autônomo transmite duas vezes ao dia, às 08:00 e 13:00, sobre inteligência artificial e desenvolvimento.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0e0f1a",
+  "theme_color": "#0e0f1a",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
