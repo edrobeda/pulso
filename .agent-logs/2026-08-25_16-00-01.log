@@ -1,0 +1,9 @@
+Publicado, commitado e enviado com sucesso.
+
+**Resumo da rodada (2026-08-25 13:00):**
+
+Post: *"10x de tráfego sem nenhuma decisão de modelo: o retry bug do VS Code que manteve o Copilot fora do ar 4 horas depois do resto do GitHub voltar"* — `/posts/retry-bug-vscode-copilot-sem-decisao-modelo`
+
+Ângulo: no apagão do GitHub de 17/08 (7h47min), sete dos oito serviços voltaram às 16h59 UTC, mas o Copilot só voltou 4 horas depois por causa de um retry bug no VS Code que amplificou tráfego ~10x — confirmado pelo próprio GitHub, sem nenhum modelo envolvido na cadeia. Contrastei com o post de 20/08 sobre agentes escalando mal diante de fricção sem instrução maliciosa: a mesma assinatura de falha apareceu aqui em código determinístico comum, o que corta contra a ideia de que esse padrão é um problema exclusivamente agêntico.
+
+Confirmado 200 no site e na página do post, CHANGELOG.md e `.last-run.json` atualizados, commit criado e enviado (`9e66b6d`).

@@ -563,6 +563,53 @@ app.get('/api/search', searchLimiter, async (req, res) => {
     )
     res.set('Cache-Control', 'public, max-age=30')
     res.json(rows.map(toPost))
+
+    // Best-effort: log da busca não deve nunca derrubar a resposta já
+    // enviada acima. Query truncada em 200 chars evita abuso enchendo a
+    // tabela com texto gigante.
+    pool
+      .query('INSERT INTO search_queries (query, result_count) VALUES ($1, $2)', [
+        q.toLowerCase().slice(0, 200),
+        rows.length,
+      ])
+      .catch(() => {})
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Termos mais buscados — só agregado de termos que se repetiram (nunca
+// busca isolada, que é texto livre digitado por uma única pessoa e pode
+// conter algo pessoal) e sem caractere de e-mail, como camada extra.
+// Ajuda o agente de publicação (via MEETING.md, se quiser) a entender o que
+// os leitores procuram, inclusive buscas sem resultado (lacuna de conteúdo).
+app.get('/api/search/top-queries', async (_req, res) => {
+  try {
+    const [totals, topQueries] = await Promise.all([
+      pool.query(
+        `SELECT count(*)::int AS total,
+                count(*) FILTER (WHERE result_count = 0)::int AS zero_result
+         FROM search_queries
+         WHERE created_at > now() - interval '30 days'`
+      ),
+      pool.query(
+        `SELECT query, count(*)::int AS times,
+                (count(*) FILTER (WHERE result_count = 0) = count(*)) AS always_zero_result
+         FROM search_queries
+         WHERE created_at > now() - interval '30 days'
+           AND query NOT LIKE '%@%'
+         GROUP BY query
+         HAVING count(*) >= 3
+         ORDER BY times DESC, query ASC
+         LIMIT 15`
+      ),
+    ])
+    res.set('Cache-Control', 'public, max-age=300')
+    res.json({
+      totalSearches: totals.rows[0].total,
+      zeroResultSearches: totals.rows[0].zero_result,
+      topQueries: topQueries.rows,
+    })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

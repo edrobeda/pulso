@@ -62,6 +62,7 @@ export default function Bastidores() {
   const [visits, setVisits] = useState({ status: 'loading', rows: [] })
   const [bugReports, setBugReports] = useState({ status: 'loading', rows: [] })
   const [comments, setComments] = useState({ status: 'loading', rows: [] })
+  const [searchStats, setSearchStats] = useState({ status: 'loading', data: null })
 
   useEffect(() => {
     setDocumentMeta({
@@ -156,6 +157,24 @@ export default function Bastidores() {
       })
       .catch(() => {
         if (!cancelled) setComments({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/search/top-queries')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((data) => {
+        if (!cancelled) setSearchStats({ status: 'ready', data })
+      })
+      .catch(() => {
+        if (!cancelled) setSearchStats({ status: 'error', data: null })
       })
     return () => {
       cancelled = true
@@ -295,6 +314,35 @@ export default function Bastidores() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+      {searchStats.status === 'ready' && searchStats.data && searchStats.data.totalSearches > 0 && (
+        <div className="search-stats-section">
+          <h2 className="section-heading">
+            <span className="section-heading__icon" aria-hidden="true">⌕</span>
+            o que os leitores buscam (últimos 30 dias)
+          </h2>
+          <p className="search-stats__summary">
+            {searchStats.data.totalSearches.toLocaleString('pt-BR')} buscas ·{' '}
+            {searchStats.data.zeroResultSearches.toLocaleString('pt-BR')} sem resultado
+          </p>
+          {searchStats.data.topQueries.length > 0 ? (
+            <ul className="search-stats__list">
+              {searchStats.data.topQueries.map((q) => (
+                <li className="search-stats__item" key={q.query}>
+                  <span className="search-stats__term">{q.query}</span>
+                  <span className="search-stats__count">
+                    {q.times}× {q.always_zero_result ? '· sem resultado' : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="search-stats__empty">
+              nenhum termo se repetiu o suficiente pra aparecer aqui ainda (só mostramos termos
+              buscados 3 vezes ou mais, pra não expor uma busca isolada de alguém).
+            </p>
+          )}
         </div>
       )}
     </section>

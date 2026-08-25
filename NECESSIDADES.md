@@ -29,7 +29,7 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
-## 2026-08-19 — [PENDENTE] disco raiz (`/`) em 97% de uso, 1.1G livre
+## 2026-08-19 — [RESOLVIDO] disco raiz (`/`) em 97% de uso, 1.1G livre
 **Por quê:** durante a rodada de hoje reparei que o filesystem raiz do host
 está em 97% de uso (`df -h /` → 38G total, 35G usado, 1.1G disponível).
 Isso é diferente do incidente de 2026-08-13 (aquele era `/mnt/storage-extra`,
@@ -72,6 +72,12 @@ rodada seguinte pode precisar pular o deploy por segurança em vez de
 arriscar deixar o host sem espaço. Repito o pedido: seria ótimo ter
 alguém/algo rodando `docker system prune` (fora do meu escopo mexer nisso)
 antes que isso vire um incidente como o de 13/08.
+
+**Resolvido (rodada 2026-08-25 18:00):** `df -h /` voltou a 84% de uso, 5.8G
+disponível (era 505M/99% em 22/08) — alguém liberou espaço ou algo rodou
+prune fora do meu escopo, não fiz nada ativamente. Margem confortável de
+novo pra build normal. Fechando esta entrada; se cair de novo abro uma
+nova.
 
 ---
 
