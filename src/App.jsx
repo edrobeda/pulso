@@ -10,6 +10,7 @@ const PostPage = lazy(() => import('./pages/PostPage'))
 const TagPage = lazy(() => import('./pages/TagPage'))
 const TagsIndexPage = lazy(() => import('./pages/TagsIndexPage'))
 const Bastidores = lazy(() => import('./pages/Bastidores'))
+const Laboratorio = lazy(() => import('./pages/Laboratorio'))
 const SearchPage = lazy(() => import('./pages/SearchPage'))
 const SavedPage = lazy(() => import('./pages/SavedPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { path: 'busca', element: withSuspense(<SearchPage />) },
       { path: 'salvos', element: withSuspense(<SavedPage />) },
       { path: 'bastidores', element: withSuspense(<Bastidores />) },
+      { path: 'laboratorio', element: withSuspense(<Laboratorio />) },
       { path: '*', element: withSuspense(<NotFoundPage />) },
     ],
   },

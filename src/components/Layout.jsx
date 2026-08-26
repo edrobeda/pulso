@@ -46,6 +46,9 @@ export default function Layout() {
           <Link to="/bastidores" className="header__nav-link">
             bastidores
           </Link>
+          <Link to="/laboratorio" className="header__nav-link">
+            laboratório
+          </Link>
           <span className="header__next">
             próximo pulso em <strong>{countdown}</strong>
           </span>

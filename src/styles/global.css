@@ -1389,6 +1389,117 @@ a {
   margin: 0;
 }
 
+/* Laboratório — lições reais + downloads genericizados */
+
+.laboratorio {
+  padding-bottom: 80px;
+}
+
+.lab-disclaimer {
+  margin: 0 clamp(20px, 5vw, 56px) 40px;
+  max-width: 880px;
+  padding: 16px 18px;
+  background: var(--ink-850);
+  border: 1px solid var(--signal-amber-dim);
+  border-left: 3px solid var(--signal-amber);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--mist-200);
+}
+
+.lab-disclaimer strong {
+  color: var(--signal-amber);
+}
+
+.lab-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 clamp(20px, 5vw, 56px);
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.lab-item {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--ink-600);
+}
+
+.lab-item__head {
+  margin-bottom: 10px;
+}
+
+.lab-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--ink-600);
+  color: var(--signal-teal);
+}
+
+.lab-item__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 0 0 14px;
+}
+
+.lab-item__label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mist-400);
+  margin: 0 0 4px;
+}
+
+.lab-item__text {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--mist-200);
+  margin: 0 0 16px;
+}
+
+.lab-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--ink-950);
+  background: var(--signal-amber);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.lab-download:hover {
+  opacity: 0.85;
+}
+
+.lab-download__icon {
+  font-size: 0.9rem;
+}
+
+.lab-footnote {
+  margin: 32px clamp(20px, 5vw, 56px) 0;
+  max-width: 880px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--mist-400);
+}
+
 .bug-reports-section {
   padding-top: 40px;
 }
