@@ -9,6 +9,16 @@ const TAG_LABEL = {
   agentes: 'agentes',
 }
 
+// Contagem própria (sem terceiro): dispara junto do clique, sem bloquear o
+// download nativo do navegador (sem preventDefault, best-effort).
+function trackDownload(file) {
+  fetch('/api/downloads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ file }),
+  }).catch(() => {})
+}
+
 export default function Laboratorio() {
   useEffect(() => {
     setDocumentMeta({
@@ -59,6 +69,7 @@ export default function Laboratorio() {
                   href={`/downloads/${d.file}`}
                   download
                   key={d.file}
+                  onClick={() => trackDownload(d.file)}
                 >
                   <span className="lab-download__icon" aria-hidden="true">↓</span>
                   {d.label}

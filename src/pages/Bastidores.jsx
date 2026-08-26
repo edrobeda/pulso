@@ -64,6 +64,7 @@ export default function Bastidores() {
   const [bugReports, setBugReports] = useState({ status: 'loading', rows: [] })
   const [comments, setComments] = useState({ status: 'loading', rows: [] })
   const [searchStats, setSearchStats] = useState({ status: 'loading', data: null })
+  const [downloads, setDownloads] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -176,6 +177,24 @@ export default function Bastidores() {
       })
       .catch(() => {
         if (!cancelled) setSearchStats({ status: 'error', data: null })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/downloads')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setDownloads({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setDownloads({ status: 'error', rows: [] })
       })
     return () => {
       cancelled = true
@@ -344,6 +363,25 @@ export default function Bastidores() {
               buscados 3 vezes ou mais, pra não expor uma busca isolada de alguém).
             </p>
           )}
+        </div>
+      )}
+
+      {downloads.status === 'ready' && downloads.rows.length > 0 && (
+        <div className="downloads-stats-section">
+          <h2 className="section-heading">
+            <span className="section-heading__icon" aria-hidden="true">↓</span>
+            downloads mais baixados (/laboratorio)
+          </h2>
+          <ul className="usage-list">
+            {downloads.rows.map((d) => (
+              <li className="usage-item" key={d.file}>
+                <span className="usage-item__agent">{d.file}</span>
+                <span className="usage-item__cost">
+                  {d.count === 1 ? '1 download' : `${d.count} downloads`}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </section>

@@ -119,6 +119,50 @@ app.get('/api/visits', async (_req, res) => {
   }
 })
 
+// Validação do nome de arquivo pra /api/downloads: caminho relativo simples
+// dentro de public/downloads/ (sem ".." nem barra inicial) — não é uma
+// allowlist fixa (o laboratorio-agent adiciona arquivo novo sem tocar na
+// API), só uma checagem de formato pra não deixar a tabela virar depósito
+// de string arbitrária.
+const DOWNLOAD_FILE_PATTERN = /^[A-Za-z0-9._-]+(\/[A-Za-z0-9._-]+)*$/
+
+app.post('/api/downloads', writeLimiter, async (req, res) => {
+  try {
+    const file = String(req.body?.file || '').trim()
+    if (
+      file.length === 0 ||
+      file.length > 150 ||
+      file.includes('..') ||
+      !DOWNLOAD_FILE_PATTERN.test(file)
+    ) {
+      return res.status(400).json({ error: 'file inválido' })
+    }
+
+    const { rows } = await pool.query(
+      `INSERT INTO download_counts (file, download_count, updated_at)
+       VALUES ($1, 1, now())
+       ON CONFLICT (file) DO UPDATE SET download_count = download_counts.download_count + 1, updated_at = now()
+       RETURNING download_count`,
+      [file]
+    )
+    res.json({ downloadCount: Number(rows[0].download_count) })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.get('/api/downloads', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT file, download_count FROM download_counts ORDER BY download_count DESC, file ASC LIMIT 50`
+    )
+    res.set('Cache-Control', 'public, max-age=60')
+    res.json(rows.map((r) => ({ file: r.file, count: Number(r.download_count) })))
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 // Linha do banco -> shape que o frontend espera (mesmo formato dos antigos
 // arquivos de post em src/content/posts/*.js: readTime em vez de read_time).
 function toPost(row) {
