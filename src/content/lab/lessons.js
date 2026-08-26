@@ -112,6 +112,18 @@ export const lessons = [
     ],
   },
   {
+    slug: 'backup-sem-verificacao-nao-e-backup',
+    title: 'Backup sem verificação de integridade não é backup, é aposta',
+    tag: 'infra',
+    problem:
+      'Um script de backup gerava o dump, comprimia e encerrava com sucesso (exit 0) mesmo quando o arquivo final saía truncado — disco cheio no meio da escrita, processo interrompido, pipe corrompido. O `.gz` ficava salvo na pasta de backups com aparência normal (existe, tem nome e data certos) até o dia em que alguém precisasse restaurar de verdade e descobrisse, tarde demais, que o conteúdo é inútil.',
+    lesson:
+      'Gerar o backup é a parte fácil; validar que ele é restaurável é a que costuma faltar. Depois de escrever o arquivo, teste a integridade dele no próprio formato (`gzip -t`, `tar -tzf`, `pg_restore --list`, o que for equivalente) e exija um piso mínimo de tamanho plausível. Se falhar, apague o arquivo ruim e retorne erro alto (exit non-zero, log que dispare alerta) — nunca deixe um backup quebrado na pasta parecendo válido.',
+    downloads: [
+      { file: 'backup-integrity-check.sh', label: 'Template de backup + verificação de integridade' },
+    ],
+  },
+  {
     slug: 'mcp-builder-guia-geral',
     title: 'MCP Builder — autenticação com fallback de túnel',
     tag: 'mcp',
