@@ -118,9 +118,10 @@ export const lessons = [
     problem:
       'Servidores MCP que autenticam com serviço de terceiro esbarram num problema recorrente: alguns provedores aceitam `localhost` como redirect URI (loopback simples resolve), mas provedores enterprise exigem HTTPS público — e não dá pra saber qual caso é até tentar, nem sempre compensa cadastrar um domínio fixo só pra um fluxo de login que roda raramente.',
     lesson:
-      'Um fluxo de auth com fallback automático resolve sem exigir infraestrutura permanente: tenta o token salvo primeiro, cai pro loopback quando o provedor aceita, e só sobe um túnel Cloudflare efêmero (`cloudflared tunnel --url`, sem conta nem DNS) quando o provedor exige HTTPS público. Guia vivo — cresce conforme aparecem novos provedores/casos de autenticação.',
+      'Um fluxo de auth com fallback automático resolve sem exigir infraestrutura permanente: tenta o token salvo primeiro, cai pro loopback quando o provedor aceita, e só sobe um túnel Cloudflare efêmero (`cloudflared tunnel --url`, sem conta nem DNS) quando o provedor exige HTTPS público. Guia vivo — cresce conforme aparecem novos provedores/casos de autenticação. Além do material de referência, tem uma skill guiada: em vez de só explicar o padrão, ela conduz um agente etapa por etapa (levantamento → auth → tools → teste ponta a ponta) verificando cada uma antes de avançar, até o MCP estar realmente no ar ou ficar provado que não dá — sem ficar tentando indefinidamente algo já bloqueado.',
     downloads: [
       { file: 'mcp-builder.md', label: 'Guia geral de construção de servidores MCP' },
+      { file: 'mcp-builder-skill.md', label: 'Skill guiada: constrói o MCP até funcionar (SKILL.md)' },
     ],
   },
 ]
