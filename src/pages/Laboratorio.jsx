@@ -52,14 +52,19 @@ export default function Laboratorio() {
             <p className="lab-item__text">{item.problem}</p>
             <p className="lab-item__label">a lição</p>
             <p className="lab-item__text">{item.lesson}</p>
-            <a
-              className="lab-download"
-              href={`/downloads/${item.download.file}`}
-              download
-            >
-              <span className="lab-download__icon" aria-hidden="true">↓</span>
-              {item.download.label}
-            </a>
+            <div className="lab-download-list">
+              {item.downloads.map((d) => (
+                <a
+                  className="lab-download"
+                  href={`/downloads/${d.file}`}
+                  download
+                  key={d.file}
+                >
+                  <span className="lab-download__icon" aria-hidden="true">↓</span>
+                  {d.label}
+                </a>
+              ))}
+            </div>
           </li>
         ))}
       </ul>

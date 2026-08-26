@@ -1469,11 +1469,17 @@ a {
   margin: 0 0 16px;
 }
 
+.lab-download-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
 .lab-download {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
   padding: 8px 16px;
   font-family: var(--font-mono);
   font-size: 0.82rem;

@@ -11,6 +11,7 @@ const STATUS_META = {
 const AGENT_LABEL = {
   infra: 'infra · 18:00',
   publicacao: 'publicação · 08:00/13:00',
+  laboratorio: 'laboratório · 20:00',
 }
 
 function usageRunLabel(isoTimestamp) {
