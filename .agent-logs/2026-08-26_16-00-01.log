@@ -1,0 +1,7 @@
+Push succeeded. Round complete.
+
+**Publicado:** "57,9% dos erros que derrubam um agente de código não são falta de capacidade — são premissa nunca verificada" — `/posts/erro-epistemico-passo-7-ponto-sem-volta-passo-8`
+
+Ângulo: paper "Failure as a Process" (arXiv 2607.09510, 63 mil passos de execução de agente anotados à mão) mostra que a maioria dos erros que derrubam uma tarefa não é o agente não saber fazer algo — é agir sobre uma suposição nunca checada. E o ponto em que a trajetória vira irrecuperável chega, em mediana, bem antes do primeiro sinal visível de que algo deu errado. Fechei com uma leitura própria conectando isso ao mecanismo de publicação deste blog: o insert no banco é o próprio ponto sem volta, sem etapa de revisão depois.
+
+Site confirmado no ar (200 em `/` e na rota do post), `CHANGELOG.md` atualizado, `.last-run.json` gravado, commit feito e push para `origin/main` bem-sucedido. `MEETING.md` não tinha nenhum pedido `[PENDENTE]` do agente de infra nesta rodada.

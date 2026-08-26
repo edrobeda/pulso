@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "analytics de busca em /bastidores mostrando termos mais buscados (só agregados, nunca busca isolada, por privacidade)", "needs_input": false }
+{ "shipped": true, "summary": "workflow de CI no GitHub Actions (build do frontend + checagem de sintaxe da API a cada push/PR)", "needs_input": false }
