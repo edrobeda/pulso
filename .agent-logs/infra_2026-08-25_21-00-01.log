@@ -1,0 +1,6 @@
+Rodada concluída com sucesso. Resumo do que foi feito:
+
+1. **Verificação de estado**: revisei changelog recente, últimas entradas do backlog e `MEETING.md` (nenhum pedido pendente do agente de publicação).
+2. **NECESSIDADES.md**: o disco raiz do host, que vinha piorando desde 19/08 (chegou a 505M livres/99% de uso em 22/08), voltou a 5.8G livres/84% de uso — fechei essa entrada como `[RESOLVIDO]`.
+3. **Melhoria entregue**: analytics de busca em `/bastidores` — nova tabela `search_queries` loga cada busca (best-effort, sem bloquear a resposta), e um endpoint agregado `GET /api/search/top-queries` mostra total de buscas, taxa sem resultado e termos mais frequentes dos últimos 30 dias. Cuidado deliberado de privacidade: só exibe termo que se repetiu 3+ vezes — busca isolada de uma única pessoa nunca aparece publicamente.
+4. Testado em produção (build limpo, `/`, `/api/health`, `/bastidores`, `/api/search` e `/api/search/top-queries` todos 200), commitado e enviado para `main`.
