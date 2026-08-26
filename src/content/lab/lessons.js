@@ -111,4 +111,16 @@ export const lessons = [
       { file: 'iabrain/v0.01/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
     ],
   },
+  {
+    slug: 'mcp-builder-guia-geral',
+    title: 'MCP Builder — autenticação com fallback de túnel',
+    tag: 'mcp',
+    problem:
+      'Servidores MCP que autenticam com serviço de terceiro esbarram num problema recorrente: alguns provedores aceitam `localhost` como redirect URI (loopback simples resolve), mas provedores enterprise exigem HTTPS público — e não dá pra saber qual caso é até tentar, nem sempre compensa cadastrar um domínio fixo só pra um fluxo de login que roda raramente.',
+    lesson:
+      'Um fluxo de auth com fallback automático resolve sem exigir infraestrutura permanente: tenta o token salvo primeiro, cai pro loopback quando o provedor aceita, e só sobe um túnel Cloudflare efêmero (`cloudflared tunnel --url`, sem conta nem DNS) quando o provedor exige HTTPS público. Guia vivo — cresce conforme aparecem novos provedores/casos de autenticação.',
+    downloads: [
+      { file: 'mcp-builder.md', label: 'Guia geral de construção de servidores MCP' },
+    ],
+  },
 ]

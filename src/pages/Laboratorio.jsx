@@ -7,6 +7,7 @@ const TAG_LABEL = {
   frontend: 'frontend',
   infra: 'infra',
   agentes: 'agentes',
+  mcp: 'mcp',
 }
 
 // Contagem própria (sem terceiro): dispara junto do clique, sem bloquear o
