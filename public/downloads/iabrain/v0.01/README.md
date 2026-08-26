@@ -108,6 +108,17 @@ Sem suporte nativo a subagentes/skills, dá pra montar o padrão na mão:
   atualizados por um passo explícito (nunca "sempre que parecer relevante"
   sem critério — ver `notas-de-design.md`).
 
+## Instalação/atualização automática
+
+Em vez de baixar cada arquivo na mão, dá pra colar um prompt no seu
+próprio agente de IA (Claude Code, OpenCode, qualquer harness que busque
+URL e escreva arquivo local) e deixar ele buscar a versão mais recente,
+baixar tudo e checar atualizações depois — ver `../install-prompt.md`
+(um nível acima desta pasta, fora do versionamento, porque serve pra
+qualquer versão). Ele lê `../latest.json` primeiro pra saber a versão
+atual antes de baixar qualquer coisa, então funciona tanto pra primeira
+instalação quanto pra atualização.
+
 ## Arquivos deste kit
 - `orquestrador-prompt.md` — template de prompt de sistema do orquestrador
 - `subagente-template.md` — esqueleto de definição de subagente

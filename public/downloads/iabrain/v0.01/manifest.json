@@ -1,0 +1,67 @@
+{
+  "version": "0.01",
+  "disclaimer": "Fornecido como está, sem garantias de qualquer tipo. Revise cada arquivo antes de integrar ao seu projeto. O autor não se responsabiliza por qualquer dano ou mau funcionamento decorrente do uso deste conteúdo.",
+  "base_url": "https://blog.eventifylab.com/downloads/iabrain/v0.01/",
+  "files": [
+    {
+      "file": "README.md",
+      "role": "readme",
+      "description": "Visão geral das 4 peças + instruções de instalação por harness."
+    },
+    {
+      "file": "orquestrador-prompt.md",
+      "role": "orchestrator-prompt",
+      "description": "Template de prompt de sistema do orquestrador.",
+      "suggested_target": {
+        "claude-code": "Seção de roteamento dentro do CLAUDE.md do projeto/usuário (mesclar, não sobrescrever o arquivo inteiro).",
+        "opencode": "System prompt do modo/agente principal (formato de config muda por versão — conferir docs atuais).",
+        "generico": "System prompt do loop principal do orquestrador."
+      }
+    },
+    {
+      "file": "subagente-template.md",
+      "role": "subagent-template",
+      "description": "Esqueleto pra definir um subagente novo de escopo estreito.",
+      "suggested_target": {
+        "claude-code": "Um arquivo novo por subagente na pasta de agentes do projeto, preenchido a partir deste template.",
+        "opencode": "Definição de agente/modo customizado, conforme suportado pela versão instalada.",
+        "generico": "Um system prompt separado por subagente, chamado via API própria."
+      }
+    },
+    {
+      "file": "skill-template.md",
+      "role": "skill-template",
+      "description": "Esqueleto de skill de referência (documento consultado antes de agir, não um agente).",
+      "suggested_target": {
+        "claude-code": "Um SKILL.md novo por skill na pasta de skills do projeto.",
+        "opencode": "Documento de referência incluído no contexto quando a tarefa bate com o escopo dele.",
+        "generico": "Arquivo de texto injetado no prompt do subagente relevante antes de agir."
+      }
+    },
+    {
+      "file": "memoria-profile.md",
+      "role": "memory-template",
+      "description": "Categoria de memória: fatos estáveis sobre quem o sistema ajuda."
+    },
+    {
+      "file": "memoria-preferences.md",
+      "role": "memory-template",
+      "description": "Categoria de memória: preferências de como trabalhar, confirmadas ou corrigidas."
+    },
+    {
+      "file": "memoria-topics.md",
+      "role": "memory-template",
+      "description": "Categoria de memória: assuntos/projetos recorrentes e decisões."
+    },
+    {
+      "file": "memoria-people.md",
+      "role": "memory-template",
+      "description": "Categoria de memória: outras pessoas relevantes e o contexto sobre elas."
+    },
+    {
+      "file": "notas-de-design.md",
+      "role": "design-notes",
+      "description": "Quando gravar memória e quando delegar pra um subagente — o ponto que mais precisa de iteração."
+    }
+  ]
+}

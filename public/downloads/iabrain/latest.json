@@ -1,0 +1,9 @@
+{
+  "kit": "iaBrain",
+  "disclaimer": "Fornecido como está, sem garantias de qualquer tipo. Revise os arquivos antes de instalar/integrar ao seu projeto. O autor não se responsabiliza por qualquer dano ou mau funcionamento decorrente do uso deste conteúdo.",
+  "latest_version": "0.01",
+  "manifest_url": "https://blog.eventifylab.com/downloads/iabrain/v0.01/manifest.json",
+  "changelog_url": "https://blog.eventifylab.com/downloads/iabrain/CHANGELOG.md",
+  "install_prompt_url": "https://blog.eventifylab.com/downloads/iabrain/install-prompt.md",
+  "published_at": "2026-08-26"
+}

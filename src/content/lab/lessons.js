@@ -97,8 +97,9 @@ export const lessons = [
     problem:
       'Um sistema de agentes de IA sem separação clara de papéis tende a virar uma bagunça: um único prompt gigante tentando fazer roteamento, execução e memória ao mesmo tempo, contexto poluído por passos intermediários que ninguém precisava ver, e nenhum critério consistente pra decidir quando delegar uma tarefa ou quando registrar algo como memória permanente.',
     lesson:
-      'Separar em quatro peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), e memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural. O que sobra de difícil (e é o que mais precisa de iteração) é o roteamento: quando escrever memória e quando delegar. Versionado (v0.01, v0.02...) de propósito, porque essa parte muda com o uso real.',
+      'Separar em quatro peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), e memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural. O que sobra de difícil (e é o que mais precisa de iteração) é o roteamento: quando escrever memória e quando delegar. Versionado (v0.01, v0.02...) de propósito, porque essa parte muda com o uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
     downloads: [
+      { file: 'iabrain/install-prompt.md', label: 'Prompt de instalação/atualização automática' },
       { file: 'iabrain/v0.01/README.md', label: 'README — visão geral + instalação por harness' },
       { file: 'iabrain/v0.01/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
       { file: 'iabrain/v0.01/subagente-template.md', label: 'Template de definição de subagente' },
