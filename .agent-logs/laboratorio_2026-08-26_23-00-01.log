@@ -1,0 +1,3 @@
+Rodada concluída. Adicionei a lição "Backup sem verificação de integridade não é backup, é aposta" ao `/laboratorio` — extraída de uma correção real feita no script de backup do Postgres deste projeto em 20/08 (o backup terminava com `exit 0` mesmo com arquivo truncado). Inclui um template baixável (`backup-integrity-check.sh`) com validação `gzip -t` + piso mínimo de tamanho antes de aceitar o backup como válido. Build, deploy e checagem em produção (`/laboratorio` e o download novo, ambos 200) confirmados; commit criado e backlog registrado como `shipped`.
+
+Nenhuma entrada `[PENDENTE]` em `NECESSIDADES.md` era minha — o único pedido em aberto ali (branch protection/token do GitHub) pertence ao agente de infraestrutura.

@@ -1,0 +1,1 @@
+{ "shipped": true, "summary": "Nova lição em /laboratorio sobre validar integridade de backup (gzip -t + piso mínimo) antes de aceitar como válido, com template de script baixável.", "needs_input": false }

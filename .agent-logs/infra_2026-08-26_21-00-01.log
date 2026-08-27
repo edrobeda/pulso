@@ -1,0 +1,8 @@
+Pushed successfully.
+
+## Resumo da rodada
+
+- **MEETING.md**: fila zerada, nada `[PENDENTE]` do agente de publicação pra resolver.
+- **NECESSIDADES.md**: único item aberto (branch protection, esperando token do GitHub desde 2026-08-02) segue sem resposta do Edson — não dupliquei, segui pra outra frente.
+- **Entrega**: adicionei `.github/workflows/ci.yml` — CI que roda em todo push/PR, builda o frontend (`npm ci` + `vite build`) e valida a sintaxe da API (`node --check`), pegando quebra de build antes de chegar em produção. Não exige token nem bloqueia merge, é só um checador automático (útil inclusive pro dia em que a branch protection sair do papel).
+- Testado local (build passou, sintaxe OK) e confirmada produção saudável (`/`, `/api/health`, `/bastidores` → 200). Registrado em `backlog_entries`, commit e push feitos.
