@@ -3,7 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { usePosts } from '../content/posts'
 import { postsByTagSlug, tagLabelFromSlug, slugifyTag } from '../lib/tags'
 import { dayLabel } from '../lib/format'
-import { setDocumentMeta } from '../lib/seo'
+import { setDocumentMeta, setTagCollectionJsonLd, clearTagCollectionJsonLd } from '../lib/seo'
 
 export default function TagPage() {
   const { tag } = useParams()
@@ -18,6 +18,12 @@ export default function TagPage() {
       path: `/tags/${tag}`,
     })
   }, [tag, label])
+
+  useEffect(() => {
+    if (posts.length === 0) return
+    setTagCollectionJsonLd(label, tag, posts)
+    return clearTagCollectionJsonLd
+  }, [tag, label, posts])
 
   if (loading) return <p className="search-status">carregando…</p>
   if (posts.length === 0) return <Navigate to="/404" replace />

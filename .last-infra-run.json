@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "workflow de CI no GitHub Actions (build do frontend + checagem de sintaxe da API a cada push/PR)", "needs_input": false }
+{ "shipped": true, "summary": "dados estruturados (JSON-LD) nas páginas de tags e /laboratorio adicionado ao sitemap.xml", "needs_input": false }

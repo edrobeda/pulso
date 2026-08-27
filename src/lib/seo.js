@@ -152,6 +152,50 @@ export function clearBreadcrumbJsonLd() {
   removeJsonLd('jsonld-breadcrumb')
 }
 
+export function setTagCollectionJsonLd(label, tagSlug, posts) {
+  setJsonLd('jsonld-tag-collection', {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `Tag: ${label}`,
+    url: `${SITE_URL}/tags/${tagSlug}`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: posts.map((post, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}/posts/${post.slug}`,
+        name: post.title,
+      })),
+    },
+  })
+}
+
+export function clearTagCollectionJsonLd() {
+  removeJsonLd('jsonld-tag-collection')
+}
+
+export function setTagsIndexJsonLd(tags) {
+  setJsonLd('jsonld-tags-index', {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Tags',
+    url: `${SITE_URL}/tags`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: tags.map((t, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}/tags/${t.slug}`,
+        name: t.label,
+      })),
+    },
+  })
+}
+
+export function clearTagsIndexJsonLd() {
+  removeJsonLd('jsonld-tags-index')
+}
+
 export function setRobotsNoIndex() {
   setMetaByName('robots', 'noindex, follow')
 }

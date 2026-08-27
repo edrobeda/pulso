@@ -208,3 +208,6 @@ INSERT 0 1
 INSERT 0 1
 2026-08-27T11:08:07+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-27_11-00-01.log
 INSERT 0 1
+2026-08-27T16:04:51+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-08-27_16-00-01.log
+INSERT 0 1
+backup criado: db/backups/backlog_20260827_210001.sql.gz (144K)

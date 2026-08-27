@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { usePosts } from '../content/posts'
 import { tagCounts } from '../lib/tags'
-import { setDocumentMeta } from '../lib/seo'
+import { setDocumentMeta, setTagsIndexJsonLd, clearTagsIndexJsonLd } from '../lib/seo'
 
 export default function TagsIndexPage() {
   const { posts, loading } = usePosts()
@@ -15,6 +15,12 @@ export default function TagsIndexPage() {
       path: '/tags',
     })
   }, [])
+
+  useEffect(() => {
+    if (tags.length === 0) return
+    setTagsIndexJsonLd(tags)
+    return clearTagsIndexJsonLd
+  }, [tags])
 
   if (loading) return <p className="search-status">carregando…</p>
 

@@ -786,6 +786,7 @@ app.get('/sitemap.xml', async (_req, res) => {
       { path: '/', changefreq: 'hourly', priority: '1.0' },
       { path: '/tags', changefreq: 'weekly', priority: '0.4' },
       { path: '/bastidores', changefreq: 'daily', priority: '0.5' },
+      { path: '/laboratorio', changefreq: 'weekly', priority: '0.4' },
     ]
 
     const urls = [...staticRoutes, ...postRoutes, ...tagRoutes]
