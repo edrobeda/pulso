@@ -124,6 +124,18 @@ export const lessons = [
     ],
   },
   {
+    slug: 'rota-nova-nao-propaga-sozinha',
+    title: 'Uma rota nova não aparece sozinha em sitemap, menu ou dados estruturados',
+    tag: 'frontend',
+    problem:
+      'O roteador da aplicação é a lista canônica de páginas, mas o `sitemap.xml` mantinha sua própria lista de rotas estáticas, escrita à mão e em paralelo — separada do array real de rotas do roteador. Uma página nova foi adicionada ao roteador, funcionava perfeitamente (link direto abria, sem erro, build passava), e mesmo assim ficou ausente do sitemap por um tempo: nada quebrou tecnicamente, só ficou incompleto, e não existe erro pra notar isso — só ausência silenciosa até alguém comparar as duas listas à mão.',
+    lesson:
+      'Toda lista derivada de rotas (sitemap, menu, dados estruturados, controle de acesso por rota) deveria ler a mesma fonte de verdade que o roteador usa, em vez de manter uma cópia manual paralela. Quando não dá pra eliminar a duplicação, um teste automatizado que compara as duas listas e falha quando divergem transforma o esquecimento silencioso em falha de CI barulhenta no momento em que a rota é adicionada, não semanas depois.',
+    downloads: [
+      { file: 'new-page-checklist.md', label: 'Checklist + exemplo de teste de consistência de rotas' },
+    ],
+  },
+  {
     slug: 'mcp-builder-guia-geral',
     title: 'MCP Builder — autenticação com fallback de túnel',
     tag: 'mcp',
