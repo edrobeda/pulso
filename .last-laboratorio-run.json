@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição em /laboratorio sobre validar integridade de backup (gzip -t + piso mínimo) antes de aceitar como válido, com template de script baixável.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada lição nova ao laboratório sobre Dockerfile com COPY explícito não acompanhar módulo novo (baseada em bug real corrigido hoje na API do blog), com checklist de download.", "needs_input": false }
