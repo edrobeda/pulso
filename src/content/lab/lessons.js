@@ -148,4 +148,16 @@ export const lessons = [
       { file: 'mcp-builder-skill.md', label: 'Skill guiada: constrói o MCP até funcionar (SKILL.md)' },
     ],
   },
+  {
+    slug: 'dockerfile-copy-nao-acompanha-modulo-novo',
+    title: 'Dockerfile com COPY explícito não acompanha um módulo novo sozinho',
+    tag: 'deploy',
+    problem:
+      'Uma função foi extraída do arquivo principal do servidor para um módulo novo numa pasta separada. Funcionava perfeitamente em ambiente local e o `docker build` da imagem passava sem erro — mas o Dockerfile listava explicitamente cada arquivo a copiar (em vez de copiar a pasta toda), e ninguém tinha adicionado a linha nova. A imagem subiu sem o módulo, e o processo só quebrou (`ERR_MODULE_NOT_FOUND`, API caindo) no runtime, ao tentar de fato carregar o import ausente.',
+    lesson:
+      'Build de imagem só empacota o que foi mandado empacotar — não verifica se todo import do código tem um arquivo correspondente copiado. Depois de qualquer Dockerfile com COPY explícito, rebuild do zero (sem cache de imagem antiga) e exercite de verdade o caminho de código novo antes de considerar o deploy validado; "o build passou" não prova que a imagem está completa, do mesmo jeito que "HTTP 200" não prova que a página funciona.',
+    downloads: [
+      { file: 'dockerfile-copy-checklist.md', label: 'Checklist: Dockerfile com COPY explícito + módulo novo' },
+    ],
+  },
 ]
