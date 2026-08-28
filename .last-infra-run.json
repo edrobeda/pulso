@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "dados estruturados (JSON-LD) nas páginas de tags e /laboratorio adicionado ao sitemap.xml", "needs_input": false }
+{ "shipped": true, "summary": "adicionei testes automatizados (node --test) pra lógica de validação/moderação da API, rodando no CI a cada push, e corrigi um bug no Dockerfile da API que ficaria quebrado em produção", "needs_input": false }

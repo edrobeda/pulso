@@ -31,3 +31,5 @@ jobs:
         run: npm ci
       - working-directory: api
         run: node --check server.js
+      - working-directory: api
+        run: npm test

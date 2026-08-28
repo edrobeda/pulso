@@ -2,6 +2,7 @@ import express from 'express'
 import pg from 'pg'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
+import { escapeXml, slugifyTag, isValidDownloadFile, containsBlockedContent } from './lib/validation.js'
 
 const { Pool, types } = pg
 
@@ -119,22 +120,14 @@ app.get('/api/visits', async (_req, res) => {
   }
 })
 
-// Validação do nome de arquivo pra /api/downloads: caminho relativo simples
-// dentro de public/downloads/ (sem ".." nem barra inicial) — não é uma
-// allowlist fixa (o laboratorio-agent adiciona arquivo novo sem tocar na
-// API), só uma checagem de formato pra não deixar a tabela virar depósito
-// de string arbitrária.
-const DOWNLOAD_FILE_PATTERN = /^[A-Za-z0-9._-]+(\/[A-Za-z0-9._-]+)*$/
-
+// Validação do nome de arquivo pra /api/downloads (não é allowlist fixa —
+// o laboratorio-agent adiciona arquivo novo sem tocar na API, só checagem
+// de formato pra não deixar a tabela virar depósito de string arbitrária)
+// mora em lib/validation.js#isValidDownloadFile, testada isoladamente.
 app.post('/api/downloads', writeLimiter, async (req, res) => {
   try {
     const file = String(req.body?.file || '').trim()
-    if (
-      file.length === 0 ||
-      file.length > 150 ||
-      file.includes('..') ||
-      !DOWNLOAD_FILE_PATTERN.test(file)
-    ) {
+    if (!isValidDownloadFile(file)) {
       return res.status(400).json({ error: 'file inválido' })
     }
 
@@ -326,7 +319,6 @@ app.post('/api/posts/:slug/reactions', writeLimiter, async (req, res) => {
 // comentário problemático que passe pela heurística, sem apagar a linha.
 const COMMENT_MIN_LEN = 2
 const COMMENT_MAX_LEN = 1000
-const COMMENT_BLOCK_PATTERN = /https?:\/\/|www\.|\b(viagra|cialis|casino|apostas?|empr[eé]stimo|bit\.ly)\b/i
 
 app.get('/api/posts/:slug/comments', async (req, res) => {
   try {
@@ -354,12 +346,12 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
     if (body.length < COMMENT_MIN_LEN || body.length > COMMENT_MAX_LEN) {
       return res.status(400).json({ error: 'comentário precisa ter entre 2 e 1000 caracteres' })
     }
-    if (COMMENT_BLOCK_PATTERN.test(body)) {
+    if (containsBlockedContent(body)) {
       return res.status(400).json({ error: 'comentário rejeitado (link ou termo bloqueado)' })
     }
 
     let authorName = String(req.body?.authorName || '').trim().slice(0, 60)
-    if (!authorName || COMMENT_BLOCK_PATTERN.test(authorName)) authorName = 'anônimo'
+    if (!authorName || containsBlockedContent(authorName)) authorName = 'anônimo'
 
     const { rows: postRows } = await pool.query('SELECT 1 FROM posts WHERE slug = $1', [
       req.params.slug,
@@ -439,7 +431,7 @@ app.post('/api/bug-reports', writeLimiter, async (req, res) => {
     if (message.length < BUG_REPORT_MIN_LEN || message.length > BUG_REPORT_MAX_LEN) {
       return res.status(400).json({ error: 'mensagem precisa ter entre 3 e 2000 caracteres' })
     }
-    if (COMMENT_BLOCK_PATTERN.test(message)) {
+    if (containsBlockedContent(message)) {
       return res.status(400).json({ error: 'mensagem rejeitada (link ou termo bloqueado)' })
     }
 
@@ -498,15 +490,6 @@ const SITE_URL = 'https://blog.eventifylab.com'
 const SITE_NAME = 'Pulso'
 const SITE_DESCRIPTION =
   'Um agente autônomo transmite duas vezes ao dia, às 08:00 e 13:00, sobre inteligência artificial e desenvolvimento.'
-
-function escapeXml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
-}
 
 // A SPA seta title/OG/JSON-LD via JS depois do mount (ver src/lib/seo.js) —
 // funciona pra crawler que executa JS (Googlebot), mas os bots que geram
@@ -658,18 +641,6 @@ app.get('/api/search/top-queries', async (_req, res) => {
     res.status(500).json({ error: err.message })
   }
 })
-
-// Mesma lógica de src/lib/tags.js#slugifyTag — duplicada aqui de propósito
-// porque a API não importa código do frontend (bundlers diferentes).
-function slugifyTag(tag) {
-  return tag
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
 
 app.get('/feed.xml', async (_req, res) => {
   try {
