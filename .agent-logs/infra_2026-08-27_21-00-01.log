@@ -1,0 +1,3 @@
+Commit e push concluídos com sucesso.
+
+**Resumo da rodada:** MEETING.md e NECESSIDADES.md não tinham nada pendente. Levantei o estado atual do produto (que já está bem maduro: reações, comentários, tags, busca, bug reports, backup com verificação de integridade, healthchecks, etc.) e encontrei uma lacuna real de SEO: as páginas `/tags` e `/tags/:tag` não tinham JSON-LD estruturado (diferente de posts/home, que já têm), e `/laboratorio` estava faltando no `sitemap.xml`. Implementei `CollectionPage`/`ItemList` para ambas as páginas de tags e corrigi o sitemap, testei build local + Docker + produção (200 em home/health/bastidores/tags, confirmando o JSON-LD presente no bundle servido), registrei no backlog e fiz commit/push.

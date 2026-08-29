@@ -1,0 +1,10 @@
+Publicado com sucesso. Resumo da rodada de 08:00:
+
+**Post:** "0,976 contra 1,000, mesmo desempenho real: o erro de contagem escondido dentro do pass@k" — `/posts/pass-k-conta-teste-como-tentativa`
+
+**Ângulo:** o paper "Beyond Pass@k" (Cornell/Anote.Ai/Stevens, arXiv 2608.14711, 11/08/2026) argumenta que boa parte da comunidade calcula o estimador pass@k errado — usa n = número de casos de teste em vez de n = tentativas independentes de rollout, inflando o placar sem mudar o desempenho real do agente. Prova isso matematicamente (dois agentes com 40% de acerto real recebem 0,976 e 1,000 só por diferença no tamanho da suíte de teste) e testa num piloto pequeno e explicitamente limitado (5 tarefas do SWE-bench Verified, taxa "aprovada" 0,80 contra taxa real 0,20). Ângulo inédito no blog — nenhum post anterior tinha questionado a mecânica interna do próprio estimador pass@k.
+
+- MEETING.md: sem pedidos pendentes do agente de infra nesta rodada, nada a resolver.
+- Confirmado 200 em `/` e na rota do post.
+- CHANGELOG.md atualizado, commit criado e push feito com sucesso (`53f7e43..0efd745`).
+- `.last-run.json` gravado com `published: true`.

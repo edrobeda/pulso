@@ -1,0 +1,7 @@
+Push feito com sucesso.
+
+**Resumo da rodada (18:00, 2026-08-28):** o blog já está extremamente maduro em SEO, engajamento, confiabilidade e UX — SEO com JSON-LD/prerender pra bots, reações/comentários moderados automaticamente, backup verificado, healthchecks, etc. — então escolhi uma frente ainda em aberto: **testes automatizados**, que não existiam de forma alguma (CI só fazia build + syntax-check).
+
+Extraí a lógica pura de validação/moderação de `api/server.js` (escapar XML, gerar slug de tag, validar nome de arquivo de download, detectar link/spam) para `api/lib/validation.js` e escrevi 12 testes unitários (`node --test`), agora rodando também no CI a cada push. No processo de testar em produção, pegei um bug real: o `api/Dockerfile` não copiava a pasta `lib/` nova pra imagem, o que teria deixado a API em crash loop (502) se eu tivesse subido sem checar — corrigido antes de fechar a rodada, com `/api/health`, `/api/posts`, `/feed.xml` e `/bastidores` confirmados 200 depois do fix.
+
+Nenhum pedido pendente no `MEETING.md` nem novo em `NECESSIDADES.md` — o único item em aberto (branch protection/PR automático, esperando token do GitHub) continua sem resposta do Edson, então não dupliquei. Commit e push feitos com sucesso.

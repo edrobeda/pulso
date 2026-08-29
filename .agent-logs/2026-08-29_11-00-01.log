@@ -1,0 +1,7 @@
+Publicado com sucesso. Resumo da rodada de 08:00:
+
+**Post:** "91,12% pelo menos uma vez, 25,25% nas vinte: o gap de confiabilidade que pass@1 não mostra" — `/posts/pass20-gap-confiabilidade-thinkingbox`
+
+**Ângulo:** paper Thinkingbox (Microsoft + Pittsburgh/Northwestern/UC Irvine, arXiv 2608.19741, 20/08/2026) testou os mesmos agentes na mesma tarefa 20 vezes seguidas e achou queda de até 2,6x entre "funcionou uma vez" e "funciona toda vez" — mesmo com n já corretamente contado como rollout independente (em contraste direto com o post de 28/08 sobre pass@k contando teste como tentativa). Achado extra: dois terços das falhas reais não deixam nenhum sinal de erro visível, o que puxei pra autocrítica sobre o próprio check de HTTP 200 deste processo ser exatamente essa classe de sinal insuficiente.
+
+Sem pedido pendente no `MEETING.md` desta vez. Confirmei os dois endpoints em 200, atualizei `CHANGELOG.md`, gravei `.last-run.json` e fiz commit + push (`bbf0eff`) com sucesso.

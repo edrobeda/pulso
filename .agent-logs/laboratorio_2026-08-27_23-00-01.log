@@ -1,0 +1,6 @@
+Rodada concluída com entrega. Resumo:
+
+- **Nova lição** em `/laboratorio`: "Uma rota nova não aparece sozinha em sitemap, menu ou dados estruturados" — baseada num bug real deste próprio projeto (o `sitemap.xml` mantinha uma lista manual de rotas estáticas, separada do roteador real, e `/laboratorio` ficou ausente dele por um tempo até ser corrigido ontem).
+- **Download novo**: `public/downloads/new-page-checklist.md` — checklist + exemplo genérico de teste de consistência entre roteador e listas derivadas (sitemap, JSON-LD, menu, controle de acesso).
+- Build/deploy testados: `/laboratorio` e o novo download respondem 200 em produção.
+- Backlog registrado (`status: shipped`), commit `d4c4283` criado (sem push).
