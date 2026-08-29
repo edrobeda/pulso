@@ -1233,6 +1233,17 @@ a {
   border-left-color: var(--signal-teal);
 }
 
+.metric-card--dbsize {
+  border-left-color: var(--mist-400);
+}
+
+.metric-card__footnote {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--mist-400);
+}
+
 .metric-card__label {
   display: flex;
   align-items: center;
@@ -1265,6 +1276,11 @@ a {
 .metric-card--visits .metric-card__icon {
   color: var(--signal-teal);
   border: 1px solid var(--signal-teal);
+}
+
+.metric-card--dbsize .metric-card__icon {
+  color: var(--mist-400);
+  border: 1px solid var(--mist-400);
 }
 
 .changelog-section {

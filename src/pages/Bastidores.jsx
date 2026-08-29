@@ -45,6 +45,18 @@ function visitDayLabel(isoDate) {
     .replace('.', '')
 }
 
+function formatBytes(bytes) {
+  const mb = bytes / (1024 * 1024)
+  if (mb >= 1024) return `${(mb / 1024).toFixed(2)} GB`
+  return `${mb.toFixed(1)} MB`
+}
+
+function dbSizeDayLabel(isoDate) {
+  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
+    .format(new Date(`${isoDate}T12:00:00`))
+    .replace('.', '')
+}
+
 function bugReportDateLabel(isoTimestamp) {
   return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
@@ -65,6 +77,7 @@ export default function Bastidores() {
   const [comments, setComments] = useState({ status: 'loading', rows: [] })
   const [searchStats, setSearchStats] = useState({ status: 'loading', data: null })
   const [downloads, setDownloads] = useState({ status: 'loading', rows: [] })
+  const [dbSize, setDbSize] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -201,6 +214,24 @@ export default function Bastidores() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/db-size')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setDbSize({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setDbSize({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <section className="bastidores">
       <div className="intro">
@@ -215,7 +246,8 @@ export default function Bastidores() {
       </div>
 
       {((usage.status === 'ready' && usage.rows.length > 0) ||
-        (visits.status === 'ready' && visits.rows.length > 0)) && (
+        (visits.status === 'ready' && visits.rows.length > 0) ||
+        (dbSize.status === 'ready' && dbSize.rows.length > 0)) && (
         <div className="metrics-grid">
           {usage.status === 'ready' && usage.rows.length > 0 && (
             <div className="metric-card metric-card--cost">
@@ -254,6 +286,29 @@ export default function Bastidores() {
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {dbSize.status === 'ready' && dbSize.rows.length > 0 && (
+            <div className="metric-card metric-card--dbsize">
+              <p className="metric-card__label">
+                <span className="metric-card__icon" aria-hidden="true">▦</span>
+                tamanho do banco (auto-monitorado)
+              </p>
+              <ul className="usage-list">
+                {dbSize.rows.map((r) => (
+                  <li className="usage-item" key={r.entry_date}>
+                    <span className="usage-item__agent">{dbSizeDayLabel(r.entry_date)}</span>
+                    <span className="usage-item__tokens">{formatBytes(Number(r.size_bytes))}</span>
+                  </li>
+                ))}
+              </ul>
+              {dbSize.rows.length > 1 && (
+                <p className="metric-card__footnote">
+                  {formatBytes(Number(dbSize.rows[0].size_bytes) - Number(dbSize.rows[dbSize.rows.length - 1].size_bytes))}{' '}
+                  de crescimento nos últimos {dbSize.rows.length} dias registrados
+                </p>
+              )}
             </div>
           )}
         </div>

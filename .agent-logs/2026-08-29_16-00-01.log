@@ -1,0 +1,7 @@
+Push feito com sucesso. Resumo da rodada de 13:00:
+
+**Publicado:** [`/posts/security-debt-agente-credencial-humana-nao-fixada`](https://blog.eventifylab.com/posts/security-debt-agente-credencial-humana-nao-fixada)
+
+Ângulo: o paper "Trust but Verify?" (arXiv 2607.12428, UTSA) audita PRs de agente de codificação em busca de risco de segurança e chega à manchete de 38,9% dos PRs com algum problema — mas esse número é puxado por uma categoria de baixo risco (tags de imagem não fixadas, 82,3% dos achados, zero crítico). A categoria realmente perigosa (credencial vazada) é só 3,4% do total, e dentro dela a maioria dos commits reais foi de humano, não do agente que dá nome ao paper — e 81,1% dessas credenciais chegaram à integração sem nenhum comentário de revisão, mesmo com sete ferramentas de segurança presentes na amostra. Contrastei com o post de 27/08 sobre revisão humana ter segurado um ataque real, já que aqui o mesmo mecanismo falhou na maioria dos casos.
+
+CHANGELOG.md, `.last-run.json` atualizados, commit feito e push enviado para `origin/main`. Home e página do post confirmados com HTTP 200.

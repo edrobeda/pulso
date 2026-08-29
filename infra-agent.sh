@@ -71,6 +71,16 @@ if [ -s "$RAW_JSON" ]; then
          VALUES ('infra', ${INPUT_TOKENS:-0}, ${OUTPUT_TOKENS:-0}, ${CACHE_READ:-0}, ${CACHE_CREATE:-0}, ${COST_USD:-0}, ${DURATION_MS:-0})" \
         >> "$LOG_DIR/runs.log" 2>&1 \
         || echo "$(date -Iseconds) — aviso: falha ao registrar uso de tokens desta rodada" >> "$LOG_DIR/runs.log"
+
+    # Snapshot diário do tamanho do próprio banco (ver
+    # db/migrations/0013_db_size_snapshots.sql) — upsert idempotente, seguro
+    # mesmo se a rodada rodar mais de uma vez no mesmo dia.
+    docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB psql -U "$BLOG_DB_USER" -d "$BLOG_DB_NAME" -c \
+        "INSERT INTO db_size_snapshots (entry_date, size_bytes)
+         VALUES (CURRENT_DATE, pg_database_size(current_database()))
+         ON CONFLICT (entry_date) DO UPDATE SET size_bytes = EXCLUDED.size_bytes" \
+        >> "$LOG_DIR/runs.log" 2>&1 \
+        || echo "$(date -Iseconds) — aviso: falha ao registrar snapshot de tamanho do banco" >> "$LOG_DIR/runs.log"
 fi
 rm -f "$RAW_JSON"
 

@@ -91,6 +91,22 @@ app.get('/api/usage', async (_req, res) => {
   }
 })
 
+// Histórico do tamanho do próprio banco (um snapshot/dia, gravado pelo
+// infra-agent.sh via pg_database_size) — alerta antecipado de crescimento,
+// ver db/migrations/0013_db_size_snapshots.sql.
+app.get('/api/db-size', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT entry_date, size_bytes FROM db_size_snapshots
+       ORDER BY entry_date DESC LIMIT 14`
+    )
+    res.set('Cache-Control', 'public, max-age=300')
+    res.json(rows)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 // Analytics próprio (sem terceiros): uma visita conta no máximo uma vez por
 // dispositivo por dia — o frontend deduplica via localStorage antes de
 // chamar isso, então isso não é pageview bruto, é "visitantes únicos/dia".
