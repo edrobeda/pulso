@@ -149,6 +149,18 @@ export const lessons = [
     ],
   },
   {
+    slug: 'tendencia-nao-so-snapshot',
+    title: 'Um valor isolado não avisa nada — é a tendência que importa',
+    tag: 'infra',
+    problem:
+      'Um recurso compartilhado (espaço em disco do host) foi enchendo aos poucos, uns 100MB por dia, ao longo de mais de uma semana, até chegar perto do limite. Só foi percebido porque alguém checou o valor bruto manualmente em rodadas separadas e comparou de cabeça com o que lembrava da vez anterior — não existia histórico gravado nem cálculo automático de tendência. Pra piorar, o processo que precisava do alerta nem tinha permissão pra investigar ou limpar o recurso real, que era compartilhado com outros serviços fora do escopo dele — só podia observar e avisar.',
+    lesson:
+      'Duas coisas resolvem isso, e são independentes uma da outra. Primeiro: grave o valor medido como série temporal (linha nova a cada checagem), não como "estado atual" que sobrescreve o anterior — só assim dá pra calcular a taxa de crescimento automaticamente, em vez de depender de alguém lembrar o número da vez passada. Segundo: quando o recurso que preocupa está fora do seu acesso ou permissão, meça uma proxy que você controla e que tende a crescer junto (ex.: o tamanho do seu próprio banco, da sua própria pasta de log) — não é o dado exato, mas dá alerta antecipado sem exigir um acesso que você não tem.',
+    downloads: [
+      { file: 'resource-trend-snapshot.sh', label: 'Template: snapshot + tendência + alerta de recurso' },
+    ],
+  },
+  {
     slug: 'dockerfile-copy-nao-acompanha-modulo-novo',
     title: 'Dockerfile com COPY explícito não acompanha um módulo novo sozinho',
     tag: 'deploy',

@@ -1,1 +1,0 @@
-{ "shipped": true, "summary": "Adicionada lição nova ao laboratório sobre Dockerfile com COPY explícito não acompanhar módulo novo (baseada em bug real corrigido hoje na API do blog), com checklist de download.", "needs_input": false }
