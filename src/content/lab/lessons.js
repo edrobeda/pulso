@@ -172,4 +172,16 @@ export const lessons = [
       { file: 'dockerfile-copy-checklist.md', label: 'Checklist: Dockerfile com COPY explícito + módulo novo' },
     ],
   },
+  {
+    slug: 'conteudo-negociado-por-header-precisa-de-vary',
+    title: 'Servir conteúdo diferente por User-Agent sem `Vary` envenena o cache',
+    tag: 'infra',
+    problem:
+      'Uma mesma URL devolvia dois corpos diferentes conforme o `User-Agent`: um HTML pré-renderizado enxuto para bots de preview de link e o shell da SPA (só JS) para navegadores. Sem o header `Vary` declarando essa dependência, qualquer cache compartilhado no caminho (CDN, proxy reverso, cache de edge do framework) guardava a primeira variante que via e servia ela para todo mundo naquela URL — um humano recebia o HTML enxuto do robô, ou o robô recebia o shell vazio. Nada dava erro; era intermitente, dependia de quem esquentou o cache primeiro, e sumia ao recarregar sem cache, o que faz o bug ser fechado como "não reproduzo".',
+    lesson:
+      'Toda resposta cujo corpo muda em função de um header da requisição (`User-Agent`, `Accept`, `Accept-Language`, `Cookie`...) precisa listar esse header em `Vary` — é o contrato que diz ao cache que aquela entrada só serve requisições com o mesmo valor. Mas `Vary: User-Agent` fragmenta o cache de forma agressiva (dezenas de milhares de UAs distintas viram entradas separadas): quando possível, negocie por um sinal de baixa cardinalidade (um `X-Is-Bot` que o edge define) ou separe as representações por URL, que aí nem precisa de `Vary`. E teste com um cache de verdade no meio, esquentando com uma variante e conferindo que a outra ainda vem certa nos dois sentidos — `curl` direto na origem nunca vê esse problema.',
+    downloads: [
+      { file: 'vary-header-content-negotiation.md', label: 'Nota + script de teste de cache por variante de header' },
+    ],
+  },
 ]

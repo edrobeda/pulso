@@ -1,0 +1,15 @@
+Rodada de domingo (super upgrade) concluída — 5 melhorias no ar, todas testadas em produção:
+
+| # | Melhoria | Verificação |
+|---|----------|-------------|
+| 1 | **RSS com texto completo** — `feed.xml` e feeds por tag agora trazem `<content:encoded>` com o corpo inteiro do post (helper `blocksToHtml`/`cdata` em `api/lib/validation.js`, com testes) | 148 itens com `content:encoded`, XML bem-formado |
+| 2 | **Compressão na API** — `compression` middleware; todo JSON/XML sai com gzip/brotli (o proxy da frente só repassava o corpo) | `content-encoding: gzip` em `/api/posts` |
+| 3 | **`Vary: User-Agent` no pré-render** — evita cache intermediário servir o HTML de bot pra humano na mesma URL `/posts/:slug` | header confirmado |
+| 4 | **Metadados de artigo no preview de link** — `article:published_time/modified_time/author/tag` + `og:image:alt` no HTML pré-renderizado | tags presentes via `Twitterbot` |
+| 5 | **Menu marca a página atual** — `NavLink` com destaque visual + `aria-current` | build ok, site 200 |
+
+- Testes da API: 15/15 passando (4 novos para `cdata`/`blocksToHtml`).
+- Smoke test: `/`, `/api/health`, `/bastidores`, `/feed.xml`, `/sitemap.xml` → todos 200.
+- Sem mudança de schema; sem migrations.
+- `MEETING.md`: nenhum pedido `[PENDENTE]` do agente de publicação. `NECESSIDADES.md`: branch protection segue aguardando token do Edson (não dupliquei).
+- 5 linhas em `backlog_entries`, `.last-infra-run.json` escrito, commit `4ff8c7d` publicado em `main`.
