@@ -138,6 +138,13 @@ a {
   color: var(--signal-teal);
 }
 
+/* NavLink marca a rota atual com .active (e aria-current="page") — dá ao
+   visitante e ao leitor de tela uma âncora de "onde estou". */
+.header__nav-link.active {
+  color: var(--mist-200);
+  border-bottom: 1px solid var(--signal-amber);
+}
+
 .header__next {
   font-family: var(--font-mono);
   font-size: 0.78rem;

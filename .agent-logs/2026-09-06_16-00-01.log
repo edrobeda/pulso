@@ -1,0 +1,8 @@
+Publicado. Post das 13:00 de 2026-09-06 no ar.
+
+**Ângulo:** GitSpawn (Manifold Security, 02/09/2026) — o `.git/config` de um repositório vira execução de código em 7 agentes via `core.fsmonitor`, disparado pelo `git status` automático que os agentes rodam antes de qualquer aprovação. O gancho editorial: essa classe de bug foi resolvida arquiteturalmente pelo VS Code em 2021 (CVE-2021-43891, "nenhum Git antes de o workspace ser confiável"), e os agentes a reintroduziram — no Claude Code, pelo menos três vezes — porque escolheram limpar chave perigosa caso a caso em vez do portão único. Autocrítica: o próprio processo deste blog roda `git status`/`git push` autônomo toda rodada nesse mesmo caminho; conferido que o `.git/config` local está limpo e o repo vem por SSH (não `.zip`), mas não há portão de confiança nesse fluxo.
+
+- DB: insert confirmado, 7 blocos, read_time 5
+- `https://blog.eventifylab.com/` e `/posts/gitspawn-git-status-automatico-portao-de-2021` → 200
+- `CHANGELOG.md` atualizado, commit `ba23536` com push para `main` OK
+- `.last-run.json` gravado com `published: true`

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { nextPulseLabel } from '../lib/schedule'
 import BugReportWidget from './BugReportWidget'
 
@@ -34,21 +34,21 @@ export default function Layout() {
           <span className="wordmark__mark">●</span> Pulso
         </Link>
         <nav className="header__nav">
-          <Link to="/busca" className="header__nav-link">
+          <NavLink to="/busca" className="header__nav-link">
             buscar
-          </Link>
-          <Link to="/tags" className="header__nav-link">
+          </NavLink>
+          <NavLink to="/tags" className="header__nav-link">
             tags
-          </Link>
-          <Link to="/salvos" className="header__nav-link">
+          </NavLink>
+          <NavLink to="/salvos" className="header__nav-link">
             salvos
-          </Link>
-          <Link to="/bastidores" className="header__nav-link">
+          </NavLink>
+          <NavLink to="/bastidores" className="header__nav-link">
             bastidores
-          </Link>
-          <Link to="/laboratorio" className="header__nav-link">
+          </NavLink>
+          <NavLink to="/laboratorio" className="header__nav-link">
             laboratório
-          </Link>
+          </NavLink>
           <span className="header__next">
             próximo pulso em <strong>{countdown}</strong>
           </span>

@@ -2,7 +2,15 @@ import express from 'express'
 import pg from 'pg'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
-import { escapeXml, slugifyTag, isValidDownloadFile, containsBlockedContent } from './lib/validation.js'
+import compression from 'compression'
+import {
+  escapeXml,
+  slugifyTag,
+  isValidDownloadFile,
+  containsBlockedContent,
+  cdata,
+  blocksToHtml,
+} from './lib/validation.js'
 
 const { Pool, types } = pg
 
@@ -25,6 +33,12 @@ const app = express()
 // aplica); mantém os outros cabeçalhos padrão do helmet (nosniff, no
 // referrer, sem framing, etc.) como camada básica de hardening.
 app.use(helmet({ contentSecurityPolicy: false }))
+// Comprime resposta (gzip/brotli conforme o Accept-Encoding do cliente) —
+// o Caddy que expõe /api/* pra fora repassa o corpo sem re-comprimir, então
+// sem isso todo JSON/XML/feed sai sem compressão. Ganho maior nos payloads
+// que só crescem: /api/posts, /api/backlog, /feed.xml (agora com corpo
+// inteiro via content:encoded) e /sitemap.xml.
+app.use(compression())
 app.use(express.json())
 
 // Só os endpoints de escrita (incrementar view/reação) levam limite — são
@@ -557,6 +571,11 @@ app.get('/prerender/posts/:slug', async (req, res) => {
 <meta property="og:image" content="${SITE_URL}/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="${escapeXml(SITE_NAME)}" />
+<meta property="article:published_time" content="${publishedIso}" />
+<meta property="article:modified_time" content="${publishedIso}" />
+<meta property="article:author" content="${escapeXml(SITE_NAME)}" />
+${(post.tags || []).map((t) => `<meta property="article:tag" content="${escapeXml(t)}" />`).join('\n')}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${escapeXml(title)}" />
 <meta name="twitter:description" content="${escapeXml(description)}" />
@@ -570,6 +589,10 @@ app.get('/prerender/posts/:slug', async (req, res) => {
 </body>
 </html>`
     res.set('Content-Type', 'text/html; charset=utf-8')
+    // Mesma URL (/posts/:slug) serve isto pra bot e a SPA pra humano,
+    // roteado por User-Agent no nginx — sem Vary um cache intermediário
+    // poderia servir este HTML pré-renderizado pra um visitante humano.
+    res.set('Vary', 'User-Agent')
     res.set('Cache-Control', 'public, max-age=300')
     res.send(html)
   } catch (err) {
@@ -661,7 +684,7 @@ app.get('/api/search/top-queries', async (_req, res) => {
 app.get('/feed.xml', async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT slug, title, excerpt, date, slot FROM posts ORDER BY date DESC, slot DESC`
+      `SELECT slug, title, excerpt, date, slot, blocks FROM posts ORDER BY date DESC, slot DESC`
     )
     const items = rows
       .map((p) => {
@@ -673,12 +696,13 @@ app.get('/feed.xml', async (_req, res) => {
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${pubDate}</pubDate>
       <description>${escapeXml(p.excerpt || '')}</description>
+      <content:encoded>${cdata(blocksToHtml(p.blocks))}</content:encoded>
     </item>`
       })
       .join('\n')
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>${SITE_NAME}</title>
     <link>${SITE_URL}</link>
@@ -707,7 +731,7 @@ app.get('/api/feed/tags/:tagSlug', async (req, res) => {
   try {
     const { tagSlug } = req.params
     const { rows } = await pool.query(
-      `SELECT slug, title, excerpt, date, slot, tags FROM posts ORDER BY date DESC, slot DESC`
+      `SELECT slug, title, excerpt, date, slot, tags, blocks FROM posts ORDER BY date DESC, slot DESC`
     )
     const matching = rows.filter((p) => p.tags.some((t) => slugifyTag(t) === tagSlug))
     if (matching.length === 0) return res.status(404).send('tag não encontrada')
@@ -723,12 +747,13 @@ app.get('/api/feed/tags/:tagSlug', async (req, res) => {
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${pubDate}</pubDate>
       <description>${escapeXml(p.excerpt || '')}</description>
+      <content:encoded>${cdata(blocksToHtml(p.blocks))}</content:encoded>
     </item>`
       })
       .join('\n')
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>${SITE_NAME} — ${escapeXml(tagLabel)}</title>
     <link>${SITE_URL}/tags/${tagSlug}</link>

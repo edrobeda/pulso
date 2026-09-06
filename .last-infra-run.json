@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "auto-monitoramento diário do tamanho do banco (nova tabela db_size_snapshots + endpoint /api/db-size + metric-card em /bastidores)", "needs_input": false }
+{ "shipped": true, "summary": "RSS com texto completo, compressão nas respostas da API, Vary: User-Agent no pré-render, metadados de artigo no preview de link, menu marcando a página atual", "needs_input": false }

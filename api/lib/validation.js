@@ -11,6 +11,37 @@ export function escapeXml(str) {
     .replace(/'/g, '&apos;')
 }
 
+// Envolve texto num bloco CDATA seguro pra XML/RSS — a única sequência que
+// não pode aparecer crua dentro de CDATA é `]]>`, que quebramos em dois
+// blocos. Usado pra `<content:encoded>` do feed, onde o corpo do post vira
+// HTML (não daria pra escapar como XML sem perder as tags).
+export function cdata(str) {
+  return `<![CDATA[${String(str == null ? '' : str).replace(/]]>/g, ']]]]><![CDATA[>')}]]>`
+}
+
+// Renderiza os blocos de um post (mesmo shape de posts.blocks: { type, text })
+// em HTML simples pra `<content:encoded>` do RSS, dando ao assinante de feed
+// o texto inteiro em vez de só o excerpt. O texto de cada bloco é escapado;
+// o conjunto de tags é fixo (h2/blockquote/pre/p), nunca vem do conteúdo.
+export function blocksToHtml(blocks) {
+  if (!Array.isArray(blocks)) return ''
+  return blocks
+    .map((block) => {
+      const text = escapeXml(block && block.text ? block.text : '')
+      switch (block && block.type) {
+        case 'h2':
+          return `<h2>${text}</h2>`
+        case 'quote':
+          return `<blockquote><p>${text}</p></blockquote>`
+        case 'code':
+          return `<pre><code>${text}</code></pre>`
+        default:
+          return `<p>${text}</p>`
+      }
+    })
+    .join('\n')
+}
+
 // Mesma lógica de src/lib/tags.js#slugifyTag — duplicada de propósito porque
 // a API não importa código do frontend (bundlers diferentes).
 export function slugifyTag(tag) {
