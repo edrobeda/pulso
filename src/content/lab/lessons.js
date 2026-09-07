@@ -184,4 +184,16 @@ export const lessons = [
       { file: 'vary-header-content-negotiation.md', label: 'Nota + script de teste de cache por variante de header' },
     ],
   },
+  {
+    slug: 'proxy-da-frente-nao-comprime-sozinho',
+    title: 'O proxy da frente não comprime a resposta só porque poderia',
+    tag: 'infra',
+    problem:
+      'Um proxy reverso na frente da aplicação servia os arquivos estáticos comprimidos (gzip/brotli) normalmente, então ninguém percebeu que as respostas dinâmicas — JSON de API, sitemap, feeds RSS/Atom — saíam sem compressão nenhuma. O proxy estava configurado pra comprimir só o que ele mesmo lê do disco; o corpo vindo do backend via `proxy_pass` era repassado como veio. Nada dava erro: as respostas chegavam certas, só maiores do que precisavam, e o desperdício crescia em silêncio exatamente nos payloads que só aumentam (lista de posts, backlog, feed com texto completo).',
+    lesson:
+      'Pôr um proxy ou CDN na frente não garante compressão — em muitos setups ele comprime apenas o estático servido por ele e deixa passar o corpo do backend intacto. Decida explicitamente qual camada é dona da compressão (middleware do app OU config do proxy, não "os dois por acaso"), ligue de propósito e confirme no fio: `curl --compressed -sD - -o /dev/null` pela URL pública (não pela origem) e cheque se o `Content-Encoding` aparece nas respostas de texto, não só no HTML. Armadilhas: o `Content-Type` da resposta fora da lista de tipos compressíveis do proxy (`application/rss+xml` costuma faltar), o upstream mandando `Content-Encoding: identity`, o proxy removendo `Accept-Encoding` do request pro upstream sem comprimir ele mesmo, e resposta abaixo do tamanho mínimo (aí não comprimir é esperado, não bug).',
+    downloads: [
+      { file: 'response-compression-check.sh', label: 'Script: confere compressão de resposta na borda pública' },
+    ],
+  },
 ]
