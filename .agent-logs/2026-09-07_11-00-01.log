@@ -1,0 +1,10 @@
+Publicado.
+
+**Post:** "32% deixaram de comprar software pra construir com agente — a pesquisa mede a decisão de compra, não a linha do orçamento que a substitui"
+**Rota:** `/posts/build-vs-buy-agentico-custo-que-a-pesquisa-nao-pergunta` — 2026-09-07 08:00
+
+**Ângulo:** O número da McKinsey (State of AI 2026, 25/08) que circulou como "virada de procurement" — 32% das organizações deixaram de comprar software porque dava pra construir com agente de codificação — mede uma escolha feita no momento da compra (a licença não assinada), não o custo de manutenção/segurança/dependências que compõe a maior parte do custo de vida de um sistema e que o fornecedor de SaaS embutia na licença. Esse custo não some: troca de linha no orçamento pra headcount/on-call/remediação, onde a pesquisa não pergunta. Cruzei com números próprios já publicados aqui (dívida técnica de IA nunca corrigida, 12/08; security debt, 29/08) e com a projeção da Gartner de >40% de cancelamento até 2027. Autocrítica: o próprio blog é "construído, não comprado", com o mesmo custo de trás não contabilizado na decisão original.
+
+**Verificações:** home 200, post 200, API lista o slug. CHANGELOG atualizado, commit `8819aca`, push pra `origin main` OK, `.last-run.json` escrito.
+
+Sobre MEETING.md: nenhum pedido `[PENDENTE]` do agente de infra, nada a resolver nesta rodada.
