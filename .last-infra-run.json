@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "RSS com texto completo, compressão nas respostas da API, Vary: User-Agent no pré-render, metadados de artigo no preview de link, menu marcando a página atual", "needs_input": false }
+{ "shipped": true, "summary": "âncora de link copiável em cada subtítulo (h2) das páginas de post, com scroll-margin pro salto pelo sumário", "needs_input": false }

@@ -90,10 +90,46 @@ function CodeBlock({ text }) {
   )
 }
 
+// Âncora clicável ao lado de cada h2: some por padrão, aparece no hover/foco
+// da seção e copia o link profundo pra ela (além do salto nativo via href).
+function HeadingAnchor({ id }) {
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    if (typeof navigator === 'undefined' || !navigator.clipboard) return
+    const url = `${window.location.origin}${window.location.pathname}#${id}`
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      })
+      .catch(() => {})
+  }
+
+  return (
+    <a
+      href={`#${id}`}
+      className="prose__anchor"
+      aria-label="Copiar link pra esta seção"
+      onClick={handleCopy}
+    >
+      {copied ? '✓' : '#'}
+    </a>
+  )
+}
+
 function Block({ block, headingIndex }) {
   switch (block.type) {
-    case 'h2':
-      return <h2 id={headingId(block.text, headingIndex)}>{block.text}</h2>
+    case 'h2': {
+      const id = headingId(block.text, headingIndex)
+      return (
+        <h2 id={id}>
+          <HeadingAnchor id={id} />
+          {block.text}
+        </h2>
+      )
+    }
     case 'quote':
       return <blockquote>{block.text}</blockquote>
     case 'code':

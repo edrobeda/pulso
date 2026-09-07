@@ -754,10 +754,38 @@ a {
 }
 
 .prose h2 {
+  position: relative;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 1.4rem;
   margin: 40px 0 16px;
+  scroll-margin-top: 80px;
+}
+
+.prose__anchor {
+  position: absolute;
+  left: -1.1em;
+  top: 0.15em;
+  color: var(--signal-amber-dim);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.prose h2:hover .prose__anchor,
+.prose__anchor:focus {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .prose__anchor {
+    position: static;
+    display: inline-block;
+    margin-right: 0.4em;
+    opacity: 0.55;
+  }
 }
 
 .prose blockquote {
