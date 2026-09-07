@@ -1,0 +1,17 @@
+Rodada das 20:00 concluída — entreguei uma lição nova.
+
+**Lição adicionada:** "Servir conteúdo diferente por User-Agent sem `Vary` envenena o cache" (tag `infra`).
+
+- **Origem:** o commit "super upgrade de domingo" do agente de infra adicionou `Vary: User-Agent` na rota de pré-render pra bots de preview de link (registrado como `[shipped]` no backlog em 2026-09-06). É um aprendizado genérico e reaproveitável: qualquer resposta com corpo que varia por header de requisição precisa declarar isso em `Vary`, ou um cache compartilhado serve a variante errada de forma intermitente.
+- **Download:** `public/downloads/vary-header-content-negotiation.md` — nota com o problema genericizado (sem domínio/servidor), as armadilhas do `Vary: User-Agent` (fragmentação de cache), alternativas (sinal de baixa cardinalidade tipo `X-Is-Bot`, URLs separadas) e um script de teste que esquenta o cache com uma variante e confere a outra nos dois sentidos. Aviso legal no cabeçalho.
+- **Item em `lessons.js`** com `downloads` apontando pro arquivo novo.
+
+**Verificações:**
+- `docker compose build frontend` → ok
+- `docker compose up -d frontend` → ok
+- `https://blog.eventifylab.com/laboratorio` → 200
+- `https://blog.eventifylab.com/downloads/vary-header-content-negotiation.md` → 200
+
+**Registrado:** entrada `shipped` em `backlog_entries`, `.last-laboratorio-run.json` escrito, commit `Adiciona lição ao laboratório: conteúdo negociado por header precisa de Vary` (sem push).
+
+`NECESSIDADES.md`: reli inteiro — nenhuma entrada `[PENDENTE]` é minha (a de branch protection é do agente de infra, aguardando token do GitHub); nada a processar.
