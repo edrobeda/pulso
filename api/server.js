@@ -533,7 +533,7 @@ const SITE_DESCRIPTION =
 app.get('/prerender/posts/:slug', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT slug, title, excerpt, date, slot, tags FROM posts WHERE slug = $1',
+      'SELECT slug, title, excerpt, date, slot, tags, blocks FROM posts WHERE slug = $1',
       [req.params.slug]
     )
     if (rows.length === 0) return res.status(404).send('not found')
@@ -543,6 +543,27 @@ app.get('/prerender/posts/:slug', async (req, res) => {
     const title = `${post.title} — ${SITE_NAME}`
     const description = post.excerpt || SITE_DESCRIPTION
     const publishedIso = `${post.date}T${post.slot}:00-03:00`
+
+    // Corpo real do post pro bot que lê HTML cru (mesma conversão do
+    // feed.xml). Sem isto o preview/índice só via o excerpt.
+    const blocks = Array.isArray(post.blocks) ? post.blocks : []
+    const bodyHtml = blocksToHtml(blocks)
+    const articleText = blocks
+      .map((b) => (b && b.text ? String(b.text) : ''))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    const wordCount = articleText ? articleText.split(' ').length : 0
+
+    const publisher = {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/favicon.svg`,
+      },
+    }
     const jsonLd = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -550,10 +571,28 @@ app.get('/prerender/posts/:slug', async (req, res) => {
       datePublished: publishedIso,
       dateModified: publishedIso,
       url,
+      mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+      inLanguage: 'pt-BR',
       description: post.excerpt,
       keywords: post.tags?.join(', '),
-      author: { '@type': 'Organization', name: SITE_NAME },
-      publisher: { '@type': 'Organization', name: SITE_NAME },
+      ...(wordCount ? { wordCount } : {}),
+      image: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+      },
+      author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      publisher,
+    }).replace(/</g, '\\u003c')
+
+    const breadcrumbLd = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: SITE_NAME, item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: post.title, item: url },
+      ],
     }).replace(/</g, '\\u003c')
 
     const html = `<!doctype html>
@@ -581,11 +620,15 @@ ${(post.tags || []).map((t) => `<meta property="article:tag" content="${escapeXm
 <meta name="twitter:description" content="${escapeXml(description)}" />
 <meta name="twitter:image" content="${SITE_URL}/og-image.png" />
 <script type="application/ld+json">${jsonLd}</script>
+<script type="application/ld+json">${breadcrumbLd}</script>
 </head>
 <body>
+<article>
 <h1>${escapeXml(post.title)}</h1>
 <p>${escapeXml(description)}</p>
-<a href="${url}">${url}</a>
+${bodyHtml}
+</article>
+<p><a href="${url}">${url}</a></p>
 </body>
 </html>`
     res.set('Content-Type', 'text/html; charset=utf-8')

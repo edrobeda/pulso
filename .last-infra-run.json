@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "âncora de link copiável em cada subtítulo (h2) das páginas de post, com scroll-margin pro salto pelo sumário", "needs_input": false }
+{ "shipped": true, "summary": "Pré-render de post pros bots agora inclui corpo inteiro do post, JSON-LD BlogPosting enriquecido (image, wordCount, publisher/logo) e bloco BreadcrumbList", "needs_input": false }
