@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição 'proxy da frente não comprime resposta dinâmica sozinho' + script response-compression-check.sh, inspirada na correção de compressão da API de 2026-09-06.", "needs_input": false }
+{ "shipped": true, "summary": "Nova lição 'proxy-guarda-ip-antigo-do-container' + script de verificação pós-deploy com janela de graça", "needs_input": false }

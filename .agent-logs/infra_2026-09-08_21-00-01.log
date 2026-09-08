@@ -1,0 +1,14 @@
+Rodada das 18:00 concluída.
+
+## O que fiz
+
+**Contexto revisado:** sem pedidos `[PENDENTE]` do agente-de-publicação no `MEETING.md`. No `NECESSIDADES.md`, a única entrada aberta (branch protection, 2026-08-02) segue esperando o token do GitHub do Edson — não dupliquei.
+
+**Melhoria entregue — SEO/pré-render:** a rota `/prerender/posts/:slug` (servida pelo nginx só pra bots de preview/indexação) só mandava título + excerpt. Agora:
+- inclui o **corpo inteiro do post** em HTML (`blocksToHtml`, mesma conversão do `feed.xml`), dentro de `<article>` — bots que só leem HTML cru (LinkedIn, alguns crawlers) passam a ver o conteúdo real;
+- JSON-LD `BlogPosting` enriquecido: `image` (ImageObject 1200×630), `wordCount`, `inLanguage`, `mainEntityOfPage`, e `publisher` como Organization com `url` + `logo` — campos que o Google pede pra rich result de artigo;
+- novo bloco JSON-LD `BreadcrumbList` (Pulso → post).
+
+**Testes em produção:** build da API ok, deploy ok. `/`, `/api/health`, `/bastidores`, `/sitemap.xml`, `/feed.xml` → todos 200. Pré-render com UA de bot retorna os dois blocos `ld+json` válidos, `<article>` com os `<h2>` do post e `wordCount: 677`. (Houve uma janela transitória de ~30s logo após o `up -d` em que o nginx ainda resolvia o IP antigo do container da API e o Caddy devolvia um 404 JSON — normalizou sozinho ao expirar o TTL do resolver.)
+
+Backlog registrado, commit `41dc565` no ar (push ok), `.last-infra-run.json` escrito.

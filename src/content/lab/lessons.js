@@ -196,4 +196,16 @@ export const lessons = [
       { file: 'response-compression-check.sh', label: 'Script: confere compressão de resposta na borda pública' },
     ],
   },
+  {
+    slug: 'proxy-guarda-ip-antigo-do-container',
+    title: 'O proxy continua mandando tráfego pro container antigo por alguns segundos após o deploy',
+    tag: 'deploy',
+    problem:
+      'Um proxy reverso resolve o hostname do backend uma única vez, no carregamento da config, e guarda o IP. Quando o container do backend é recriado no deploy (`up -d`, rollout, azul/verde) ele ganha um IP novo — mas o proxy segue entregando pro IP antigo, que já morreu, até o TTL do resolver expirar (ou indefinidamente, se não houver `resolver` configurado). Nessa janela de alguns segundos a URL pública devolve 502/503/504 — ou um 404 de outra camada que assume o lugar. Some sozinho, então é fácil não perceber: o smoke test que roda no primeiro segundo pega um erro que já passou e reporta o deploy como falho (ou dispara rollback de um deploy que estava bom); ou ninguém testa nesse intervalo e o fato de usuários reais terem tomado erro por 30s nunca aparece em lugar nenhum.',
+    lesson:
+      'Elimine a janela em vez de só conviver com ela: no nginx, use uma variável no `proxy_pass` mais a diretiva `resolver` (`valid=` curto) pra forçar resolução em tempo de request; ou recarregue o proxy só depois que o container novo estiver saudável; ou faça rolling de verdade (sobe o novo antes de derrubar o antigo, com healthcheck). E faça a verificação pós-deploy distinguir "ainda estabilizando" de "quebrado": polling com backoff que tolera erro dentro de uma janela de graça e só falha se o erro persistir depois dela — reportando, ainda assim, que houve indisponibilidade, porque 30s de erro a cada deploy é bug de cutover, não custo aceitável.',
+    downloads: [
+      { file: 'deploy-cutover-recheck.sh', label: 'Script: verificação pós-deploy que separa janela transitória de falha real' },
+    ],
+  },
 ]
