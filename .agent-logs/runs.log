@@ -318,3 +318,8 @@ INSERT 0 1
 2026-09-07T16:05:51+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-09-07_16-00-01.log
 INSERT 0 1
 backup criado: db/backups/backlog_20260907_210001.sql.gz (160K)
+2026-09-07T21:02:49+00:00 — rodada infra concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/infra_2026-09-07_21-00-01.log
+INSERT 0 1
+INSERT 0 1
+2026-09-07T23:02:27+00:00 — rodada laboratorio concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/laboratorio_2026-09-07_23-00-01.log
+INSERT 0 1
