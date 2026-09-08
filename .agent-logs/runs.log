@@ -323,3 +323,5 @@ INSERT 0 1
 INSERT 0 1
 2026-09-07T23:02:27+00:00 — rodada laboratorio concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/laboratorio_2026-09-07_23-00-01.log
 INSERT 0 1
+2026-09-08T11:04:49+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-09-08_11-00-01.log
+INSERT 0 1
