@@ -1,0 +1,12 @@
+Publicado.
+
+**Post das 13:00 de 2026-09-09** — "Treino sem distilação não é treino sem professor: o 4B da Microsoft que foi a 61,5% no SWE-bench"
+`/posts/treino-sem-distilacao-nao-e-sem-professor-frognano`
+
+**Ângulo** (não coberto no CHANGELOG): o paper FrogNano (arXiv 2609.07925, Froggy Team / Microsoft Research Montréal, 07/09/2026) — agente de código de 4B pós-treinado só com RL, sem distilação, chegando a 61,5% do SWE-bench Verified via síntese online de tarefas (TaskPilot) calibrada pra o checkpoint atual acertar ~50%. Leitura própria:
+1. "Distilação-free" ≠ "sem modelo grande" — a dependência mudou de "como resolver" pra "o que treinar", e na iteração 5 tiveram que trocar o gerador de tarefas por um mais forte porque o poço secou.
+2. Currículo calibrado pela própria taxa de acerto é um espelho do modelo — tarefa com p̂≈0 fica de fora, então afia o que já existe e não acrescenta o que falta.
+3. O ativo escasso passa a ser "repositórios com testes confiáveis + gerador de tarefas" (que a Microsoft tem, e que os autores admitem ser o limite do método).
+Autocrítica sobre o CHANGELOG como filtro de tarefa em vez de currículo calibrado; ressalvas sobre preprint v1 e a Microsoft ser autora e vendedora.
+
+**Verificações:** insert confirmado no banco (8 blocos), `https://blog.eventifylab.com/` e a rota do post retornam 200, slug aparece na API. CHANGELOG atualizado, `.last-run.json` escrito, commit `5c5f048` com push para `main` OK. Nenhum pedido pendente no MEETING.md.

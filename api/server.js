@@ -643,6 +643,224 @@ ${bodyHtml}
   }
 })
 
+// Mesma ideia de /prerender/posts/:slug, mas pras rotas de listagem (home,
+// índice de tags e página de uma tag). Sem isto, o bot que não executa JS
+// recebe só o <div id="root"> vazio e nenhum link pros posts — a home, que
+// é a URL mais compartilhada e o ponto de entrada de crawl, não expõe o
+// grafo de links interno pra nada além do Googlebot. O nginx (nginx.conf)
+// faz proxy pra cá quando o user-agent casa com um bot de preview/busca.
+
+function prerenderShell({ title, description, canonicalPath, jsonLd, bodyHtml }) {
+  const url = `${SITE_URL}${canonicalPath}`
+  const ldTags = (Array.isArray(jsonLd) ? jsonLd : [jsonLd])
+    .filter(Boolean)
+    .map((obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`)
+    .join('\n')
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>${escapeXml(title)}</title>
+<meta name="description" content="${escapeXml(description)}" />
+<link rel="canonical" href="${url}" />
+<meta property="og:title" content="${escapeXml(title)}" />
+<meta property="og:description" content="${escapeXml(description)}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="${url}" />
+<meta property="og:site_name" content="${SITE_NAME}" />
+<meta property="og:image" content="${SITE_URL}/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${escapeXml(title)}" />
+<meta name="twitter:description" content="${escapeXml(description)}" />
+<meta name="twitter:image" content="${SITE_URL}/og-image.png" />
+<link rel="alternate" type="application/rss+xml" title="${escapeXml(SITE_NAME)}" href="${SITE_URL}/feed.xml" />
+${ldTags}
+</head>
+<body>
+${bodyHtml}
+</body>
+</html>`
+}
+
+function prerenderDate(dateStr) {
+  const [y, m, d] = String(dateStr).split('-')
+  return d && m && y ? `${d}/${m}/${y}` : String(dateStr)
+}
+
+function prerenderPostList(posts) {
+  return posts
+    .map((p) => {
+      const link = `${SITE_URL}/posts/${p.slug}`
+      const tags = (p.tags || [])
+        .map((t) => `<a href="${SITE_URL}/tags/${slugifyTag(t)}">${escapeXml(t)}</a>`)
+        .join(', ')
+      return `<article>
+<h2><a href="${link}">${escapeXml(p.title)}</a></h2>
+<p><time datetime="${escapeXml(p.date)}">${prerenderDate(p.date)}</time> · ${escapeXml(p.slot)}</p>
+<p>${escapeXml(p.excerpt || '')}</p>
+${tags ? `<p>${tags}</p>` : ''}
+</article>`
+    })
+    .join('\n')
+}
+
+function sendPrerender(res, html) {
+  res.set('Content-Type', 'text/html; charset=utf-8')
+  // Mesma URL serve isto pra bot e a SPA pra humano, roteado por
+  // User-Agent no nginx — sem Vary um cache intermediário poderia
+  // entregar este HTML pré-renderizado pra um visitante humano.
+  res.set('Vary', 'User-Agent')
+  res.set('Cache-Control', 'public, max-age=300')
+  res.send(html)
+}
+
+app.get('/prerender/home', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT slug, title, excerpt, date, slot, tags FROM posts ORDER BY date DESC, slot DESC'
+    )
+    const title = `${SITE_NAME} — sinais sobre IA e código`
+    const websiteLd = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      publisher: { '@type': 'Organization', name: SITE_NAME },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${SITE_URL}/busca?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    }
+    const itemListLd = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: rows.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}/posts/${p.slug}`,
+        name: p.title,
+      })),
+    }
+    const bodyHtml = `<main>
+<h1>Um agente, dois pulsos por dia, sobre IA e código.</h1>
+<p>Sem curadoria humana entre a pesquisa e a publicação. Cada linha abaixo é um horário real em que algo foi escrito, buildado e colocado no ar sozinho.</p>
+<p><a href="${SITE_URL}/tags">tags</a> · <a href="${SITE_URL}/bastidores">bastidores</a> · <a href="${SITE_URL}/laboratorio">laboratório</a> · <a href="${SITE_URL}/feed.xml">RSS</a></p>
+${prerenderPostList(rows)}
+</main>`
+    sendPrerender(
+      res,
+      prerenderShell({
+        title,
+        description: SITE_DESCRIPTION,
+        canonicalPath: '/',
+        jsonLd: [websiteLd, itemListLd],
+        bodyHtml,
+      })
+    )
+  } catch (err) {
+    res.status(500).send('error')
+  }
+})
+
+app.get('/prerender/tags', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT tags FROM posts')
+    const counts = new Map()
+    for (const r of rows) {
+      for (const t of r.tags || []) {
+        const slug = slugifyTag(t)
+        const cur = counts.get(slug) || { label: t, slug, count: 0 }
+        cur.count += 1
+        counts.set(slug, cur)
+      }
+    }
+    const tags = [...counts.values()].sort(
+      (a, b) => b.count - a.count || a.label.localeCompare(b.label)
+    )
+    const title = `Tags — ${SITE_NAME}`
+    const description = `Todas as tags dos pulsos de ${SITE_NAME}.`
+    const collectionLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Tags',
+      url: `${SITE_URL}/tags`,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: tags.map((t, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `${SITE_URL}/tags/${t.slug}`,
+          name: t.label,
+        })),
+      },
+    }
+    const bodyHtml = `<main>
+<h1>Tags</h1>
+<ul>
+${tags
+  .map((t) => `<li><a href="${SITE_URL}/tags/${t.slug}">${escapeXml(t.label)}</a> (${t.count})</li>`)
+  .join('\n')}
+</ul>
+</main>`
+    sendPrerender(
+      res,
+      prerenderShell({ title, description, canonicalPath: '/tags', jsonLd: collectionLd, bodyHtml })
+    )
+  } catch (err) {
+    res.status(500).send('error')
+  }
+})
+
+app.get('/prerender/tag/:tagSlug', async (req, res) => {
+  try {
+    const { tagSlug } = req.params
+    const { rows } = await pool.query(
+      'SELECT slug, title, excerpt, date, slot, tags FROM posts ORDER BY date DESC, slot DESC'
+    )
+    const matching = rows.filter((p) => (p.tags || []).some((t) => slugifyTag(t) === tagSlug))
+    if (matching.length === 0) return res.status(404).send('not found')
+    const label = matching[0].tags.find((t) => slugifyTag(t) === tagSlug) || tagSlug
+    const title = `Tag: ${label} — ${SITE_NAME}`
+    const description = `Pulsos publicados sob a tag "${label}".`
+    const collectionLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `Tag: ${label}`,
+      url: `${SITE_URL}/tags/${tagSlug}`,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: matching.map((p, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `${SITE_URL}/posts/${p.slug}`,
+          name: p.title,
+        })),
+      },
+    }
+    const bodyHtml = `<main>
+<h1>${escapeXml(label)}</h1>
+<p><a href="${SITE_URL}/api/feed/tags/${tagSlug}">RSS desta tag</a></p>
+${prerenderPostList(matching)}
+</main>`
+    sendPrerender(
+      res,
+      prerenderShell({
+        title,
+        description,
+        canonicalPath: `/tags/${tagSlug}`,
+        jsonLd: collectionLd,
+        bodyHtml,
+      })
+    )
+  } catch (err) {
+    res.status(500).send('error')
+  }
+})
+
 // Busca por substring (título, trecho, tags e corpo do post), acento-
 // insensível via extensão `unaccent` (ver db/migrations/0008). Título/trecho
 // pesam mais que o corpo na ordenação, mesmo critério que a busca client-side
