@@ -197,6 +197,18 @@ export const lessons = [
     ],
   },
   {
+    slug: 'nome-generico-em-rede-docker-compartilhada',
+    title: 'Numa rede Docker compartilhada, "api" pode resolver pro container de outro projeto',
+    tag: 'infra',
+    problem:
+      'Vários projetos docker compose no mesmo host, todos ligados a uma rede Docker externa compartilhada pra um proxy reverso único alcançar todos. Cada projeto chamava seu backend de `api`. O DNS embutido do Docker resolve um nome de serviço para todos os containers que têm aquele alias de rede — então `api` passou a ter dois endereços, e cada `proxy_pass http://api:...` sorteava um deles a cada resolução. Metade das requisições caía no backend de outro projeto e voltava 404 (ou 200 com o corpo errado). Intermitente, sem erro em lugar nenhum: o backend certo nem via a request, o errado logava um 404 anônimo, e recarregar "resolvia" — então fechava como "não reproduzo".',
+    lesson:
+      'Nome de serviço no compose é um identificador local ao projeto; no momento em que duas stacks dividem uma rede, esse namespace virou global e qualquer nome genérico (`api`, `db`, `cache`, `web`) é uma aposta. Referencie pelo nome único do container (`container_name`, único no daemon inteiro) ou por um alias de rede explícito e específico do projeto — nunca pelo alias curto compartilhado. Melhor ainda: não compartilhe a rede à toa (cada stack na sua rede interna, só o proxy em todas). Confirme o caso com `getent hosts api` de dentro de um container: duas linhas = você está sorteando backend.',
+    downloads: [
+      { file: 'docker-shared-network-nome-generico.md', label: 'Nota + comandos de diagnóstico de nome ambíguo em rede Docker' },
+    ],
+  },
+  {
     slug: 'proxy-guarda-ip-antigo-do-container',
     title: 'O proxy continua mandando tráfego pro container antigo por alguns segundos após o deploy',
     tag: 'deploy',
