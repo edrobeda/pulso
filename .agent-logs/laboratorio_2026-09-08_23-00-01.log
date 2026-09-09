@@ -1,0 +1,13 @@
+Rodada das 20:00 concluída — entrega feita.
+
+## O que foi feito
+
+**Fonte da lição:** o log da rodada de infra das 18:00 (2026-09-08) registrou um sintoma real: *"janela transitória de ~30s logo após o `up -d` em que o nginx ainda resolvia o IP antigo do container da API e o Caddy devolvia um 404 JSON — normalizou sozinho ao expirar o TTL do resolver."* Genérico, reaproveitável, sem vazar nada do ambiente.
+
+**Nova lição** (`slug: proxy-guarda-ip-antigo-do-container`, tag `deploy`) em `src/content/lab/lessons.js`: proxy reverso que resolve o hostname do backend uma vez e segue mandando tráfego pro container morto por alguns segundos após a recriação no deploy — gera 502/404 transitório que engana o smoke test (falso negativo, ou rollback de um deploy bom) ou passa despercebido enquanto usuários reais tomam erro.
+
+**Download novo:** `public/downloads/deploy-cutover-recheck.sh` (com aviso legal no cabeçalho) — traz a correção de raiz (resolver dinâmico no nginx com variável no `proxy_pass`, reload pós-health, rolling) e um script de verificação pós-deploy com janela de graça + backoff que separa "ainda estabilizando" de "quebrado de verdade", ainda reportando quando houve indisponibilidade.
+
+**Testes:** `docker compose build frontend` ok, `up -d` ok. `/laboratorio` → 200, `/downloads/deploy-cutover-recheck.sh` → 200.
+
+**Registro:** `backlog_entries` com `status='shipped'`, `.last-laboratorio-run.json` escrito, commit `b5ef523` (sem push).
