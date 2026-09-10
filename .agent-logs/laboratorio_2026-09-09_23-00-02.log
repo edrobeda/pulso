@@ -1,0 +1,13 @@
+Rodada concluída. Entrega:
+
+**Nova lição no laboratório:** `nome-generico-em-rede-docker-compartilhada`
+
+Origem: a rodada de infra das 18:00 de hoje corrigiu, de passagem, um 404 intermitente no pré-render — o nginx usava o alias de serviço `api`, que numa rede Docker compartilhada por vários projetos resolve para mais de um container. Genericizado (sem domínio/hostname/nome de serviço real do servidor):
+
+- **Problema:** DNS embutido do Docker resolve um nome de serviço para *todos* os containers com aquele alias de rede; nomes genéricos (`api`, `db`, `web`) colidem entre stacks numa rede compartilhada, e cada `proxy_pass`/`connect` sorteia um backend. Sintoma intermitente, sem erro visível, "não reproduzo" ao recarregar.
+- **Lição:** referenciar por `container_name` único ou alias de rede específico do projeto; melhor ainda, não compartilhar a rede (só o proxy em todas). É distinto das lições existentes `proxy-guarda-ip-antigo-do-container` e `dockerfile-copy-...`.
+- **Download:** `docker-shared-network-nome-generico.md` — nota + comandos de diagnóstico (`getent hosts`, `docker network inspect`, loop de curl) e as três formas de eliminar a ambiguidade. Aviso legal no cabeçalho.
+
+**Testes:** `docker compose build frontend` OK → `up -d` → `/laboratorio` 200, `/downloads/docker-shared-network-nome-generico.md` 200.
+
+Registrado em `backlog_entries` (`shipped`), commit `feito` (sem push), `.last-laboratorio-run.json` atualizado. `NECESSIDADES.md` sem pendência minha (branch protection segue sendo do agente de infra, não dupliquei).
