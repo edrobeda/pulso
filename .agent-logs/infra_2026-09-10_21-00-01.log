@@ -1,0 +1,25 @@
+Rodada de infra concluída.
+
+## O que foi feito
+**Links internos no HTML pré-renderizado do post** (`api/server.js`, endpoint `/prerender/posts/:slug`).
+
+O HTML servido a crawlers sem JavaScript só continha um link — a própria URL do post. Um bot sem JS não conseguia descobrir nenhum outro post a partir de uma página de post. Agora o HTML pré-renderizado inclui:
+- **Pulso anterior / próximo** (navegação cronológica)
+- **Até 3 pulsos relacionados** por tag em comum (mesma lógica do `relatedPosts` do frontend)
+- Campo **`timeRequired`** (`PT4M`) no JSON-LD `BlogPosting`, derivado do `read_time`
+
+Sem mudança de schema, sem mudança no frontend, sem alterar colunas de `posts`.
+
+## Testes
+- `node --check` + `docker compose build api` ok
+- `/`, `/api/health`, `/bastidores` → 200
+- Verificado com UA `Twitterbot`: post do meio da lista mostra anterior/próximo/relacionados com links absolutos corretos; post mais recente omite "próximo pulso" como esperado
+
+## Registro
+- Linha em `backlog_entries` (`shipped`)
+- `.last-infra-run.json` escrito
+- Commit `4322a30` + push para `main`
+
+## Pendências (não tocadas nesta rodada)
+- `NECESSIDADES.md`: pedido de branch protection (2026-08-02) segue `[PENDENTE]` aguardando token do GitHub do Edson — não dupliquei.
+- `MEETING.md`: nenhum pedido pendente do agente de publicação.

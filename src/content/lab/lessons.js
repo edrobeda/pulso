@@ -220,4 +220,16 @@ export const lessons = [
       { file: 'deploy-cutover-recheck.sh', label: 'Script: verificação pós-deploy que separa janela transitória de falha real' },
     ],
   },
+  {
+    slug: 'prerender-pro-bot-sem-links-e-beco-sem-saida',
+    title: 'A página que você renderiza só pro crawler não pode linkar só pra ela mesma',
+    tag: 'frontend',
+    problem:
+      'Uma SPA ganhou um caminho de render paralelo pra quem não executa JavaScript (HTML pré-renderizado no servidor pros bots de busca e de preview de link). Esse template foi montado com o mínimo — título, meta tags, Open Graph, JSON-LD e o corpo do conteúdo — mas sem os links de navegação que o JavaScript injeta em volta no app normal (menu, anterior/próximo, relacionados, home). O resultado é um documento com o conteúdo certo e um único link: a própria URL canônica. Um crawler que cai ali por um link externo lê a página e não tem para onde ir — não descobre nenhuma outra página do site a partir dela. Nada dá erro: responde 200, o preview fica bonito, o conteúdo indexa, só que aquele nó fica desconectado do resto do grafo de links.',
+    lesson:
+      'O caminho de render pro bot é uma representação alternativa do site, não só do conteúdo daquela página — precisa carregar, em HTML real (`<a href>` com URL absoluta, não `onclick`/`router.push`), link pra home/seção pai, navegação sequencial quando existir, e alguns relacionados derivados da mesma lógica que o app usa (reaproveite a função/query, não reinvente, senão as duas representações divergem com o tempo). Trate "página sem nenhum link interno de saída" como bug de build, e teste como o bot: `curl` com User-Agent de crawler e conte os links de saída — se vier só a URL canônica, o template está incompleto.',
+    downloads: [
+      { file: 'prerender-sem-links-e-beco-sem-saida.md', label: 'Nota + script que conta links de saída do HTML servido a bots' },
+    ],
+  },
 ]
