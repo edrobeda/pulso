@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Pré-render de HTML (meta, OG, JSON-LD, lista de posts) pra home e páginas de tag pra bots sem JS, e correção de um 404 intermitente no pré-render de post", "needs_input": false }
+{ "shipped": true, "summary": "Links internos (anterior/próximo/relacionados) e timeRequired no HTML pré-renderizado do post para bots sem JS", "needs_input": false }

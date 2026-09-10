@@ -533,13 +533,43 @@ const SITE_DESCRIPTION =
 app.get('/prerender/posts/:slug', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT slug, title, excerpt, date, slot, tags, blocks FROM posts WHERE slug = $1',
+      'SELECT slug, title, excerpt, date, slot, tags, blocks, read_time FROM posts WHERE slug = $1',
       [req.params.slug]
     )
     if (rows.length === 0) return res.status(404).send('not found')
 
     const post = rows[0]
     const url = `${SITE_URL}/posts/${post.slug}`
+
+    // Links internos pro bot que não roda JS: sem isto a página de um post
+    // só linka pra ela mesma, e um crawler sem JS não descobre outro post a
+    // partir daqui. Traz pulso anterior/próximo (cronológico) + até 3
+    // relacionados por tag em comum (mesma lógica de relatedPosts no
+    // front). Payload leve, sem `blocks`.
+    const { rows: navRows } = await pool.query(
+      'SELECT slug, title, date, slot, tags FROM posts ORDER BY date DESC, slot DESC'
+    )
+    const curIdx = navRows.findIndex((p) => p.slug === post.slug)
+    const newerPost = curIdx > 0 ? navRows[curIdx - 1] : null
+    const olderPost = curIdx >= 0 && curIdx < navRows.length - 1 ? navRows[curIdx + 1] : null
+    const relatedPrerender = navRows
+      .filter((p) => p.slug !== post.slug)
+      .map((p) => ({ p, shared: (p.tags || []).filter((t) => (post.tags || []).includes(t)).length }))
+      .filter((e) => e.shared > 0)
+      .sort((a, b) => b.shared - a.shared || (a.p.date < b.p.date ? 1 : -1))
+      .slice(0, 3)
+      .map((e) => e.p)
+    const internalLink = (p) =>
+      `<a href="${SITE_URL}/posts/${p.slug}">${escapeXml(p.title)}</a>`
+    const navHtml = [
+      olderPost ? `<p>Pulso anterior: ${internalLink(olderPost)}</p>` : '',
+      newerPost ? `<p>Próximo pulso: ${internalLink(newerPost)}</p>` : '',
+      relatedPrerender.length
+        ? `<nav aria-label="Pulsos relacionados"><p>Pulsos relacionados:</p><ul>${relatedPrerender
+            .map((p) => `<li>${internalLink(p)}</li>`)
+            .join('')}</ul></nav>`
+        : '',
+    ].join('\n')
     const title = `${post.title} — ${SITE_NAME}`
     const description = post.excerpt || SITE_DESCRIPTION
     const publishedIso = `${post.date}T${post.slot}:00-03:00`
@@ -576,6 +606,7 @@ app.get('/prerender/posts/:slug', async (req, res) => {
       description: post.excerpt,
       keywords: post.tags?.join(', '),
       ...(wordCount ? { wordCount } : {}),
+      ...(post.read_time ? { timeRequired: `PT${post.read_time}M` } : {}),
       image: {
         '@type': 'ImageObject',
         url: `${SITE_URL}/og-image.png`,
@@ -628,6 +659,7 @@ ${(post.tags || []).map((t) => `<meta property="article:tag" content="${escapeXm
 <p>${escapeXml(description)}</p>
 ${bodyHtml}
 </article>
+${navHtml}
 <p><a href="${url}">${url}</a></p>
 </body>
 </html>`
