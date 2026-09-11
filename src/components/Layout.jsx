@@ -1,15 +1,38 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { nextPulseLabel } from '../lib/schedule'
 import BugReportWidget from './BugReportWidget'
 
 export default function Layout() {
   const [countdown, setCountdown] = useState(() => nextPulseLabel())
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const id = setInterval(() => setCountdown(nextPulseLabel()), 30_000)
     return () => clearInterval(id)
   }, [])
+
+  // Atalho global "/" pra busca (padrão de sites como GitHub/Slack) — sem
+  // caixa de busca no header, só um link, então sem isso alcançar a busca
+  // sempre exige clique + navegação. Ignora quando o foco já está em campo
+  // editável, pra não roubar "/" de quem está digitando em outro lugar.
+  useEffect(() => {
+    function handleKeydown(e) {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return
+      const target = e.target
+      const tag = target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return
+      e.preventDefault()
+      if (location.pathname === '/busca') {
+        document.querySelector('.search-form__input')?.focus()
+      } else {
+        navigate('/busca')
+      }
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [navigate, location.pathname])
 
   // Analytics próprio: conta no máximo uma visita por dispositivo por dia,
   // sem terceiro nenhum (ver /api/visits em api/server.js).
@@ -35,7 +58,7 @@ export default function Layout() {
         </Link>
         <nav className="header__nav">
           <NavLink to="/busca" className="header__nav-link">
-            buscar
+            buscar <kbd className="kbd-hint" aria-hidden="true">/</kbd>
           </NavLink>
           <NavLink to="/tags" className="header__nav-link">
             tags

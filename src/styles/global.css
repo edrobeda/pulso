@@ -145,6 +145,24 @@ a {
   border-bottom: 1px solid var(--signal-amber);
 }
 
+.kbd-hint {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  padding: 2px 5px;
+  border: 1px solid var(--ink-600);
+  border-radius: 4px;
+  color: var(--mist-400);
+  vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+  .kbd-hint {
+    display: none;
+  }
+}
+
 .header__next {
   font-family: var(--font-mono);
   font-size: 0.78rem;

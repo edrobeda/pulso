@@ -355,3 +355,6 @@ INSERT 0 1
 INSERT 0 1
 2026-09-11T11:04:53+00:00 — rodada 08:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-09-11_11-00-01.log
 INSERT 0 1
+2026-09-11T16:05:27+00:00 — rodada 13:00 concluída (exit 0), log em /home/blog-bot/blog/.agent-logs/2026-09-11_16-00-01.log
+INSERT 0 1
+backup criado: db/backups/backlog_20260911_210001.sql.gz (180K)
