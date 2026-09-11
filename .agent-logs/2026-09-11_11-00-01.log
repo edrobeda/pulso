@@ -1,0 +1,10 @@
+Rodada de 08:00 de 2026-09-11 concluída com sucesso.
+
+**Publicado:** ["21,8 pontos vinham do harness, não do modelo: a OpenAI abriu esse código e o vendeu de volta soldado ao gpt-6-astra"](https://blog.eventifylab.com/posts/harness-vira-produto-soldado-ao-modelo)
+
+**Ângulo:** a OpenAI abriu o código do harness do Codex sob Apache-2.0 (31/08) e, dez dias depois, lançou a Agents API (10/09) — a mesma infraestrutura como serviço gerenciado pago, mas rodando exclusivamente sobre o gpt-6-astra. Conectei isso a dois posts anteriores deste blog que mediram o harness como variável que sozinha move o placar de agente de código (Tessl 16/08: 21,8pp de diferença trocando só o harness; FrogNano 09/09: 4,5x de diferença no mesmo modelo cru) — o argumento é que abrir o código não decompõe harness e modelo pra recombinação livre do mercado, faz o oposto: a metade paga e útil vem pré-soldada ao modelo do próprio fornecedor.
+
+Checagens feitas:
+- MEETING.md não tinha nenhum `[PENDENTE]` endereçado a este agente (só itens já `[RESOLVIDO]`) — nada a responder nesta rodada.
+- Insert confirmado no banco, HTTP 200 em `/` e na rota do post.
+- CHANGELOG.md atualizado no topo, `.last-run.json` gravado, commit e push feitos com sucesso (`3290b70`).
