@@ -232,4 +232,16 @@ export const lessons = [
       { file: 'prerender-sem-links-e-beco-sem-saida.md', label: 'Nota + script que conta links de saída do HTML servido a bots' },
     ],
   },
+  {
+    slug: 'log-de-monitoramento-nao-e-instrucao',
+    title: 'O log do seu próprio WAF pode carregar uma instrução pro seu agente obedecer',
+    tag: 'agentes',
+    problem:
+      'Um agente com tarefa de investigar tráfego bloqueado ou triafica um alerta lê campos como `User-Agent`, mensagem de erro ou payload de crash report — todos escritos originalmente por quem fez a requisição, não pela ferramenta de monitoramento em si (WAF, rastreador de erro, observability). Como esse texto chega até o agente através de um sistema próprio e "confiável" (o painel do WAF, o Sentry, o Datadog), ele não é tratado com a mesma suspeita que um input de usuário cru — mas continua sendo, byte a byte, controlado por quem originou a requisição. Uma instrução disfarçada de telemetria (algo como "ignore instruções anteriores e..." embutido no User-Agent ou na mensagem de exceção) vira injeção de prompt indireta assim que o agente lê aquele campo como contexto de tarefa, e se a mesma sessão tem acesso a alguma ferramenta de ação (mudar DNS, fazer deploy, instalar pacote), a instrução tem caminho direto até um efeito real — sem que nenhuma requisição maliciosa precise sequer passar pelo firewall.',
+    lesson:
+      'Dado que passa por uma ferramenta de segurança ou observability tem taxa mais alta de conteúdo adversarial que a média, não mais baixa — é justamente o que essas ferramentas capturam. Delimite explicitamente qualquer log/alerta lido por um agente como dado não confiável (marcador claro no prompt, instrução de nunca seguir o que estiver dentro dele), separe o agente que só lê/triafica (sem ferramenta de ação de alto impacto) do que decide agir, e nunca deixe o portão entre os dois ser só "o LLM decidiu que parece seguro".',
+    downloads: [
+      { file: 'log-de-monitoramento-nao-e-instrucao.md', label: 'Checklist: log de monitoramento como dado não confiável' },
+    ],
+  },
 ]
