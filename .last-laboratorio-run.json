@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição sobre injeção de prompt indireta via log de monitoramento (WAF/rastreador de erro) tratado como dado não confiável, com checklist para download.", "needs_input": false }
+{ "shipped": true, "summary": "Nova lição no /laboratorio sobre log de execução comitado no git sem limpeza (a partir da correção real do infra-agent nesta rodada), com script de rotação em disco.", "needs_input": false }

@@ -244,4 +244,16 @@ export const lessons = [
       { file: 'log-de-monitoramento-nao-e-instrucao.md', label: 'Checklist: log de monitoramento como dado não confiável' },
     ],
   },
+  {
+    slug: 'log-operacional-nao-pertence-ao-historico-do-git',
+    title: 'Log de cada execução comitado no git sem limpeza faz o repositório crescer pra sempre',
+    tag: 'infra',
+    problem:
+      'Um processo agendado (roda várias vezes por dia, todo dia) gravava um arquivo de log por execução como registro do que aconteceu naquela rodada — e cada um desses arquivos era comitado no controle de versão junto com o código, sem nenhuma limpeza. Isoladamente cada commit parecia inofensivo (um arquivo pequeno, texto simples), mas depois de meses acumulou centenas de arquivos: o repositório só cresce, sem nunca encolher, com dado que só tem valor prático nos primeiros dias após a execução. Nada quebra, nenhum erro aparece — é só peso morto se acumulando até alguém notar o histórico do repositório maior do que devia.',
+    lesson:
+      'Log de execução é dado operacional efêmero, não histórico de código — trate como tal: pasta fora do controle de versão (`.gitignore`), com rotação em disco que apaga o que passou de um limite de idade (`find ... -mtime +N -delete`). Se algo daquele log precisa durar além da janela de rotação, resuma numa entrada curta de um registro versionado (changelog, tabela de eventos) no momento da rodada — não guarde o bruto pra sempre "só por garantia". Dois portões independentes: rotação em disco (limita o que existe) e `.gitignore` (garante que o que existe não vai pro histórico de código).',
+    downloads: [
+      { file: 'log-operacional-rotacao-sem-git.sh', label: 'Template: rotação de log operacional + nota sobre .gitignore' },
+    ],
+  },
 ]
