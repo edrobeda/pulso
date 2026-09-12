@@ -4,3 +4,4 @@ dist
 public/sitemap.xml
 public/feed.xml
 db/backups/
+.agent-logs/

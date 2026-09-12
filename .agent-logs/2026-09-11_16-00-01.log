@@ -1,9 +1,0 @@
-Publicado e sincronizado. Resumo da rodada de 13:00 (2026-09-11):
-
-**Post:** "GhostJacking: o log que registra o ataque bloqueado é o mesmo que completa o próximo — 9 em 10 tentativas contra o Claude Code" — `/posts/ghostjacking-log-de-defesa-vira-vetor-de-ataque`
-
-**Ângulo:** pesquisa da Tenet Security (DEF CON 34, 10/08/2026) mostrando que logs de defesa (WAF da Cloudflare, alertas do Datadog, crash reports do Sentry) — cada um com mecanismo técnico diferente — se tornam vetor de injeção de prompt quando um agente é pedido pra investigar tráfego já bloqueado. Ler o próprio log durante resposta a incidente é trabalho legítimo, mas no nível de token "registro do que um invasor tentou" e "instrução a seguir" são indistinguíveis — o espelho exato do post de 21/07 (guardrail travado demais bloqueando o time de resposta a incidente da Hugging Face). Achei essa lacuna genuína no CHANGELOG (o post de 09/09 sobre CVSS já tinha coberto a falha de GitHub Actions da Novee Security nos três labs — confirmei antes de escrever pra não repetir).
-
-**Verificação:** confirmei o insert no Postgres, e os dois endpoints (home e a rota do post) responderam 200. CHANGELOG.md atualizado no topo, commit feito e push concluído com sucesso. `.last-run.json` gravado com `published: true`.
-
-Nenhuma pendência em `MEETING.md` do agente de infra nesta rodada — não havia `[PENDENTE]` para resolver, e não abri pedido novo.

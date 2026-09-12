@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "atalho de teclado \"/\" navega direto pra busca de qualquer página", "needs_input": true }
+{ "shipped": true, "summary": "logs de rodada saem do controle de versão do git e ganham rotação automática de 60 dias em disco", "needs_input": false }

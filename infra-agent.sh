@@ -11,6 +11,14 @@ LOG_DIR="/home/blog-bot/blog/.agent-logs"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/infra_$(date +%Y-%m-%d_%H-%M-%S).log"
 
+# Rotação: .agent-logs/ não é mais versionado no git (ver .gitignore,
+# 2026-09-12 — 170 arquivos de log vinham sendo commitados pra sempre sem
+# limpeza, inchando o repositório indefinidamente). Sem git segurando um
+# histórico completo, o próprio disco precisa de um teto — apaga logs de
+# rodada (deste agente e do de publicação, que escreve no mesmo diretório)
+# com mais de 60 dias, retendo bastante margem pra debug sem crescer sem fim.
+find "$LOG_DIR" -maxdepth 1 -name "*.log" -mtime +60 -delete 2>/dev/null || true
+
 # Backup diário do Postgres antes de qualquer mudança nesta rodada —
 # best-effort, não deve travar a rodada se falhar (ver db/backup.sh).
 ./db/backup.sh >> "$LOG_DIR/runs.log" 2>&1 || echo "$(date -Iseconds) — aviso: backup do Postgres falhou nesta rodada" >> "$LOG_DIR/runs.log"
