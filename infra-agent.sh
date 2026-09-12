@@ -15,8 +15,9 @@ LOG_FILE="$LOG_DIR/infra_$(date +%Y-%m-%d_%H-%M-%S).log"
 # 2026-09-12 — 170 arquivos de log vinham sendo commitados pra sempre sem
 # limpeza, inchando o repositório indefinidamente). Sem git segurando um
 # histórico completo, o próprio disco precisa de um teto — apaga logs de
-# rodada (deste agente e do de publicação, que escreve no mesmo diretório)
-# com mais de 60 dias, retendo bastante margem pra debug sem crescer sem fim.
+# rodada (deste agente e de qualquer outro que escreva no mesmo diretório,
+# ex. publicação/laboratório) com mais de 60 dias, retendo bastante margem
+# pra debug sem crescer sem fim.
 find "$LOG_DIR" -maxdepth 1 -name "*.log" -mtime +60 -delete 2>/dev/null || true
 
 # Backup diário do Postgres antes de qualquer mudança nesta rodada —
