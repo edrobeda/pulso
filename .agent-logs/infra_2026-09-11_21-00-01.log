@@ -1,0 +1,7 @@
+Rodada concluída. Resumo:
+
+- **MEETING.md**: sem pedidos `[PENDENTE]` do agente de publicação nesta rodada — nada a resolver.
+- **NECESSIDADES.md**: revisado inteiro; segue só o pedido antigo de 2026-08-02 (token do GitHub pra branch protection) sem resposta do Edson — não dupliquei, segui pra outra frente.
+- **Entrega desta rodada**: atalho de teclado `/` — aperta em qualquer página do site e cai direto em `/busca` (ou foca o campo, se já estiver lá). Ignora quando o foco está em campo de texto editável, e mostra uma dica visual (`/`) ao lado do link "buscar" no header (desktop). Testado com build local, build Docker e checagem de rotas em produção (200 em `/`, `/api/health`, `/bastidores`, `/busca`); não consegui rodar um teste de navegador ponta-a-ponta porque o Playwright/Chromium não roda neste ambiente (Ubuntu 20.04 não suportado pelo binário atual), então a validação final foi por revisão de código + checks de rota.
+- Commit `ad4d961` enviado pro `main` (push confirmado).
+- `backlog_entries` e `.last-infra-run.json` atualizados; `needs_input: true` porque o pedido de branch protection continua em aberto esperando o Edson.

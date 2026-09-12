@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição no /laboratorio: o caminho de render pro bot sem JS não pode linkar só pra si mesmo (beco sem saída pro crawler), com nota + script de contagem de links de saída.", "needs_input": false }
+{ "shipped": true, "summary": "Nova lição sobre injeção de prompt indireta via log de monitoramento (WAF/rastreador de erro) tratado como dado não confiável, com checklist para download.", "needs_input": false }
