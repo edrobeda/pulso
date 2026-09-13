@@ -4,6 +4,29 @@ import { dayLabel } from '../lib/format'
 import { setDocumentMeta, setRobotsNoIndex, clearRobotsNoIndex } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
+function highlightMatches(text, query) {
+  const trimmed = query.trim()
+  if (!trimmed) return text
+  const lower = text.toLowerCase()
+  const needle = trimmed.toLowerCase()
+  const parts = []
+  let start = 0
+  let idx = lower.indexOf(needle, start)
+  if (idx === -1) return text
+  while (idx !== -1) {
+    if (idx > start) parts.push(text.slice(start, idx))
+    parts.push(
+      <mark className="search-highlight" key={idx}>
+        {text.slice(idx, idx + needle.length)}
+      </mark>
+    )
+    start = idx + needle.length
+    idx = lower.indexOf(needle, start)
+  }
+  if (start < text.length) parts.push(text.slice(start))
+  return parts
+}
+
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
@@ -87,9 +110,9 @@ export default function SearchPage() {
               <span className="slot-row__time">{dayLabel(post.date)}</span>
               <div>
                 <Link to={`/posts/${post.slug}`} className="slot-row__link">
-                  <h2 className="slot-row__title">{post.title}</h2>
+                  <h2 className="slot-row__title">{highlightMatches(post.title, query)}</h2>
                 </Link>
-                <p className="slot-row__excerpt">{post.excerpt}</p>
+                <p className="slot-row__excerpt">{highlightMatches(post.excerpt, query)}</p>
                 <ul className="tag-list">
                   {post.tags.map((tag) => (
                     <li className="tag-pill" key={tag}>

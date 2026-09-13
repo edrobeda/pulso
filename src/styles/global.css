@@ -203,6 +203,32 @@ a {
   color: var(--signal-teal);
 }
 
+.text-size-control {
+  display: flex;
+  gap: 4px;
+}
+
+.text-size-control__btn {
+  background: transparent;
+  border: 1px solid var(--ink-600);
+  color: var(--mist-400);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.text-size-control__btn:hover:not(:disabled) {
+  color: var(--signal-teal);
+  border-color: var(--signal-teal);
+}
+
+.text-size-control__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 .bug-report {
   position: relative;
 }
@@ -537,6 +563,13 @@ a {
   line-height: 1.55;
   color: var(--mist-200);
   margin: 0 0 12px;
+}
+
+.search-highlight {
+  background: var(--signal-amber);
+  color: var(--ink-950);
+  border-radius: 2px;
+  padding: 0 1px;
 }
 
 .slot-row__footer {

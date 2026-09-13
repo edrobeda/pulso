@@ -186,7 +186,13 @@ export default function PostPage() {
 
   useEffect(() => {
     if (!post) return
-    setDocumentMeta({ title: post.title, description: post.excerpt, path: `/posts/${post.slug}`, type: 'article' })
+    setDocumentMeta({
+      title: post.title,
+      description: post.excerpt,
+      path: `/posts/${post.slug}`,
+      type: 'article',
+      publishedTime: `${post.date}T${post.slot}:00-03:00`,
+    })
     const wordCount = postBody
       ? postBody.blocks.reduce((sum, b) => sum + (b.text ? b.text.trim().split(/\s+/).filter(Boolean).length : 0), 0)
       : undefined

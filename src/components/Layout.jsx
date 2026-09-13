@@ -1,17 +1,27 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { nextPulseLabel } from '../lib/schedule'
+import { getTextSize, applyTextSize, stepTextSize, SIZES } from '../lib/textSize'
 import BugReportWidget from './BugReportWidget'
 
 export default function Layout() {
   const [countdown, setCountdown] = useState(() => nextPulseLabel())
+  const [textSize, setTextSizeState] = useState(() => getTextSize())
   const navigate = useNavigate()
   const location = useLocation()
+
+  useEffect(() => {
+    applyTextSize(textSize)
+  }, [])
 
   useEffect(() => {
     const id = setInterval(() => setCountdown(nextPulseLabel()), 30_000)
     return () => clearInterval(id)
   }, [])
+
+  function handleTextSizeStep(direction) {
+    setTextSizeState(stepTextSize(direction))
+  }
 
   // Atalho global "/" pra busca (padrão de sites como GitHub/Slack) — sem
   // caixa de busca no header, só um link, então sem isso alcançar a busca
@@ -86,6 +96,26 @@ export default function Layout() {
         <a href="/feed.xml" className="footer__rss">
           RSS
         </a>
+        <div className="text-size-control" role="group" aria-label="Tamanho do texto">
+          <button
+            type="button"
+            className="text-size-control__btn"
+            onClick={() => handleTextSizeStep(-1)}
+            disabled={textSize === SIZES[0]}
+            aria-label="Diminuir tamanho do texto"
+          >
+            A-
+          </button>
+          <button
+            type="button"
+            className="text-size-control__btn"
+            onClick={() => handleTextSizeStep(1)}
+            disabled={textSize === SIZES[SIZES.length - 1]}
+            aria-label="Aumentar tamanho do texto"
+          >
+            A+
+          </button>
+        </div>
         <BugReportWidget />
       </footer>
     </div>

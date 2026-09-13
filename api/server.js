@@ -1077,12 +1077,18 @@ app.get('/sitemap.xml', async (_req, res) => {
       priority: '0.8',
     }))
 
-    const tagSlugs = new Set()
+    // rows já vem ORDER BY date DESC, então a primeira ocorrência de cada
+    // tag é a data do post mais recente com ela.
+    const tagLastmod = new Map()
     for (const p of rows) {
-      for (const tag of p.tags) tagSlugs.add(slugifyTag(tag))
+      for (const tag of p.tags) {
+        const tagSlug = slugifyTag(tag)
+        if (!tagLastmod.has(tagSlug)) tagLastmod.set(tagSlug, p.date)
+      }
     }
-    const tagRoutes = [...tagSlugs].map((tagSlug) => ({
+    const tagRoutes = [...tagLastmod.entries()].map(([tagSlug, lastmod]) => ({
       path: `/tags/${tagSlug}`,
+      lastmod,
       changefreq: 'weekly',
       priority: '0.4',
     }))

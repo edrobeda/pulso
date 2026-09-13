@@ -41,7 +41,13 @@ function setCanonical(path) {
  * o ganho de ter cada rota com sua própria descrição e OG card já vale a
  * implementação simples.
  */
-export function setDocumentMeta({ title, description = DEFAULT_DESCRIPTION, path = '/', type = 'website' }) {
+export function setDocumentMeta({
+  title,
+  description = DEFAULT_DESCRIPTION,
+  path = '/',
+  type = 'website',
+  publishedTime,
+}) {
   const fullTitle = title ? `${title} — ${SITE_NAME}` : `${SITE_NAME} — sinais sobre IA e código`
   const image = `${SITE_URL}/og-image.png`
 
@@ -55,6 +61,15 @@ export function setDocumentMeta({ title, description = DEFAULT_DESCRIPTION, path
   setMetaByProperty('og:url', `${SITE_URL}${path}`)
   setMetaByProperty('og:site_name', SITE_NAME)
   setMetaByProperty('og:image', image)
+  setMetaByProperty('og:locale', 'pt_BR')
+
+  if (type === 'article' && publishedTime) {
+    setMetaByProperty('article:published_time', publishedTime)
+    setMetaByProperty('article:modified_time', publishedTime)
+  } else {
+    document.head.querySelector('meta[property="article:published_time"]')?.remove()
+    document.head.querySelector('meta[property="article:modified_time"]')?.remove()
+  }
 
   setMetaByName('twitter:card', 'summary_large_image')
   setMetaByName('twitter:title', fullTitle)
