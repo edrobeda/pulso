@@ -256,4 +256,16 @@ export const lessons = [
       { file: 'log-operacional-rotacao-sem-git.sh', label: 'Template: rotação de log operacional + nota sobre .gitignore' },
     ],
   },
+  {
+    slug: 'meta-tags-duplicadas-entre-prerender-e-client-side',
+    title: 'Duas implementações de meta tag pra mesma página divergem sem barulho nenhum',
+    tag: 'frontend',
+    problem:
+      'Uma SPA com pré-renderização pra bots tinha duas rotinas independentes escrevendo as mesmas meta tags de compartilhamento (Open Graph, `article:*`) pra uma página: uma no template server-side, outra injetada via JavaScript depois da hidratação. As duas nasceram idênticas, mas quando campos novos (idioma da página, data de publicação/atualização) foram adicionados, só entraram na rotina do pré-render — a de client-side ficou pra trás. Nada quebrou: a página carregava normal dos dois jeitos, o preview pro bot que só lê HTML cru continuava completo, só a versão renderizada no navegador ficava com metadado incompleto, sem nenhum erro ou diferença visível pra apontar a lacuna.',
+    lesson:
+      'Duas implementações da "mesma" coisa que vivem em caminhos diferentes (server vs. client, bot vs. humano) não são coincidência inofensiva — são duplicação com prazo de validade. Compartilhe uma única fonte de campos sempre que der; onde não der, documente lado a lado o que uma precisa espelhar da outra; e um teste que compara as duas saídas (HTML pro bot vs. DOM hidratado) pra mesma URL transforma "campo esquecido" em falha de CI no momento em que é adicionado, não em lacuna descoberta meses depois.',
+    downloads: [
+      { file: 'meta-tags-duplicadas-prerender-client.md', label: 'Nota + script de comparação bot vs. client-side hidratado' },
+    ],
+  },
 ]
