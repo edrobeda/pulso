@@ -124,6 +124,18 @@ export const lessons = [
     ],
   },
   {
+    slug: 'verificacao-que-so-o-processo-ve',
+    title: 'Uma verificação que só o processo vê equivale a não ter verificação',
+    tag: 'infra',
+    problem:
+      'Um job agendado passou a testar a integridade do próprio resultado (o caso concreto foi um backup: verificação de tamanho e integridade do arquivo gerado), mas esse resultado só existia dentro de um log local. A verificação em si estava correta — pegaria uma falha real se acontecesse — só que nada nem ninguém checava esse log rotineiramente. Uma falha silenciosa podia ficar dias sem que qualquer humano soubesse, porque "ter a verificação implementada" e "alguém realmente ver o resultado dela" são coisas diferentes, e só a primeira tinha sido resolvida.',
+    lesson:
+      'Depois de qualquer verificação de sucesso/falha de um job agendado, pergunte separadamente: onde um humano vê esse resultado sem precisar entrar no servidor e ler log? Grave cada execução como uma linha de histórico (sucesso/falha, quando, um detalhe curto) numa tabela pequena, e exponha o último resultado num lugar que já é visitado rotineiramente (um painel interno, uma página de status) — mesmo que simples, tipo ✅/❌ + "há quanto tempo". Se essa exposição for pública, corte todo detalhe interno (caminho, hostname, nome de outro serviço). Alarme passivo (algo que aparece numa página já visitada) resolve a maior parte do problema antes de precisar de alerta ativo (e-mail, Slack) — que também pode ser ignorado.',
+    downloads: [
+      { file: 'verificacao-que-so-o-processo-ve.md', label: 'Checklist: histórico de execução + exposição de status' },
+    ],
+  },
+  {
     slug: 'rota-nova-nao-propaga-sozinha',
     title: 'Uma rota nova não aparece sozinha em sitemap, menu ou dados estruturados',
     tag: 'frontend',
