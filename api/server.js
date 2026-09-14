@@ -121,6 +121,21 @@ app.get('/api/db-size', async (_req, res) => {
   }
 })
 
+// Transparência do backup diário (db/backup.sh grava aqui a cada rodada) —
+// só status/data/tamanho, nada que exponha caminho ou host do servidor.
+app.get('/api/backup-status', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT ran_at, status, size_bytes, message FROM backup_log
+       ORDER BY ran_at DESC LIMIT 14`
+    )
+    res.set('Cache-Control', 'public, max-age=300')
+    res.json(rows)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 // Analytics próprio (sem terceiros): uma visita conta no máximo uma vez por
 // dispositivo por dia — o frontend deduplica via localStorage antes de
 // chamar isso, então isso não é pageview bruto, é "visitantes únicos/dia".

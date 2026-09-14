@@ -11,6 +11,7 @@
   --signal-amber: #ffb35c;
   --signal-amber-dim: #b8834a;
   --signal-teal: #5fd9ce;
+  --signal-red: #e5686b;
 
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Source Serif 4', Georgia, serif;
@@ -1323,6 +1324,14 @@ a {
   border-left-color: var(--mist-400);
 }
 
+.metric-card--backup {
+  border-left-color: var(--signal-teal);
+}
+
+.metric-card--backup.metric-card--backup-failed {
+  border-left-color: var(--signal-red);
+}
+
 .metric-card__footnote {
   margin: 10px 0 0;
   font-family: var(--font-mono);
@@ -1367,6 +1376,16 @@ a {
 .metric-card--dbsize .metric-card__icon {
   color: var(--mist-400);
   border: 1px solid var(--mist-400);
+}
+
+.metric-card--backup .metric-card__icon {
+  color: var(--signal-teal);
+  border: 1px solid var(--signal-teal);
+}
+
+.metric-card--backup-failed .metric-card__icon {
+  color: var(--signal-red);
+  border: 1px solid var(--signal-red);
 }
 
 .changelog-section {

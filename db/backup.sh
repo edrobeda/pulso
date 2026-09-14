@@ -15,11 +15,22 @@ mkdir -p "$BACKUP_DIR"
 STAMP=$(date +%Y%m%d_%H%M%S)
 OUT="$BACKUP_DIR/backlog_${STAMP}.sql.gz"
 
+# Registra o resultado em backup_log pra ficar visível em /bastidores (best-
+# effort: um insert que falhar não deve mascarar o resultado real do backup
+# nem travar o script, já que quem chama espera só o exit code do dump).
+log_result() {
+  docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
+    psql -U "$BLOG_DB_USER" -d "$BLOG_DB_NAME" -v ON_ERROR_STOP=1 -c \
+    "INSERT INTO backup_log (status, size_bytes, message) VALUES ('$1', ${2:-NULL}, $3)" \
+    >/dev/null 2>&1 || true
+}
+
 if ! docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
     pg_dump -U "$BLOG_DB_USER" -d "$BLOG_DB_NAME" --no-owner --no-privileges \
     | gzip > "$OUT"; then
   echo "backup falhou" >&2
   rm -f "$OUT"
+  log_result 'failure' '' "'pg_dump ou gzip falhou'"
   exit 1
 fi
 
@@ -33,16 +44,19 @@ MIN_BYTES=1024
 if ! gzip -t "$OUT" 2>/dev/null; then
   echo "backup corrompido: falha na verificação de integridade (gzip -t)" >&2
   rm -f "$OUT"
+  log_result 'failure' '' "'arquivo .gz corrompido (falhou gzip -t)'"
   exit 1
 fi
 SIZE=$(stat -c%s "$OUT" 2>/dev/null || echo 0)
 if [ "$SIZE" -lt "$MIN_BYTES" ]; then
   echo "backup suspeito: só $SIZE bytes (esperado bem mais que $MIN_BYTES)" >&2
   rm -f "$OUT"
+  log_result 'failure' "$SIZE" "'dump menor que o piso esperado de $MIN_BYTES bytes'"
   exit 1
 fi
 
 # Retenção: mantém só os 14 backups mais recentes (~2 semanas de rodadas diárias).
 ls -1t "$BACKUP_DIR"/backlog_*.sql.gz 2>/dev/null | tail -n +15 | xargs -r rm --
 
+log_result 'success' "$SIZE" 'NULL'
 echo "backup criado: $OUT ($(du -h "$OUT" | cut -f1))"

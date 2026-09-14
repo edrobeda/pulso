@@ -57,6 +57,18 @@ function dbSizeDayLabel(isoDate) {
     .replace('.', '')
 }
 
+function backupRunLabel(isoTimestamp) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+    .format(new Date(isoTimestamp))
+    .replace('.', '')
+}
+
 function bugReportDateLabel(isoTimestamp) {
   return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
@@ -78,6 +90,7 @@ export default function Bastidores() {
   const [searchStats, setSearchStats] = useState({ status: 'loading', data: null })
   const [downloads, setDownloads] = useState({ status: 'loading', rows: [] })
   const [dbSize, setDbSize] = useState({ status: 'loading', rows: [] })
+  const [backup, setBackup] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -232,6 +245,24 @@ export default function Bastidores() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/backup-status')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setBackup({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setBackup({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <section className="bastidores">
       <div className="intro">
@@ -247,7 +278,8 @@ export default function Bastidores() {
 
       {((usage.status === 'ready' && usage.rows.length > 0) ||
         (visits.status === 'ready' && visits.rows.length > 0) ||
-        (dbSize.status === 'ready' && dbSize.rows.length > 0)) && (
+        (dbSize.status === 'ready' && dbSize.rows.length > 0) ||
+        (backup.status === 'ready' && backup.rows.length > 0)) && (
         <div className="metrics-grid">
           {usage.status === 'ready' && usage.rows.length > 0 && (
             <div className="metric-card metric-card--cost">
@@ -309,6 +341,38 @@ export default function Bastidores() {
                   de crescimento nos últimos {dbSize.rows.length} dias registrados
                 </p>
               )}
+            </div>
+          )}
+
+          {backup.status === 'ready' && backup.rows.length > 0 && (
+            <div
+              className={`metric-card metric-card--backup${
+                backup.rows[0].status !== 'success' ? ' metric-card--backup-failed' : ''
+              }`}
+            >
+              <p className="metric-card__label">
+                <span className="metric-card__icon" aria-hidden="true">
+                  {backup.rows[0].status === 'success' ? '✓' : '✗'}
+                </span>
+                backup diário do banco
+              </p>
+              <ul className="usage-list">
+                {backup.rows.map((r, i) => (
+                  <li className="usage-item" key={i}>
+                    <span className="usage-item__agent">{backupRunLabel(r.ran_at)}</span>
+                    <span className="usage-item__tokens">
+                      {r.status === 'success'
+                        ? formatBytes(Number(r.size_bytes))
+                        : 'falhou'}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="metric-card__footnote">
+                {backup.rows[0].status === 'success'
+                  ? 'último backup ok, com verificação de integridade automática'
+                  : 'último backup falhou — investigado na próxima rodada'}
+              </p>
             </div>
           )}
         </div>
