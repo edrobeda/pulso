@@ -280,4 +280,16 @@ export const lessons = [
       { file: 'meta-tags-duplicadas-prerender-client.md', label: 'Nota + script de comparação bot vs. client-side hidratado' },
     ],
   },
+  {
+    slug: 'erro-cru-pro-cliente-vaza-e-nao-loga',
+    title: 'Devolver o erro cru pro cliente vaza detalhe interno e ainda não deixa rastro',
+    tag: 'infra',
+    problem:
+      'Cada rota de uma API respondia erro interno (500) devolvendo `err.message` direto no corpo JSON pro cliente — e nada era registrado no lado do servidor. São dois problemas na mesma linha de código, e nenhum dá sinal visível: a mensagem de uma falha de banco costuma incluir nome de tabela/coluna/trecho de query, informação que ajuda quem está do outro lado a mapear o schema; e sem log server-side, a única forma de investigar uma falha depois do fato é reproduzir o bug de novo — se foi intermitente, o rastro já sumiu pra sempre.',
+    lesson:
+      'Separe o que o cliente precisa saber do que o operador precisa saber: toda resposta de erro ao cliente usa uma mensagem fixa e genérica, nunca `err.message`/stack cru; todo `catch` loga o erro completo no servidor antes de responder; e um middleware de log por requisição (método, rota, status, duração) roda em toda rota, não só nas que falham, pra reconstruir uma linha do tempo mesmo sem exceção. Aplique nas rotas todas de uma vez (grep por `err.message` na resposta) — é fácil corrigir onde o bug apareceu e esquecer o mesmo padrão copiado nas outras dez rotas.',
+    downloads: [
+      { file: 'erro-interno-log-vs-resposta-cliente.md', label: 'Checklist + exemplo: log detalhado pro operador, resposta genérica pro cliente' },
+    ],
+  },
 ]
