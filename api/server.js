@@ -41,6 +41,20 @@ app.use(helmet({ contentSecurityPolicy: false }))
 app.use(compression())
 app.use(express.json())
 
+// Antes de hoje, um 500 só aparecia pro cliente como um JSON de erro — nada
+// ficava em `docker logs DK_BLOG_API`, então investigar uma falha exigia
+// reproduzir o bug de novo. Esta linha por request (sempre) mais o
+// console.error dentro de cada catch (só quando falha) dão visibilidade
+// básica sem logar corpo de request (evita vazar dado de comentário/bug
+// report no log).
+app.use((req, res, next) => {
+  const startedAt = Date.now()
+  res.on('finish', () => {
+    console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${Date.now() - startedAt}ms`)
+  })
+  next()
+})
+
 // Só os endpoints de escrita (incrementar view/reação) levam limite — são
 // os únicos que um script poderia martelar pra inflar número; leitura fica
 // livre porque cache de CDN/browser já amortece.
@@ -68,6 +82,7 @@ app.get('/api/health', async (_req, res) => {
     await pool.query('SELECT 1')
     res.json({ ok: true })
   } catch (err) {
+    console.error(err)
     res.status(503).json({ ok: false, error: err.message })
   }
 })
@@ -83,7 +98,8 @@ app.get('/api/backlog', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=60')
     res.json(rows)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -101,7 +117,8 @@ app.get('/api/usage', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=60')
     res.json(rows)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -117,7 +134,8 @@ app.get('/api/db-size', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=300')
     res.json(rows)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -132,7 +150,8 @@ app.get('/api/backup-status', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=300')
     res.json(rows)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -149,7 +168,8 @@ app.post('/api/visits', writeLimiter, async (_req, res) => {
     )
     res.json({ visitCount: Number(rows[0].visit_count) })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -161,7 +181,8 @@ app.get('/api/visits', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=60')
     res.json(rows.map((r) => ({ date: r.visit_date, count: Number(r.visit_count) })))
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -185,7 +206,8 @@ app.post('/api/downloads', writeLimiter, async (req, res) => {
     )
     res.json({ downloadCount: Number(rows[0].download_count) })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -197,7 +219,8 @@ app.get('/api/downloads', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=60')
     res.json(rows.map((r) => ({ file: r.file, count: Number(r.download_count) })))
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -234,7 +257,8 @@ app.get('/api/posts', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=60')
     res.json(rows.map(toPost))
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -264,7 +288,8 @@ app.get('/api/posts/summary', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=30')
     res.json(summary)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -282,7 +307,8 @@ app.get('/api/posts/:slug', async (req, res) => {
     res.set('Cache-Control', 'public, max-age=60')
     res.json(toPost(rows[0]))
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -306,7 +332,8 @@ app.post('/api/posts/:slug/view', writeLimiter, async (req, res) => {
     )
     res.json({ viewCount: Number(rows[0].view_count) })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -329,7 +356,8 @@ app.get('/api/posts/:slug/reactions', async (req, res) => {
     res.set('Cache-Control', 'public, max-age=30')
     res.json(counts)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -353,7 +381,8 @@ app.post('/api/posts/:slug/reactions', writeLimiter, async (req, res) => {
     )
     res.json({ emoji, count: Number(rows[0].count) })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -378,7 +407,8 @@ app.get('/api/posts/:slug/comments', async (req, res) => {
     res.set('Cache-Control', 'public, max-age=30')
     res.json(rows)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -411,7 +441,8 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
     )
     res.status(201).json(rows[0])
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -457,7 +488,8 @@ app.post('/api/comments/:id/flag', writeLimiter, async (req, res) => {
 
     res.json({ flagCount, hidden: flagCount >= FLAG_HIDE_THRESHOLD })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -491,7 +523,8 @@ app.post('/api/bug-reports', writeLimiter, async (req, res) => {
     )
     res.status(201).json(rows[0])
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -506,7 +539,8 @@ app.get('/api/bug-reports', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=30')
     res.json(rows)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -527,7 +561,8 @@ app.get('/api/comments/recent', async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=30')
     res.json(rows)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -686,6 +721,7 @@ ${navHtml}
     res.set('Cache-Control', 'public, max-age=300')
     res.send(html)
   } catch (err) {
+    console.error(err)
     res.status(500).send('error')
   }
 })
@@ -809,6 +845,7 @@ ${prerenderPostList(rows)}
       })
     )
   } catch (err) {
+    console.error(err)
     res.status(500).send('error')
   }
 })
@@ -858,6 +895,7 @@ ${tags
       prerenderShell({ title, description, canonicalPath: '/tags', jsonLd: collectionLd, bodyHtml })
     )
   } catch (err) {
+    console.error(err)
     res.status(500).send('error')
   }
 })
@@ -904,6 +942,7 @@ ${prerenderPostList(matching)}
       })
     )
   } catch (err) {
+    console.error(err)
     res.status(500).send('error')
   }
 })
@@ -948,7 +987,8 @@ app.get('/api/search', searchLimiter, async (req, res) => {
       ])
       .catch(() => {})
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -985,7 +1025,8 @@ app.get('/api/search/top-queries', async (_req, res) => {
       topQueries: topQueries.rows,
     })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -1026,7 +1067,8 @@ ${items}
     res.set('Cache-Control', 'public, max-age=300')
     res.send(xml)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -1077,7 +1119,8 @@ ${items}
     res.set('Cache-Control', 'public, max-age=300')
     res.send(xml)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 
@@ -1134,7 +1177,8 @@ ${urls
     res.set('Cache-Control', 'public, max-age=300')
     res.send(xml)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
   }
 })
 

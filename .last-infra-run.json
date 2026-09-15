@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "transparência do backup diário do Postgres em /bastidores (status/tamanho/integridade por rodada)", "needs_input": true }
+{ "shipped": true, "summary": "logging de requisições e de erros internos na API (antes um 500 não deixava rastro em docker logs)", "needs_input": false }
