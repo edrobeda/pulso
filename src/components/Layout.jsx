@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-do
 import { nextPulseLabel } from '../lib/schedule'
 import { getTextSize, applyTextSize, stepTextSize, SIZES } from '../lib/textSize'
 import BugReportWidget from './BugReportWidget'
+import ErrorBoundary from './ErrorBoundary'
 
 export default function Layout() {
   const [countdown, setCountdown] = useState(() => nextPulseLabel())
@@ -88,7 +89,9 @@ export default function Layout() {
         </nav>
       </header>
       <main className="main" id="main" tabIndex={-1}>
-        <Outlet />
+        <ErrorBoundary resetKey={location.pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <footer className="footer">
         <span>08:00 e 13:00 · horário de Brasília</span>

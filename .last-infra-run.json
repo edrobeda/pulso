@@ -1,1 +1,0 @@
-{ "shipped": true, "summary": "logging de requisições e de erros internos na API (antes um 500 não deixava rastro em docker logs)", "needs_input": false }
