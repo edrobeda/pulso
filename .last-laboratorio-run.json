@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição no laboratório sobre não vazar err.message cru pro cliente e sempre logar erro no servidor, a partir do logging de API adicionado hoje pelo diretor de infra.", "needs_input": false }
+{ "shipped": true, "summary": "nova lição no laboratório sobre error boundary em duas camadas para evitar tela branca em React, com componente e checklist para download", "needs_input": false }
