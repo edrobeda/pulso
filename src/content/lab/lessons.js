@@ -292,4 +292,16 @@ export const lessons = [
       { file: 'erro-interno-log-vs-resposta-cliente.md', label: 'Checklist + exemplo: log detalhado pro operador, resposta genérica pro cliente' },
     ],
   },
+  {
+    slug: 'error-boundary-evita-tela-branca',
+    title: 'Sem error boundary, um erro de render qualquer derruba a aplicação inteira',
+    tag: 'frontend',
+    problem:
+      'Um erro lançado durante o render de qualquer componente (conteúdo dinâmico malformado, bug num componente específico) não fica contido ali — por padrão o React descarta a árvore inteira a partir da raiz montada, e a página vira branca pro visitante. Nenhum log ficava registrado e a única forma de continuar navegando era um F5 manual, nada óbvio pra quem só vê uma tela em branco sem mensagem nenhuma.',
+    lesson:
+      '`try/catch` comum não pega erro de render em React — só um error boundary (componente de classe com `getDerivedStateFromError`/`componentDidCatch`) captura isso. Duas camadas, não uma: uma em volta só do conteúdo roteado, que se reseta sozinha ao trocar de rota (`resetKey` amarrado ao path atual) sem exigir reload manual; e uma na raiz do app inteiro, como última linha de defesa caso o erro seja fora do conteúdo roteado. E sempre logar de verdade em `componentDidCatch` — capturar o erro sem registrar em lugar nenhum troca "app quebrado" por "app falha em silêncio", o que não é a mesma coisa que estar corrigido.',
+    downloads: [
+      { file: 'react-error-boundary.md', label: 'Componente + checklist: error boundary em duas camadas' },
+    ],
+  },
 ]
