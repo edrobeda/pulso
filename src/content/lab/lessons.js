@@ -304,4 +304,16 @@ export const lessons = [
       { file: 'react-error-boundary.md', label: 'Componente + checklist: error boundary em duas camadas' },
     ],
   },
+  {
+    slug: 'integridade-de-arquivo-nao-prova-restore',
+    title: 'O arquivo de backup passar no teste de integridade não prova que ele restaura',
+    tag: 'infra',
+    problem:
+      'Um backup diário já tinha verificação de integridade do arquivo comprimido (`gzip -t`) antes de reportar sucesso — resolvendo o problema clássico de arquivo truncado por disco cheio ou processo interrompido. Só que integridade do formato de compressão e restaurabilidade do conteúdo são coisas diferentes: um `.gz` pode descomprimir perfeitamente e ainda conter um dump incompleto (schema pela metade, uma tabela que falhou no meio do `pg_dump` sem derrubar o processo inteiro, uma transação que não fechou certo). `gzip -t` só prova "não truncado no nível do arquivo comprimido" — nunca chegou a testar se o SQL lá dentro roda até o fim contra um banco de verdade.',
+    lesson:
+      'A validação definitiva de um backup é restaurá-lo de fato — não simular, restaurar mesmo — num destino descartável (banco temporário, schema separado, container efêmero) e comparar um sinal de saúde simples e barato de checar (contagem de linhas de uma tabela que varia de verdade, não uma tabela de configuração estática) contra o mesmo sinal no banco vivo. Só reporte sucesso se os dois baterem, e sempre limpe o destino descartável depois, com sucesso ou falha no teste. Isso é uma camada a mais sobre a verificação de integridade do arquivo, não um substituto dela — mantenha as duas: a de arquivo pega corrupção de transporte/disco; a de restore pega dump logicamente incompleto que a primeira nunca veria.',
+    downloads: [
+      { file: 'backup-restore-verification.sh', label: 'Template: restore real pra destino descartável + comparação de contagem' },
+    ],
+  },
 ]
