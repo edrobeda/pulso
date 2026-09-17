@@ -18,10 +18,13 @@ OUT="$BACKUP_DIR/backlog_${STAMP}.sql.gz"
 # Registra o resultado em backup_log pra ficar visível em /bastidores (best-
 # effort: um insert que falhar não deve mascarar o resultado real do backup
 # nem travar o script, já que quem chama espera só o exit code do dump).
+# $4 (restore_verified) é opcional: NULL nas falhas de geração do dump, onde
+# testar restore não se aplica.
 log_result() {
+  local restore_verified="${4:-NULL}"
   docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
     psql -U "$BLOG_DB_USER" -d "$BLOG_DB_NAME" -v ON_ERROR_STOP=1 -c \
-    "INSERT INTO backup_log (status, size_bytes, message) VALUES ('$1', ${2:-NULL}, $3)" \
+    "INSERT INTO backup_log (status, size_bytes, message, restore_verified) VALUES ('$1', ${2:-NULL}, $3, $restore_verified)" \
     >/dev/null 2>&1 || true
 }
 
@@ -58,5 +61,41 @@ fi
 # Retenção: mantém só os 14 backups mais recentes (~2 semanas de rodadas diárias).
 ls -1t "$BACKUP_DIR"/backlog_*.sql.gz 2>/dev/null | tail -n +15 | xargs -r rm --
 
-log_result 'success' "$SIZE" 'NULL'
-echo "backup criado: $OUT ($(du -h "$OUT" | cut -f1))"
+# gzip -t só prova que o arquivo não está truncado/corrompido — não prova
+# que o SQL lá dentro restaura de fato (esquema incompleto, dump parcial
+# que ainda assim descomprime limpo, etc.). Restaura pra um banco
+# descartável dentro do mesmo container e compara a contagem de `posts`
+# com a do banco vivo antes de considerar o backup restaurável de verdade.
+RESTORE_DB="pulso_restore_test"
+LIVE_COUNT=$(docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
+  psql -U "$BLOG_DB_USER" -d "$BLOG_DB_NAME" -tAc "SELECT count(*) FROM posts" 2>/dev/null || echo -1)
+
+docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
+  psql -U "$BLOG_DB_USER" -d postgres -v ON_ERROR_STOP=1 -c \
+  "DROP DATABASE IF EXISTS $RESTORE_DB" >/dev/null 2>&1
+docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
+  psql -U "$BLOG_DB_USER" -d postgres -v ON_ERROR_STOP=1 -c \
+  "CREATE DATABASE $RESTORE_DB" >/dev/null 2>&1
+
+RESTORE_OK=0
+RESTORE_COUNT=-1
+if gunzip -c "$OUT" | docker exec -i -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
+    psql -U "$BLOG_DB_USER" -d "$RESTORE_DB" -v ON_ERROR_STOP=1 -q >/dev/null 2>&1; then
+  RESTORE_COUNT=$(docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
+    psql -U "$BLOG_DB_USER" -d "$RESTORE_DB" -tAc "SELECT count(*) FROM posts" 2>/dev/null || echo -1)
+  if [ "$LIVE_COUNT" != "-1" ] && [ "$RESTORE_COUNT" = "$LIVE_COUNT" ]; then
+    RESTORE_OK=1
+  fi
+fi
+
+# Sempre limpa o banco descartável, com sucesso ou não no teste acima.
+docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB \
+  psql -U "$BLOG_DB_USER" -d postgres -c "DROP DATABASE IF EXISTS $RESTORE_DB" >/dev/null 2>&1
+
+if [ "$RESTORE_OK" = "1" ]; then
+  log_result 'success' "$SIZE" "'restaurado e verificado: $RESTORE_COUNT posts'" true
+  echo "backup criado e restore verificado: $OUT ($(du -h "$OUT" | cut -f1), $RESTORE_COUNT posts)"
+else
+  log_result 'success' "$SIZE" "'dump ok, mas teste de restore falhou ou contagem não bateu (viva=$LIVE_COUNT, restaurada=$RESTORE_COUNT)'" false
+  echo "backup criado, mas teste de restore falhou: $OUT ($(du -h "$OUT" | cut -f1))" >&2
+fi

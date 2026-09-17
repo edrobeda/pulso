@@ -1,0 +1,1 @@
+{ "shipped": true, "summary": "backup diário do Postgres agora restaura de verdade pra um banco descartável e confere a contagem de posts, não só a integridade do .gz", "needs_input": false }

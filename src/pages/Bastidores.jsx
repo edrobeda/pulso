@@ -369,9 +369,13 @@ export default function Bastidores() {
                 ))}
               </ul>
               <p className="metric-card__footnote">
-                {backup.rows[0].status === 'success'
-                  ? 'último backup ok, com verificação de integridade automática'
-                  : 'último backup falhou — investigado na próxima rodada'}
+                {backup.rows[0].status !== 'success'
+                  ? 'último backup falhou — investigado na próxima rodada'
+                  : backup.rows[0].restore_verified === true
+                    ? 'último backup ok — restaurado num banco de teste e a contagem de posts confere com a do banco vivo'
+                    : backup.rows[0].restore_verified === false
+                      ? 'último backup gerado, mas o teste de restore falhou ou a contagem não bateu — investigado na próxima rodada'
+                      : 'último backup ok, com verificação de integridade automática'}
               </p>
             </div>
           )}

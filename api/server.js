@@ -144,7 +144,7 @@ app.get('/api/db-size', async (_req, res) => {
 app.get('/api/backup-status', async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT ran_at, status, size_bytes, message FROM backup_log
+      `SELECT ran_at, status, size_bytes, message, restore_verified FROM backup_log
        ORDER BY ran_at DESC LIMIT 14`
     )
     res.set('Cache-Control', 'public, max-age=300')
