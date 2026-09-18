@@ -155,6 +155,81 @@ app.get('/api/backup-status', async (_req, res) => {
   }
 })
 
+// Real User Monitoring (RUM) próprio, sem serviço de terceiro (tipo
+// Google Analytics) — src/lib/vitals.js coleta TTFB/FCP/LCP/CLS reais do
+// navegador de quem visita e manda um POST só por sessão via sendBeacon.
+const VITALS_METRICS = new Set(['ttfb', 'fcp', 'lcp', 'cls'])
+const VITALS_LABELS = {
+  ttfb: 'TTFB (tempo até o primeiro byte)',
+  fcp: 'FCP (primeira renderização)',
+  lcp: 'LCP (maior elemento visível)',
+  cls: 'CLS (estabilidade visual)',
+}
+
+function isValidVitalValue(metric, value) {
+  if (!Number.isFinite(value) || value < 0) return false
+  // cls é adimensional (soma de deslocamentos, normalmente < 1); timing em
+  // ms cai fora de qualquer sessão real acima de 10 minutos — descarta lixo
+  // sem travar em um teto arbitrário baixo demais pra conexão ruim de verdade.
+  return metric === 'cls' ? value <= 50 : value <= 600_000
+}
+
+app.post('/api/vitals', writeLimiter, async (req, res) => {
+  try {
+    const path = String(req.body?.path || '').trim().slice(0, 200)
+    const metrics = req.body?.metrics
+    if (!path || !metrics || typeof metrics !== 'object') {
+      return res.status(400).json({ error: 'invalid' })
+    }
+
+    const entries = Object.entries(metrics).filter(
+      ([metric, value]) => VITALS_METRICS.has(metric) && isValidVitalValue(metric, Number(value))
+    )
+    if (entries.length === 0) return res.status(400).json({ error: 'no valid metrics' })
+
+    for (const [metric, value] of entries) {
+      await pool.query(`INSERT INTO web_vitals (metric, value, path) VALUES ($1, $2, $3)`, [
+        metric,
+        Number(value),
+        path,
+      ])
+    }
+    res.status(201).json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// p75 (percentil 75) é a agregação padrão da indústria pra Web Vitals — uma
+// média simples esconde a experiência dos 25% piores, que é justo o que
+// mais importa pra decidir se algo precisa de atenção.
+app.get('/api/vitals/summary', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT metric,
+              count(*)::int AS sample_count,
+              percentile_cont(0.75) WITHIN GROUP (ORDER BY value) AS p75
+       FROM web_vitals
+       WHERE created_at > now() - interval '7 days'
+       GROUP BY metric`
+    )
+    const byMetric = {}
+    for (const row of rows) {
+      byMetric[row.metric] = {
+        label: VITALS_LABELS[row.metric] || row.metric,
+        p75: Number(row.p75),
+        sampleCount: row.sample_count,
+      }
+    }
+    res.set('Cache-Control', 'public, max-age=300')
+    res.json(byMetric)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
 // Analytics próprio (sem terceiros): uma visita conta no máximo uma vez por
 // dispositivo por dia — o frontend deduplica via localStorage antes de
 // chamar isso, então isso não é pageview bruto, é "visitantes únicos/dia".

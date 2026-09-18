@@ -69,6 +69,13 @@ function backupRunLabel(isoTimestamp) {
     .replace('.', '')
 }
 
+function vitalValueLabel(metric, value) {
+  if (metric === 'cls') return value.toFixed(3)
+  return value >= 1000 ? `${(value / 1000).toFixed(2)}s` : `${Math.round(value)}ms`
+}
+
+const VITALS_ORDER = ['ttfb', 'fcp', 'lcp', 'cls']
+
 function bugReportDateLabel(isoTimestamp) {
   return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
@@ -91,6 +98,7 @@ export default function Bastidores() {
   const [downloads, setDownloads] = useState({ status: 'loading', rows: [] })
   const [dbSize, setDbSize] = useState({ status: 'loading', rows: [] })
   const [backup, setBackup] = useState({ status: 'loading', rows: [] })
+  const [vitals, setVitals] = useState({ status: 'loading', byMetric: {} })
 
   useEffect(() => {
     setDocumentMeta({
@@ -263,6 +271,24 @@ export default function Bastidores() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/vitals/summary')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((byMetric) => {
+        if (!cancelled) setVitals({ status: 'ready', byMetric })
+      })
+      .catch(() => {
+        if (!cancelled) setVitals({ status: 'error', byMetric: {} })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <section className="bastidores">
       <div className="intro">
@@ -279,7 +305,8 @@ export default function Bastidores() {
       {((usage.status === 'ready' && usage.rows.length > 0) ||
         (visits.status === 'ready' && visits.rows.length > 0) ||
         (dbSize.status === 'ready' && dbSize.rows.length > 0) ||
-        (backup.status === 'ready' && backup.rows.length > 0)) && (
+        (backup.status === 'ready' && backup.rows.length > 0) ||
+        (vitals.status === 'ready' && Object.keys(vitals.byMetric).length > 0)) && (
         <div className="metrics-grid">
           {usage.status === 'ready' && usage.rows.length > 0 && (
             <div className="metric-card metric-card--cost">
@@ -376,6 +403,29 @@ export default function Bastidores() {
                     : backup.rows[0].restore_verified === false
                       ? 'último backup gerado, mas o teste de restore falhou ou a contagem não bateu — investigado na próxima rodada'
                       : 'último backup ok, com verificação de integridade automática'}
+              </p>
+            </div>
+          )}
+
+          {vitals.status === 'ready' && Object.keys(vitals.byMetric).length > 0 && (
+            <div className="metric-card metric-card--vitals">
+              <p className="metric-card__label">
+                <span className="metric-card__icon" aria-hidden="true">⚡</span>
+                performance real (p75, últimos 7 dias)
+              </p>
+              <ul className="usage-list">
+                {VITALS_ORDER.filter((m) => vitals.byMetric[m]).map((m) => (
+                  <li className="usage-item" key={m}>
+                    <span className="usage-item__agent">{vitals.byMetric[m].label}</span>
+                    <span className="usage-item__tokens">
+                      {vitalValueLabel(m, vitals.byMetric[m].p75)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="metric-card__footnote">
+                medido no navegador de quem visita, não em laboratório — sem
+                serviço de terceiro
               </p>
             </div>
           )}

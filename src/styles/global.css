@@ -1332,6 +1332,10 @@ a {
   border-left-color: var(--signal-red);
 }
 
+.metric-card--vitals {
+  border-left-color: var(--mist-400);
+}
+
 .metric-card__footnote {
   margin: 10px 0 0;
   font-family: var(--font-mono);
@@ -1386,6 +1390,11 @@ a {
 .metric-card--backup-failed .metric-card__icon {
   color: var(--signal-red);
   border: 1px solid var(--signal-red);
+}
+
+.metric-card--vitals .metric-card__icon {
+  color: var(--mist-400);
+  border: 1px solid var(--mist-400);
 }
 
 .changelog-section {

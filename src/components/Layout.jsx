@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { nextPulseLabel } from '../lib/schedule'
 import { getTextSize, applyTextSize, stepTextSize, SIZES } from '../lib/textSize'
+import { initWebVitals } from '../lib/vitals'
 import BugReportWidget from './BugReportWidget'
 import ErrorBoundary from './ErrorBoundary'
 
@@ -56,6 +57,10 @@ export default function Layout() {
     fetch('/api/visits', { method: 'POST' })
       .then(() => localStorage.setItem(key, today))
       .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    initWebVitals()
   }, [])
 
   return (
