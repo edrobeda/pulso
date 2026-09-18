@@ -8,6 +8,7 @@ const TAG_LABEL = {
   infra: 'infra',
   agentes: 'agentes',
   mcp: 'mcp',
+  seguranca: 'segurança',
 }
 
 // Contagem própria (sem terceiro): dispara junto do clique, sem bloquear o

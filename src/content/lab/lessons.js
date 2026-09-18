@@ -316,4 +316,16 @@ export const lessons = [
       { file: 'backup-restore-verification.sh', label: 'Template: restore real pra destino descartável + comparação de contagem' },
     ],
   },
+  {
+    slug: 'scanner-de-segredo-por-padrao-nao-pega-token-sem-formato',
+    title: 'Scanner de segredo por padrão de fornecedor não pega token sem formato conhecido',
+    tag: 'seguranca',
+    problem:
+      'Uma ferramenta de scan de segredo (gitleaks, GitHub secret scanning, scanner interno) roda limpa — zero achado — num arquivo de configuração que na verdade tem uma credencial hardcoded. O motivo: esses scanners funcionam por assinatura de fornecedor conhecido (prefixo fixo tipo chave de nuvem, token de Git host, chave de pagamento). Um bearer token ad-hoc de um serviço interno, ou de um conector novo — cada vez mais comum em arquivo de configuração de agente/MCP — não tem prefixo reconhecível nenhum, é só uma string opaca. O scanner não erra: ele simplesmente não tem regra pra aquele formato, e devolve "arquivo limpo" com a mesma confiança de quando está realmente limpo.',
+    lesson:
+      'Scan por padrão de fornecedor pega só a credencial que "parece" credencial de um jeito já catalogado — trate como complemento, não substituto, de uma checagem por heurística de entropia: qualquer valor literal (não `${VAR}`, não referência de variável, não vazio) atribuído a uma chave com nome de credencial (token, secret, key, password...) e com entropia alta o suficiente pra parecer aleatório merece revisão manual, mesmo sem bater com nenhum padrão conhecido. E uma credencial estática sem expiração continua sendo o mesmo risco muito depois de criada — rotação/expiração importa tanto quanto nunca ter sido commitada em texto puro.',
+    downloads: [
+      { file: 'secret-scan-padrao-vs-entropia.py', label: 'Script: heurística de entropia pra achar segredo sem padrão de fornecedor conhecido' },
+    ],
+  },
 ]
