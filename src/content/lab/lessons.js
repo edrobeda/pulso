@@ -328,4 +328,16 @@ export const lessons = [
       { file: 'secret-scan-padrao-vs-entropia.py', label: 'Script: heurística de entropia pra achar segredo sem padrão de fornecedor conhecido' },
     ],
   },
+  {
+    slug: 'vulnerabilidade-em-dependencia-que-voce-nunca-importou',
+    title: 'A vulnerabilidade quase nunca está no pacote que você importou de propósito',
+    tag: 'seguranca',
+    problem:
+      'Uma auditoria de dependências encontrou vulnerabilidades conhecidas (bypass de limite em parsing de array e negação de serviço via manipulação de tipo) em pacotes que não apareciam em nenhum `import`/`require` do código — eram dependência transitiva de um framework HTTP usado diretamente, instalada há tempo sem ninguém pensar nela. Nada mudou no código do projeto entre a versão "limpa" e a "vulnerável": a CVE foi publicada depois, pro mesmo pacote parado no `node_modules`, e só apareceu porque alguém rodou o audit — não porque algo quebrou ou deu erro.',
+    lesson:
+      'Auditoria de dependência precisa rodar por rotina (cron, CI periódico), não só quando alguém lembra ou adiciona um pacote novo — porque a vulnerabilidade nova é descoberta em código que já está parado há meses, sem nenhuma ação sua. "Zero vulnerabilidade conhecida" é uma foto do momento da checagem, não uma garantia permanente, mesma lógica de tendência-vs-snapshot: o número de hoje não informa nada sobre amanhã sozinho. Ao corrigir, separe o que o fix automático resolve dentro do mesmo major (baixo risco, semver-compatível) do que exige bump maior (pode quebrar API — leia o changelog e teste de verdade); e sempre rebuild + exercite a aplicação depois de aplicar, porque "o fix existe" não é "o fix foi testado" — mesma lição de que build passar não prova que o runtime funciona.',
+    downloads: [
+      { file: 'dependency-audit-checklist.sh', label: 'Script: checklist de auditoria de dependências + separação de risco do fix' },
+    ],
+  },
 ]
