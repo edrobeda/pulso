@@ -1022,6 +1022,53 @@ ${prerenderPostList(matching)}
   }
 })
 
+// Bastidores está no sitemap (prioridade 0.5), mas sem isto um bot sem JS
+// (inclusive os crawlers de IA liberados no map lá em cima) só via o shell
+// vazio nessa URL indexável — mesmo problema que home/tags/post já tinham
+// antes do prerender deles existir. Reaproveita backlog_entries, a mesma
+// tabela que a SPA lê via /api/backlog.
+app.get('/prerender/bastidores', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT entry_date, title, description, status
+       FROM backlog_entries
+       ORDER BY entry_date DESC, created_at DESC
+       LIMIT 200`
+    )
+    const title = `Bastidores — ${SITE_NAME}`
+    const description =
+      'O que muda por trás do Pulso: banco de dados, API, layout e SEO, cuidados por um segundo agente autônomo que roda uma vez por dia.'
+    const statusLabel = { shipped: 'entregue', analyzing: 'analisando', blocked: 'aguardando o Edson' }
+    const itemListLd = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: rows.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: r.title })),
+    }
+    const bodyHtml = `<main>
+<h1>O que muda por trás do Pulso.</h1>
+<p>${escapeXml(description)}</p>
+<ul>
+${rows
+  .map(
+    (r) => `<li>
+<h2>${escapeXml(r.title)}</h2>
+<p><time datetime="${escapeXml(r.entry_date)}">${prerenderDate(r.entry_date)}</time> · ${statusLabel[r.status] || escapeXml(r.status)}</p>
+<p>${escapeXml(r.description)}</p>
+</li>`
+  )
+  .join('\n')}
+</ul>
+</main>`
+    sendPrerender(
+      res,
+      prerenderShell({ title, description, canonicalPath: '/bastidores', jsonLd: itemListLd, bodyHtml })
+    )
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('error')
+  }
+})
+
 // Busca por substring (título, trecho, tags e corpo do post), acento-
 // insensível via extensão `unaccent` (ver db/migrations/0008). Título/trecho
 // pesam mais que o corpo na ordenação, mesmo critério que a busca client-side
@@ -1147,6 +1194,45 @@ ${items}
   }
 })
 
+// JSON Feed 1.1 (jsonfeed.org) — mesmo conteúdo de /feed.xml, formato mais
+// fácil de consumir por app/agente que já espera JSON em vez de XML. Fica
+// sob /api/* pelo mesmo motivo do feed de tag logo abaixo: só /api/* tem
+// rota garantida no Caddy sem exigir mudança de infra fora do escopo deste
+// agente (/feed.xml e /sitemap.xml, na raiz, já foram registrados lá antes
+// desta rodada).
+app.get('/api/feed.json', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT slug, title, excerpt, date, slot, blocks FROM posts ORDER BY date DESC, slot DESC`
+    )
+    const items = rows.map((p) => {
+      const link = `${SITE_URL}/posts/${p.slug}`
+      return {
+        id: link,
+        url: link,
+        title: p.title,
+        summary: p.excerpt || '',
+        content_html: blocksToHtml(p.blocks),
+        date_published: `${p.date}T${p.slot}:00-03:00`,
+      }
+    })
+    res.set('Content-Type', 'application/feed+json; charset=utf-8')
+    res.set('Cache-Control', 'public, max-age=300')
+    res.json({
+      version: 'https://jsonfeed.org/version/1.1',
+      title: SITE_NAME,
+      home_page_url: SITE_URL,
+      feed_url: `${SITE_URL}/api/feed.json`,
+      description: SITE_DESCRIPTION,
+      language: 'pt-BR',
+      items,
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
 // RSS filtrado por tag — mesmo shape de /feed.xml, mas só com os posts que
 // carregam essa tag (slug de tag, mesmo formato de /tags/:tag no frontend).
 // Fica sob /api/* de propósito (diferente de /feed.xml e /sitemap.xml, que
@@ -1202,6 +1288,9 @@ ${items}
 app.get('/sitemap.xml', async (_req, res) => {
   try {
     const { rows } = await pool.query(`SELECT slug, date, tags FROM posts ORDER BY date DESC`)
+    const { rows: backlogRows } = await pool.query(
+      `SELECT entry_date FROM backlog_entries ORDER BY entry_date DESC LIMIT 1`
+    )
 
     const postRoutes = rows.map((p) => ({
       path: `/posts/${p.slug}`,
@@ -1229,7 +1318,12 @@ app.get('/sitemap.xml', async (_req, res) => {
     const staticRoutes = [
       { path: '/', changefreq: 'hourly', priority: '1.0' },
       { path: '/tags', changefreq: 'weekly', priority: '0.4' },
-      { path: '/bastidores', changefreq: 'daily', priority: '0.5' },
+      {
+        path: '/bastidores',
+        lastmod: backlogRows[0]?.entry_date,
+        changefreq: 'daily',
+        priority: '0.5',
+      },
       { path: '/laboratorio', changefreq: 'weekly', priority: '0.4' },
     ]
 

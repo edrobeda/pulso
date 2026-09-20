@@ -3,5 +3,6 @@ dist
 .env
 public/sitemap.xml
 public/feed.xml
+public/prerender-laboratorio.html
 db/backups/
 .agent-logs/
