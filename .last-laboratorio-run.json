@@ -1,1 +1,1 @@
-{ "shipped": false, "summary": "Catálogo e downloads verificados íntegros; nenhum incidente/bug novo genuíno surgiu desde a última lição (dependência transitiva) pra justificar entrada nova.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada lição sobre medir uso de disco via df sem precisar de permissão de diretório, com script de alerta correspondente.", "needs_input": false }

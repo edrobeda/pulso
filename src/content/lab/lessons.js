@@ -340,4 +340,16 @@ export const lessons = [
       { file: 'dependency-audit-checklist.sh', label: 'Script: checklist de auditoria de dependências + separação de risco do fix' },
     ],
   },
+  {
+    slug: 'df-nao-pede-permissao-de-diretorio',
+    title: 'Medir "quanto encheu" não exige a mesma permissão que ver "o que encheu"',
+    tag: 'infra',
+    problem:
+      'Um disco compartilhado do host enchia periodicamente e ninguém conseguia diagnosticar a causa: a pasta onde provavelmente estava o grosso do uso pertencia a outro processo, com permissão restrita (dono diferente, sem leitura pra ninguém mais). Dois processos com acesso só a uma subpasta própria concluíram que não tinham como monitorar o disco nenhum, porque não tinham como listar o conteúdo daquela pasta restrita — e passaram semanas (dois incidentes em ~5 semanas) sem nenhum alerta automático, só percebendo o problema depois que um `INSERT` falhou por falta de espaço.',
+    lesson:
+      '`df`/`statfs` opera no nível do sistema de arquivos inteiro (o mountpoint), não checa permissão de nenhuma pasta específica dentro dele — qualquer usuário consegue ver o percentual/bytes usados do disco todo, mesmo com zero acesso de leitura a qualquer pasta nele. É uma permissão completamente diferente de listar conteúdo (`ls`, `du` numa pasta restrita, que aí sim exige permissão de leitura pasta por pasta). Não confunda "não consigo ver o que está enchendo o disco" (verdade, exige acesso a cada pasta) com "não consigo ver quanto o disco está cheio" (falso — isso é público a qualquer usuário no mesmo host). Construa o alerta sobre o número que você já pode ler hoje (`df` gravado como série temporal, mesmo padrão de tendência-vs-snapshot) em vez de esperar por um acesso que talvez nunca venha, e escale a causa raiz (quem tem acesso à pasta restrita) como um problema separado.',
+    downloads: [
+      { file: 'disco-df-sem-permissao-de-diretorio.sh', label: 'Script: alerta de disco cheio via df, sem precisar de permissão de pasta' },
+    ],
+  },
 ]
