@@ -1336,6 +1336,14 @@ a {
   border-left-color: var(--mist-400);
 }
 
+.metric-card--disk {
+  border-left-color: var(--signal-teal);
+}
+
+.metric-card--disk.metric-card--disk-critical {
+  border-left-color: var(--signal-red);
+}
+
 .metric-card__footnote {
   margin: 10px 0 0;
   font-family: var(--font-mono);
@@ -1395,6 +1403,16 @@ a {
 .metric-card--vitals .metric-card__icon {
   color: var(--mist-400);
   border: 1px solid var(--mist-400);
+}
+
+.metric-card--disk .metric-card__icon {
+  color: var(--signal-teal);
+  border: 1px solid var(--signal-teal);
+}
+
+.metric-card--disk-critical .metric-card__icon {
+  color: var(--signal-red);
+  border: 1px solid var(--signal-red);
 }
 
 .changelog-section {

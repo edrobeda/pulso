@@ -139,6 +139,24 @@ app.get('/api/db-size', async (_req, res) => {
   }
 })
 
+// Histórico de uso de disco do host (/ e /mnt/storage-extra) — ver
+// db/migrations/0017_disk_usage_snapshots.sql. Só percentuais e bytes,
+// nada que exponha caminho interno além dos dois mounts já públicos aqui.
+app.get('/api/disk-usage', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT entry_date, mount_path, total_bytes, avail_bytes, used_pct
+       FROM disk_usage_snapshots
+       ORDER BY entry_date DESC LIMIT 28`
+    )
+    res.set('Cache-Control', 'public, max-age=300')
+    res.json(rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
 // Transparência do backup diário (db/backup.sh grava aqui a cada rodada) —
 // só status/data/tamanho, nada que exponha caminho ou host do servidor.
 app.get('/api/backup-status', async (_req, res) => {

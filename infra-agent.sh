@@ -90,6 +90,22 @@ if [ -s "$RAW_JSON" ]; then
          ON CONFLICT (entry_date) DO UPDATE SET size_bytes = EXCLUDED.size_bytes" \
         >> "$LOG_DIR/runs.log" 2>&1 \
         || echo "$(date -Iseconds) — aviso: falha ao registrar snapshot de tamanho do banco" >> "$LOG_DIR/runs.log"
+
+    # Snapshot diário de uso de disco do host (/ e /mnt/storage-extra) — ver
+    # db/migrations/0017_disk_usage_snapshots.sql. Não precisa de root: df
+    # funciona no mount point mesmo sem permissão de leitura dentro dele.
+    # Dá visibilidade histórica em /bastidores pro padrão de disco cheio
+    # registrado em NECESSIDADES.md (2026-08-13, 2026-08-19, 2026-09-21).
+    while read -r MOUNT TOTAL AVAIL PCT; do
+        PCT="${PCT%\%}"
+        docker exec -e PGPASSWORD="$BLOG_DB_PASSWORD" DK_BLOG_DB psql -U "$BLOG_DB_USER" -d "$BLOG_DB_NAME" -c \
+            "INSERT INTO disk_usage_snapshots (entry_date, mount_path, total_bytes, avail_bytes, used_pct)
+             VALUES (CURRENT_DATE, '$MOUNT', $TOTAL, $AVAIL, $PCT)
+             ON CONFLICT (entry_date, mount_path) DO UPDATE SET
+               total_bytes = EXCLUDED.total_bytes, avail_bytes = EXCLUDED.avail_bytes, used_pct = EXCLUDED.used_pct" \
+            >> "$LOG_DIR/runs.log" 2>&1 \
+            || echo "$(date -Iseconds) — aviso: falha ao registrar snapshot de disco ($MOUNT)" >> "$LOG_DIR/runs.log"
+    done < <(df --output=target,size,avail,pcent -B1 / /mnt/storage-extra 2>/dev/null | tail -n +2)
 fi
 rm -f "$RAW_JSON"
 

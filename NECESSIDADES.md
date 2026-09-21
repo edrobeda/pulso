@@ -29,6 +29,31 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-09-21 — [PENDENTE] `/mnt/storage-extra` encheu e esvaziou sozinho de novo — segunda vez em ~5 semanas
+**Por quê:** o agente de publicação reportou (via `MEETING.md`) que
+`/mnt/storage-extra` estava 100% cheio (47G/49G, 0 disponível) às 13:00 de
+hoje, derrubando o insert de um post (`ERROR: could not extend file
+"base/16384/16431": No space left on device"`). Nesta minha rodada de
+18:00 o mesmo volume já está de volta a 34% de uso (62G disponíveis),
+Postgres e site saudáveis — mesmo padrão do incidente de 2026-08-13 (enche
+sozinho, esvazia sozinho, sem eu ou o agente de publicação fazermos nada
+ativamente). É a segunda vez em ~5 semanas. Nenhum de nós dois tem
+permissão de leitura em `/mnt/storage-extra/docker` (dono `root`,
+`drwx--x---`), que é onde provavelmente está a maior parte do uso — então
+nenhum dos dois consegue diagnosticar a causa raiz (qual container/processo
+está enchendo o disco) nem configurar um alerta de verdade.
+**O que preciso:** não precisa ser um conserto imediato — é mais uma
+decisão de prioridade: (a) vale a pena investigar o que enche
+`/mnt/storage-extra/docker` periodicamente (algum container fora dos três
+do blog, log rotation, etc.), e (b) se sim, considerar algum alerta de
+disco em nível de host (fora do escopo dos dois agentes) pra avisar antes
+da próxima vez que um post deixar de publicar por causa disso. Só um "ciente,
+vou investigar" ou "não é prioridade agora" já resolve pra mim continuar
+sem ficar reabrindo isso toda vez que o padrão se repetir.
+**Resposta do Edson:** _(preencha aqui embaixo desta linha)_
+
+---
+
 ## 2026-08-19 — [RESOLVIDO] disco raiz (`/`) em 97% de uso, 1.1G livre
 **Por quê:** durante a rodada de hoje reparei que o filesystem raiz do host
 está em 97% de uso (`df -h /` → 38G total, 35G usado, 1.1G disponível).

@@ -57,6 +57,19 @@ function dbSizeDayLabel(isoDate) {
     .replace('.', '')
 }
 
+const DISK_MOUNT_LABEL = {
+  '/': 'disco do sistema',
+  '/mnt/storage-extra': 'volume de dados',
+}
+
+function latestDiskByMount(rows) {
+  const seen = new Map()
+  for (const r of rows) {
+    if (!seen.has(r.mount_path)) seen.set(r.mount_path, r)
+  }
+  return [...seen.values()]
+}
+
 function backupRunLabel(isoTimestamp) {
   return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
@@ -98,6 +111,7 @@ export default function Bastidores() {
   const [downloads, setDownloads] = useState({ status: 'loading', rows: [] })
   const [dbSize, setDbSize] = useState({ status: 'loading', rows: [] })
   const [backup, setBackup] = useState({ status: 'loading', rows: [] })
+  const [diskUsage, setDiskUsage] = useState({ status: 'loading', rows: [] })
   const [vitals, setVitals] = useState({ status: 'loading', byMetric: {} })
 
   useEffect(() => {
@@ -273,6 +287,24 @@ export default function Bastidores() {
 
   useEffect(() => {
     let cancelled = false
+    fetch('/api/disk-usage')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setDiskUsage({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setDiskUsage({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
     fetch('/api/vitals/summary')
       .then((res) => {
         if (!res.ok) throw new Error(`status ${res.status}`)
@@ -306,6 +338,7 @@ export default function Bastidores() {
         (visits.status === 'ready' && visits.rows.length > 0) ||
         (dbSize.status === 'ready' && dbSize.rows.length > 0) ||
         (backup.status === 'ready' && backup.rows.length > 0) ||
+        (diskUsage.status === 'ready' && diskUsage.rows.length > 0) ||
         (vitals.status === 'ready' && Object.keys(vitals.byMetric).length > 0)) && (
         <div className="metrics-grid">
           {usage.status === 'ready' && usage.rows.length > 0 && (
@@ -406,6 +439,36 @@ export default function Bastidores() {
               </p>
             </div>
           )}
+
+          {diskUsage.status === 'ready' && diskUsage.rows.length > 0 && (() => {
+            const latest = latestDiskByMount(diskUsage.rows)
+            const critical = latest.some((r) => r.used_pct >= 90)
+            return (
+              <div className={`metric-card metric-card--disk${critical ? ' metric-card--disk-critical' : ''}`}>
+                <p className="metric-card__label">
+                  <span className="metric-card__icon" aria-hidden="true">{critical ? '!' : '◌'}</span>
+                  disco do host (auto-monitorado)
+                </p>
+                <ul className="usage-list">
+                  {latest.map((r) => (
+                    <li className="usage-item" key={r.mount_path}>
+                      <span className="usage-item__agent">
+                        {DISK_MOUNT_LABEL[r.mount_path] || r.mount_path}
+                      </span>
+                      <span className="usage-item__tokens">
+                        {r.used_pct}% usado · {formatBytes(Number(r.avail_bytes))} livre
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="metric-card__footnote">
+                  {critical
+                    ? 'uso acima de 90% em pelo menos um volume — risco de falha em escrita'
+                    : 'snapshot diário; volume de dados já ficou cheio duas vezes desde agosto e se recuperou sozinho'}
+                </p>
+              </div>
+            )
+          })()}
 
           {vitals.status === 'ready' && Object.keys(vitals.byMetric).length > 0 && (
             <div className="metric-card metric-card--vitals">
