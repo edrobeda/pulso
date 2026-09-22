@@ -62,6 +62,15 @@ const DISK_MOUNT_LABEL = {
   '/mnt/storage-extra': 'volume de dados',
 }
 
+const UPTIME_TARGET_LABEL = {
+  db: 'banco de dados',
+  frontend: 'site',
+}
+
+function uptimePctLabel(pct) {
+  return `${pct.toFixed(pct >= 99.95 ? 2 : 1)}%`
+}
+
 function latestDiskByMount(rows) {
   const seen = new Map()
   for (const r of rows) {
@@ -113,6 +122,7 @@ export default function Bastidores() {
   const [backup, setBackup] = useState({ status: 'loading', rows: [] })
   const [diskUsage, setDiskUsage] = useState({ status: 'loading', rows: [] })
   const [vitals, setVitals] = useState({ status: 'loading', byMetric: {} })
+  const [uptime, setUptime] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -305,6 +315,24 @@ export default function Bastidores() {
 
   useEffect(() => {
     let cancelled = false
+    fetch('/api/uptime')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setUptime({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setUptime({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
     fetch('/api/vitals/summary')
       .then((res) => {
         if (!res.ok) throw new Error(`status ${res.status}`)
@@ -339,7 +367,8 @@ export default function Bastidores() {
         (dbSize.status === 'ready' && dbSize.rows.length > 0) ||
         (backup.status === 'ready' && backup.rows.length > 0) ||
         (diskUsage.status === 'ready' && diskUsage.rows.length > 0) ||
-        (vitals.status === 'ready' && Object.keys(vitals.byMetric).length > 0)) && (
+        (vitals.status === 'ready' && Object.keys(vitals.byMetric).length > 0) ||
+        (uptime.status === 'ready' && uptime.rows.length > 0)) && (
         <div className="metrics-grid">
           {usage.status === 'ready' && usage.rows.length > 0 && (
             <div className="metric-card metric-card--cost">
@@ -465,6 +494,34 @@ export default function Bastidores() {
                   {critical
                     ? 'uso acima de 90% em pelo menos um volume — risco de falha em escrita'
                     : 'snapshot diário; volume de dados já ficou cheio duas vezes desde agosto e se recuperou sozinho'}
+                </p>
+              </div>
+            )
+          })()}
+
+          {uptime.status === 'ready' && uptime.rows.length > 0 && (() => {
+            const degraded = uptime.rows.some((r) => r.uptime24h < 99)
+            return (
+              <div className={`metric-card metric-card--uptime${degraded ? ' metric-card--uptime-degraded' : ''}`}>
+                <p className="metric-card__label">
+                  <span className="metric-card__icon" aria-hidden="true">{degraded ? '!' : '●'}</span>
+                  disponibilidade (auto-monitorada)
+                </p>
+                <ul className="usage-list">
+                  {uptime.rows.map((r) => (
+                    <li className="usage-item" key={r.target}>
+                      <span className="usage-item__agent">
+                        {UPTIME_TARGET_LABEL[r.target] || r.target}
+                      </span>
+                      <span className="usage-item__tokens">
+                        {uptimePctLabel(r.uptime24h)} em 24h · {uptimePctLabel(r.uptime7d)} em 7d
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="metric-card__footnote">
+                  a própria API testa banco e site a cada 5min, sem serviço
+                  de terceiro
                 </p>
               </div>
             )

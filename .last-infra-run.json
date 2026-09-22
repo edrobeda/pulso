@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "monitoramento de uso de disco do host (histórico + card de alerta em /bastidores), motivado pelo incidente de disco cheio de hoje", "needs_input": true }
+{ "shipped": true, "summary": "disponibilidade auto-monitorada (banco + site, checagem própria a cada 5min) exposta em /bastidores", "needs_input": false }

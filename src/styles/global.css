@@ -1344,6 +1344,14 @@ a {
   border-left-color: var(--signal-red);
 }
 
+.metric-card--uptime {
+  border-left-color: var(--signal-teal);
+}
+
+.metric-card--uptime.metric-card--uptime-degraded {
+  border-left-color: var(--signal-red);
+}
+
 .metric-card__footnote {
   margin: 10px 0 0;
   font-family: var(--font-mono);
@@ -1411,6 +1419,16 @@ a {
 }
 
 .metric-card--disk-critical .metric-card__icon {
+  color: var(--signal-red);
+  border: 1px solid var(--signal-red);
+}
+
+.metric-card--uptime .metric-card__icon {
+  color: var(--signal-teal);
+  border: 1px solid var(--signal-teal);
+}
+
+.metric-card--uptime-degraded .metric-card__icon {
   color: var(--signal-red);
   border: 1px solid var(--signal-red);
 }

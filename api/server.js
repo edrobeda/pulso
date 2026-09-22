@@ -157,6 +157,42 @@ app.get('/api/disk-usage', async (_req, res) => {
   }
 })
 
+// Disponibilidade real (ver UPTIME_CHECK_INTERVAL_MS mais abaixo, que grava
+// em uptime_checks a cada 5min) — % de checks `ok` nas últimas 24h/7d por
+// alvo. Amostra faltante (API fora do ar, sem ninguém rodando o check) conta
+// como indisponibilidade, não é ignorada — por isso o denominador é o total
+// de janelas de 5min esperadas no período, não só quantas linhas existem.
+app.get('/api/uptime', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT target,
+              ok,
+              (now() - checked_at) < interval '24 hours' AS in_24h,
+              (now() - checked_at) < interval '7 days' AS in_7d
+       FROM uptime_checks
+       WHERE checked_at > now() - interval '7 days'`
+    )
+    const expected24h = Math.ceil((24 * 60) / UPTIME_CHECK_INTERVAL_MINUTES)
+    const expected7d = Math.ceil((7 * 24 * 60) / UPTIME_CHECK_INTERVAL_MINUTES)
+    const byTarget = {}
+    for (const r of rows) {
+      const t = (byTarget[r.target] ||= { ok24h: 0, ok7d: 0 })
+      if (r.in_24h && r.ok) t.ok24h += 1
+      if (r.in_7d && r.ok) t.ok7d += 1
+    }
+    const summary = Object.entries(byTarget).map(([target, t]) => ({
+      target,
+      uptime24h: Math.min(100, (t.ok24h / expected24h) * 100),
+      uptime7d: Math.min(100, (t.ok7d / expected7d) * 100),
+    }))
+    res.set('Cache-Control', 'public, max-age=120')
+    res.json(summary)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
 // Transparência do backup diário (db/backup.sh grava aqui a cada rodada) —
 // só status/data/tamanho, nada que exponha caminho ou host do servidor.
 app.get('/api/backup-status', async (_req, res) => {
@@ -1368,6 +1404,53 @@ ${urls
     res.status(500).json({ error: 'internal error' })
   }
 })
+
+// Self-check de disponibilidade: sem serviço externo (uptime robot de
+// terceiro), a própria API testa suas duas dependências a cada 5min e grava
+// em uptime_checks — /api/uptime transforma isso num número público. Testa
+// o Postgres (SELECT 1, já usado em /api/health) e o frontend via rede
+// Docker interna (nome do container, não `localhost`/domínio público — evita
+// depender de DNS externo ou do próprio Caddy pra medir a própria saúde).
+const UPTIME_CHECK_INTERVAL_MINUTES = 5
+
+async function recordUptimeCheck(target, fn) {
+  const startedAt = Date.now()
+  try {
+    await fn()
+    await pool.query(
+      'INSERT INTO uptime_checks (target, ok, latency_ms) VALUES ($1, true, $2)',
+      [target, Date.now() - startedAt]
+    )
+  } catch (err) {
+    await pool
+      .query('INSERT INTO uptime_checks (target, ok, latency_ms, error) VALUES ($1, false, $2, $3)', [
+        target,
+        Date.now() - startedAt,
+        String(err.message || err).slice(0, 500),
+      ])
+      .catch(() => {})
+  }
+}
+
+async function runUptimeChecks() {
+  await recordUptimeCheck('db', () => pool.query('SELECT 1'))
+  await recordUptimeCheck('frontend', async () => {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
+    try {
+      const r = await fetch('http://DK_BLOG:80/', { signal: controller.signal })
+      if (!r.ok) throw new Error(`status ${r.status}`)
+    } finally {
+      clearTimeout(timeout)
+    }
+  })
+  // Retenção: sem isto a tabela cresce sem limite (288 linhas/alvo/dia).
+  // 7 dias já cobre o que /api/uptime expõe.
+  await pool.query("DELETE FROM uptime_checks WHERE checked_at < now() - interval '7 days'").catch(() => {})
+}
+
+setInterval(runUptimeChecks, UPTIME_CHECK_INTERVAL_MINUTES * 60_000)
+runUptimeChecks().catch(() => {})
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
