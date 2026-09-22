@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionada lição sobre medir uso de disco via df sem precisar de permissão de diretório, com script de alerta correspondente.", "needs_input": false }
+{ "shipped": true, "summary": "Nova lição no laboratório: cálculo de % de disponibilidade auto-monitorada precisa usar janelas de tempo esperadas como denominador, não linhas existentes, senão a queda do próprio checker fica invisível.", "needs_input": false }

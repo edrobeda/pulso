@@ -352,4 +352,16 @@ export const lessons = [
       { file: 'disco-df-sem-permissao-de-diretorio.sh', label: 'Script: alerta de disco cheio via df, sem precisar de permissão de pasta' },
     ],
   },
+  {
+    slug: 'uptime-conta-janela-esperada-nao-linha-existente',
+    title: 'Disponibilidade auto-monitorada calculada errado fica cega bem na hora que mais importa',
+    tag: 'infra',
+    problem:
+      'Um serviço passou a medir sua própria disponibilidade sem depender de terceiro: um checker periódico testa dependências (banco, outro componente interno) e grava uma linha por checagem, sucesso ou falha. O jeito óbvio de calcular o percentual é `linhas_ok / total_de_linhas_no_período` — só que se o próprio processo que faz a checagem cair (crash, deploy, container reiniciando), nenhuma linha nova é gravada durante a queda. Não existe uma linha "falhou" pra aquele intervalo, existe ausência total de dado — e dividir só pelo que existe faz esse buraco não mudar a proporção nem um pouco. O painel mostra disponibilidade quase perfeita justamente na janela em que ninguém sabia se estava tudo bem, porque o termômetro em si estava quebrado.',
+    lesson:
+      'O denominador de um percentual de disponibilidade auto-medido não pode ser "quantas linhas existem" — tem que ser "quantas checagens deveriam ter acontecido no período", um número fixo calculado a partir do relógio e do intervalo configurado, não da tabela. Linha ausente dentro dessa janela esperada conta como falha, não como dado faltante. Teste de propósito: pare o processo que faz a checagem por um tempo e confirme que o percentual cai quando ele volta — se continuar perto de 100%, o denominador ainda está errado. Mesma família de lição que verificação-que-só-o-processo-vê e tendência-vs-snapshot: o número bonito no painel só vale alguma coisa se o método por trás dele sobreviver ao próprio monitor falhar.',
+    downloads: [
+      { file: 'uptime-denominador-janela-esperada.sql', label: 'Template SQL: % de disponibilidade com denominador correto' },
+    ],
+  },
 ]
