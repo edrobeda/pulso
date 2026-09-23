@@ -1486,6 +1486,16 @@ a {
   margin-left: auto;
 }
 
+.sparkline {
+  align-self: center;
+  flex-shrink: 0;
+  display: block;
+}
+
+.metric-card__label + .sparkline {
+  margin: -4px 0 10px;
+}
+
 .backlog-list {
   list-style: none;
   margin: 0;

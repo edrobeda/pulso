@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { dayLabel } from '../lib/format'
 import { setDocumentMeta } from '../lib/seo'
+import Sparkline from '../components/Sparkline'
 
 const STATUS_META = {
   shipped: { label: 'entregue', className: 'backlog-badge--shipped' },
@@ -77,6 +78,18 @@ function latestDiskByMount(rows) {
     if (!seen.has(r.mount_path)) seen.set(r.mount_path, r)
   }
   return [...seen.values()]
+}
+
+// Rows chegam DESC (mais recente primeiro) — sparkline quer ordem
+// cronológica, então cada série por mount é revertida.
+function diskSeriesByMount(rows) {
+  const byMount = new Map()
+  for (const r of rows) {
+    if (!byMount.has(r.mount_path)) byMount.set(r.mount_path, [])
+    byMount.get(r.mount_path).push(r)
+  }
+  for (const series of byMount.values()) series.reverse()
+  return byMount
 }
 
 function backupRunLabel(isoTimestamp) {
@@ -416,6 +429,13 @@ export default function Bastidores() {
                 <span className="metric-card__icon" aria-hidden="true">▦</span>
                 tamanho do banco (auto-monitorado)
               </p>
+              {dbSize.rows.length > 1 && (
+                <Sparkline
+                  points={[...dbSize.rows].reverse().map((r) => Number(r.size_bytes))}
+                  color="var(--mist-400)"
+                  label={`tamanho do banco: de ${formatBytes(Number(dbSize.rows[dbSize.rows.length - 1].size_bytes))} a ${formatBytes(Number(dbSize.rows[0].size_bytes))} nos últimos ${dbSize.rows.length} dias`}
+                />
+              )}
               <ul className="usage-list">
                 {dbSize.rows.map((r) => (
                   <li className="usage-item" key={r.entry_date}>
@@ -472,6 +492,7 @@ export default function Bastidores() {
           {diskUsage.status === 'ready' && diskUsage.rows.length > 0 && (() => {
             const latest = latestDiskByMount(diskUsage.rows)
             const critical = latest.some((r) => r.used_pct >= 90)
+            const seriesByMount = diskSeriesByMount(diskUsage.rows)
             return (
               <div className={`metric-card metric-card--disk${critical ? ' metric-card--disk-critical' : ''}`}>
                 <p className="metric-card__label">
@@ -479,16 +500,26 @@ export default function Bastidores() {
                   disco do host (auto-monitorado)
                 </p>
                 <ul className="usage-list">
-                  {latest.map((r) => (
-                    <li className="usage-item" key={r.mount_path}>
-                      <span className="usage-item__agent">
-                        {DISK_MOUNT_LABEL[r.mount_path] || r.mount_path}
-                      </span>
-                      <span className="usage-item__tokens">
-                        {r.used_pct}% usado · {formatBytes(Number(r.avail_bytes))} livre
-                      </span>
-                    </li>
-                  ))}
+                  {latest.map((r) => {
+                    const series = seriesByMount.get(r.mount_path) || []
+                    return (
+                      <li className="usage-item" key={r.mount_path}>
+                        <span className="usage-item__agent">
+                          {DISK_MOUNT_LABEL[r.mount_path] || r.mount_path}
+                        </span>
+                        {series.length > 1 && (
+                          <Sparkline
+                            points={series.map((s) => s.used_pct)}
+                            color={r.used_pct >= 90 ? 'var(--signal-red)' : 'var(--signal-teal)'}
+                            label={`uso de disco: de ${series[0].used_pct}% a ${series[series.length - 1].used_pct}% nos últimos ${series.length} dias`}
+                          />
+                        )}
+                        <span className="usage-item__tokens">
+                          {r.used_pct}% usado · {formatBytes(Number(r.avail_bytes))} livre
+                        </span>
+                      </li>
+                    )
+                  })}
                 </ul>
                 <p className="metric-card__footnote">
                   {critical
