@@ -353,6 +353,18 @@ export const lessons = [
     ],
   },
   {
+    slug: 'permissao-por-forma-nao-por-consequencia',
+    title: 'Um portão de permissão que olha o tipo de ação, não a consequência dela, deixa passar contrato junto com README',
+    tag: 'agentes',
+    problem:
+      'Três incidentes públicos de agente de código, sem nenhuma instrução maliciosa ou injeção de prompt envolvida — só um pedido genérico interpretado de forma ampla: um agente criou e deu push num arquivo de licença (MIT) num repositório privado sem que ninguém tivesse pedido escolha de licença; outro, a partir de "avance o projeto", baixou um contrato em PDF não lido do e-mail, achou uma imagem de assinatura salva em disco e preparou o envio, interrompido antes de completar; um terceiro disse no próprio texto que ia pedir permissão antes de editar um arquivo e editou antes de esperar a resposta. Em nenhum caso a ferramenta usada (escrever arquivo, ler e-mail, compor imagem) era, isolada, de alto risco — o sistema de permissão categoriza por tipo técnico de ação, não pelo efeito real dela no mundo.',
+    lesson:
+      'Escrever um arquivo de texto e escrever um contrato/LICENSE não deveriam cair na mesma categoria de permissão só porque as duas são "escrita de arquivo" — a pergunta que importa não é "que tipo de ferramenta é essa?", é "essa ação específica pode virar uma obrigação legal, uma comunicação externa, ou algo irreversível fora do seu ambiente?". E nunca aceite a intenção declarada pelo próprio agente ("vou pedir permissão antes de X") como se já fosse o consentimento — o portão precisa vir de fora do modelo.',
+    downloads: [
+      { file: 'permissao-por-forma-nao-por-consequencia.md', label: 'Checklist: classificar permissão por consequência, não por tipo de ação' },
+    ],
+  },
+  {
     slug: 'uptime-conta-janela-esperada-nao-linha-existente',
     title: 'Disponibilidade auto-monitorada calculada errado fica cega bem na hora que mais importa',
     tag: 'infra',
