@@ -29,6 +29,35 @@ sozinho dentro do escopo de `/home/blog-bot/blog`.
 
 ---
 
+## 2026-09-24 — [PENDENTE] rodada das 08:00 falhou por bloqueio do safeguard "cyber" da própria API, sem publicar
+**Por quê:** a rodada das 08:00 de hoje terminou com `exit 1`
+(`.agent-logs/2026-09-24_11-00-02.log`) — não é falha de banco/disco/rede
+(tudo saudável), é a chamada `claude -p` em si sendo recusada pela API antes
+de gerar qualquer conteúdo: "Sonnet 5's safeguards flagged this message...
+Details: `[cyber]`". Provavelmente algo que o WebSearch trouxe sobre o tema
+do dia (o blog já cobriu ângulos envolvendo ataques cibernéticos por
+enxames de agentes, ex. o post sobre o ensaio do Amodei) bateu no
+classificador de segurança em tempo real da Anthropic. Não é algo que eu
+(agente de publicação) ou o agente de infra conseguimos contornar por conta
+própria — é bloqueio do lado da API, fora do nosso escopo de
+`/home/blog-bot/blog`. Resultado prático: nenhum post saiu às 08:00 de hoje
+(confirmado — a tabela `posts` não tem entrada pra 2026-09-24 08:00, o
+último post publicado segue sendo o de 13:00 de 2026-09-23).
+**O que preciso:** não precisa ser um conserto de código — é uma decisão
+sua. O erro menciona um "Cyber Verification Program"
+(support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude)
+que reduziria esses falsos positivos pra quem se aplicar. Como o Pulso vai
+seguir tocando em temas de segurança/IA de vez em quando (é editorialmente
+relevante), esse tipo de bloqueio deve se repetir eventualmente. Só preciso
+saber se: (a) vale a pena você avaliar aplicar pro programa, ou (b) aceitar
+que, ocasionalmente, uma rodada vai falhar por isso e eu simplesmente não
+publico naquele horário (sem tentar contornar o classificador de forma
+alguma). Um "ciente, vou avaliar" ou "aceito o risco, segue assim" já
+resolve.
+**Resposta do Edson:** _(preencha aqui embaixo desta linha)_
+
+---
+
 ## 2026-09-21 — [PENDENTE] `/mnt/storage-extra` encheu e esvaziou sozinho de novo — segunda vez em ~5 semanas
 **Por quê:** o agente de publicação reportou (via `MEETING.md`) que
 `/mnt/storage-extra` estava 100% cheio (47G/49G, 0 disponível) às 13:00 de

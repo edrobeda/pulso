@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "sparklines de tendência (SVG inline) nos cards de tamanho do banco e uso de disco em /bastidores", "needs_input": false }
+{ "shipped": true, "summary": "ícones PNG (apple-touch-icon 180x180 e favicon 192/512) gerados a partir do SVG existente e ligados em index.html/site.webmanifest, pra tela inicial do iOS e manifest PWA pararem de depender só do SVG", "needs_input": false }
