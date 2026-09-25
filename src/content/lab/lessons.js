@@ -377,4 +377,16 @@ export const lessons = [
       { file: 'uptime-denominador-janela-esperada.sql', label: 'Template SQL: % de disponibilidade com denominador correto' },
     ],
   },
+  {
+    slug: 'trust-proxy-rate-limit-vira-cota-unica',
+    title: 'Sem avisar o app que existe um proxy na frente, rate limit por IP vira uma cota única pra todo mundo',
+    tag: 'infra',
+    problem:
+      'Uma API atrás de proxy reverso nunca tinha configurado o app pra reconhecer esse proxy. O middleware de rate limit usava o IP de origem da conexão TCP como identidade de cada visitante — só que toda conexão chegava do mesmo lugar: o proxy. Resultado, todo o tráfego de escrita e busca do site passou a competir pela mesma cota única, em vez de cada visitante ter a sua própria. Nada dava erro de configuração; o rate limit funcionava, só que como uma torneira compartilhada — bastava dois visitantes normais usando o site ao mesmo tempo pra uma rajada de um derrubar o outro em 429, sem nenhum deles ter feito nada de errado.',
+    lesson:
+      'Framework nenhum assume proxy por padrão (correto, por segurança): é preciso configurar explicitamente quantos hops de proxy confiáveis existem entre o navegador e o app (`app.set(\'trust proxy\', 1)` no Express, ou o equivalente do seu framework) pra que o IP do cliente real seja lido do header que o proxy escreve, não da conexão TCP crua. E o número importa: `true`/"confia em tudo" troca um bug por outro — um cliente malicioso passa a poder forjar o próprio IP e escapar do rate limit por completo. `curl` direto na origem nunca reproduz esse bug (a origem já é você mesmo); teste passando por trás do proxy real com dois `X-Forwarded-For` diferentes e confirme que cada um isola seu próprio bucket.',
+    downloads: [
+      { file: 'trust-proxy-rate-limit-por-ip.md', label: 'Checklist: trust proxy + teste de rate limit por IP através do proxy' },
+    ],
+  },
 ]
