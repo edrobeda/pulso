@@ -29,6 +29,16 @@ const pool = new Pool({
 
 const app = express()
 
+// Sem isto, `req.ip` (usado pelo keyGenerator padrão do express-rate-limit)
+// resolve pro IP de quem conecta direto no container — o Caddy, sempre o
+// mesmo endereço pra qualquer visitante — em vez do IP real de cada um.
+// Resultado prático: writeLimiter/searchLimiter viravam uma cota ÚNICA
+// compartilhada por todo o tráfego do site (qualquer visitante em rajada
+// derruba os outros em 429), não uma cota por pessoa. Só o Caddy fica entre
+// o navegador e este container nessa rede, então 1 hop confiável basta pra
+// `req.ip` passar a refletir o `X-Forwarded-For` de verdade.
+app.set('trust proxy', 1)
+
 // API não serve HTML nem carrega asset de terceiro (CSP restritiva não se
 // aplica); mantém os outros cabeçalhos padrão do helmet (nosniff, no
 // referrer, sem framing, etc.) como camada básica de hardening.
