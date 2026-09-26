@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionada lição sobre rate limit atrás de proxy reverso virar cota única compartilhada sem trust proxy configurado, com checklist + download novo.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada lição sobre service worker cache-first travando usuários numa versão velha, com checklist e template network-first reaproveitável.", "needs_input": false }
