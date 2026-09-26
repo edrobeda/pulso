@@ -389,4 +389,16 @@ export const lessons = [
       { file: 'trust-proxy-rate-limit-por-ip.md', label: 'Checklist: trust proxy + teste de rate limit por IP através do proxy' },
     ],
   },
+  {
+    slug: 'service-worker-cache-first-trava-em-versao-velha',
+    title: 'Service worker cache-first sem plano de saída trava o usuário numa versão velha',
+    tag: 'frontend',
+    problem:
+      'Um service worker adicionado pra dar resiliência offline nasce, pela via mais simples de implementar, como cache-first: serve do cache se existir, só busca na rede se não existir. Funciona perfeitamente no dia da implementação. Semanas depois, em produção, aparece o problema: o navegador mantém o mesmo service worker registrado entre sessões, e sem invalidação de cache (mesma chave pra sempre, sem limpeza no `activate`) usuários que voltam ao site recebem o HTML/JS antigo — mesmo online, mesmo já existindo versão nova no servidor. Nenhum erro aparece; a página carrega normal, só congelada na versão de quando o cache foi criado, e a única saída pro usuário é limpar o storage do site manualmente, algo que ninguém faz sem saber que precisa.',
+    lesson:
+      'Cache-first só serve pra recurso verdadeiramente imutável (tipicamente arquivo com hash no nome gerado pelo build, onde o nome já muda quando o conteúdo muda). Pra navegação (HTML) e chamadas de API, use network-first — tenta a rede primeiro, cai pro cache só quando a rede falha de verdade — assim quem está online sempre vê conteúdo fresco e o cache só reforça a ausência de conexão. Além disso: versione a chave do cache e apague as antigas no `activate`, e use `skipWaiting`/`clients.claim()` pra o service worker novo assumir sem esperar todas as abas fecharem. Teste o cenário que interessa: publique uma mudança, recarregue normal (sem hard-refresh) com o SW antigo já registrado, e confirme que a versão nova aparece sozinha.',
+    downloads: [
+      { file: 'service-worker-network-first-checklist.md', label: 'Checklist + template: service worker network-first com versionamento de cache' },
+    ],
+  },
 ]
