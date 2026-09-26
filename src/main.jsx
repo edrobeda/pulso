@@ -11,3 +11,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </ErrorBoundary>
   </React.StrictMode>
 )
+
+// Leitura offline: cacheia posts/páginas já visitadas pra funcionar em
+// conexão instável (ex.: leitura no celular). Registra depois do load pra
+// não competir com o carregamento inicial da página.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {})
+  })
+}
