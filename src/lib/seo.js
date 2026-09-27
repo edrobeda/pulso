@@ -211,6 +211,28 @@ export function clearTagsIndexJsonLd() {
   removeJsonLd('jsonld-tags-index')
 }
 
+export function setLabJsonLd(lessons) {
+  setJsonLd('jsonld-lab', {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Laboratório',
+    url: `${SITE_URL}/laboratorio`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: lessons.map((item, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}/laboratorio#${item.slug}`,
+        name: item.title,
+      })),
+    },
+  })
+}
+
+export function clearLabJsonLd() {
+  removeJsonLd('jsonld-lab')
+}
+
 export function setRobotsNoIndex() {
   setMetaByName('robots', 'noindex, follow')
 }

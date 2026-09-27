@@ -1602,6 +1602,7 @@ a {
 .lab-item {
   padding: 28px 0;
   border-bottom: 1px solid var(--ink-600);
+  scroll-margin-top: 80px;
 }
 
 .lab-item__head {
@@ -1618,6 +1619,43 @@ a {
   border-radius: 100px;
   border: 1px solid var(--ink-600);
   color: var(--signal-teal);
+  text-decoration: none;
+}
+
+.lab-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 clamp(20px, 5vw, 56px) 28px;
+  max-width: 880px;
+}
+
+.lab-filter {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--ink-600);
+  background: transparent;
+  color: var(--mist-400);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.lab-filter:hover {
+  color: var(--mist-200);
+  border-color: var(--mist-400);
+}
+
+.lab-filter--active {
+  color: var(--signal-teal);
+  border-color: var(--signal-teal);
+}
+
+.lab-filter__count {
+  color: inherit;
+  opacity: 0.7;
 }
 
 .lab-item__title {

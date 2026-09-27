@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "corrigido trust proxy na API — rate limit de escrita/busca agora é por IP real, não uma cota única compartilhada por todo o tráfego atrás do Caddy", "needs_input": false }
+{ "shipped": true, "summary": "filtro por categoria + links diretos + JSON-LD no laboratório, aria-labels nos botões de reação dos pulsos", "needs_input": true }

@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { lessons } from '../content/lab/lessons'
-import { setDocumentMeta } from '../lib/seo'
+import { setDocumentMeta, setLabJsonLd, clearLabJsonLd } from '../lib/seo'
 
 const TAG_LABEL = {
   deploy: 'deploy',
@@ -22,6 +23,9 @@ function trackDownload(file) {
 }
 
 export default function Laboratorio() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeTag = searchParams.get('tag') || ''
+
   useEffect(() => {
     setDocumentMeta({
       title: 'Laboratório',
@@ -29,7 +33,26 @@ export default function Laboratorio() {
         'Lições reais tiradas da operação dos agentes autônomos do Pulso, com templates pra download — o que quebrou, por quê, e como evitamos de novo.',
       path: '/laboratorio',
     })
+    setLabJsonLd(lessons)
+    return clearLabJsonLd
   }, [])
+
+  // Só lista tags que têm pelo menos uma lição, na ordem definida em
+  // TAG_LABEL, pra não mostrar filtro vazio conforme o laboratório cresce.
+  const tagCounts = useMemo(() => {
+    const counts = {}
+    for (const item of lessons) counts[item.tag] = (counts[item.tag] || 0) + 1
+    return Object.keys(TAG_LABEL)
+      .filter((tag) => counts[tag])
+      .map((tag) => ({ tag, count: counts[tag] }))
+  }, [])
+
+  const visibleLessons = activeTag ? lessons.filter((item) => item.tag === activeTag) : lessons
+
+  function handleFilter(tag) {
+    if (tag) setSearchParams({ tag })
+    else setSearchParams({})
+  }
 
   return (
     <section className="laboratorio">
@@ -53,11 +76,35 @@ export default function Laboratorio() {
         funcionamento decorrente do uso deste conteúdo.
       </div>
 
+      <div className="lab-filters" role="group" aria-label="Filtrar lições por categoria">
+        <button
+          type="button"
+          className={`lab-filter${activeTag === '' ? ' lab-filter--active' : ''}`}
+          onClick={() => handleFilter('')}
+          aria-pressed={activeTag === ''}
+        >
+          todas <span className="lab-filter__count">({lessons.length})</span>
+        </button>
+        {tagCounts.map(({ tag, count }) => (
+          <button
+            type="button"
+            key={tag}
+            className={`lab-filter${activeTag === tag ? ' lab-filter--active' : ''}`}
+            onClick={() => handleFilter(tag)}
+            aria-pressed={activeTag === tag}
+          >
+            {TAG_LABEL[tag] || tag} <span className="lab-filter__count">({count})</span>
+          </button>
+        ))}
+      </div>
+
       <ul className="lab-list">
-        {lessons.map((item) => (
-          <li className="lab-item" key={item.slug}>
+        {visibleLessons.map((item) => (
+          <li className="lab-item" id={item.slug} key={item.slug}>
             <div className="lab-item__head">
-              <span className="lab-badge">{TAG_LABEL[item.tag] || item.tag}</span>
+              <a href={`#${item.slug}`} className="lab-badge" aria-label={`Link direto pra esta lição, categoria ${TAG_LABEL[item.tag] || item.tag}`}>
+                {TAG_LABEL[item.tag] || item.tag}
+              </a>
             </div>
             <h2 className="lab-item__title">{item.title}</h2>
             <p className="lab-item__label">o que aconteceu</p>

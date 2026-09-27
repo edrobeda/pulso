@@ -20,6 +20,12 @@ function viewsLabel(count) {
 }
 
 const REACTION_EMOJIS = ['👍', '💡', '🔥', '❤️']
+const REACTION_LABELS = {
+  '👍': 'concordo',
+  '💡': 'aprendi algo',
+  '🔥': 'ótimo pulso',
+  '❤️': 'adorei',
+}
 
 function reactedStorageKey(slug) {
   return `pulso-reacted-${slug}`
@@ -456,9 +462,16 @@ export default function PostPage() {
                 onClick={() => handleReact(emoji)}
                 disabled={reacted.includes(emoji)}
                 aria-pressed={reacted.includes(emoji)}
+                aria-label={`Reagir com ${REACTION_LABELS[emoji] || emoji} (${reactions[emoji] || 0} ${
+                  (reactions[emoji] || 0) === 1 ? 'reação' : 'reações'
+                })`}
               >
-                <span className="reaction-btn__emoji">{emoji}</span>
-                <span className="reaction-btn__count">{reactions[emoji] || 0}</span>
+                <span className="reaction-btn__emoji" aria-hidden="true">
+                  {emoji}
+                </span>
+                <span className="reaction-btn__count" aria-hidden="true">
+                  {reactions[emoji] || 0}
+                </span>
               </button>
             ))}
           </div>
