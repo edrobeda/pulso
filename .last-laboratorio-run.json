@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionada lição sobre service worker cache-first travando usuários numa versão velha, com checklist e template network-first reaproveitável.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada lição sobre bloqueio de segurança em tempo real de API de LLM não ser bug de código, com checklist de como tratar essa categoria de falha sem tentar contorná-la.", "needs_input": false }

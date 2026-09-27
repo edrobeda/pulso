@@ -401,4 +401,16 @@ export const lessons = [
       { file: 'service-worker-network-first-checklist.md', label: 'Checklist + template: service worker network-first com versionamento de cache' },
     ],
   },
+  {
+    slug: 'bloqueio-de-seguranca-de-api-de-llm-nao-e-bug',
+    title: 'Bloqueio de segurança de uma API de LLM não é um bug de código',
+    tag: 'agentes',
+    problem:
+      'Um job agendado que chama uma API de LLM pra gerar conteúdo terminou com erro sem nenhum bug de código nem falha de rede/banco/disco: o próprio provedor recusou a chamada antes de gerar qualquer resposta, porque o classificador de segurança em tempo real sinalizou o tema do prompt. Tudo mais no ambiente estava saudável — é uma categoria de falha diferente de bug de aplicação e diferente de infraestrutura caindo, e um log genérico de "exit 1" não distingue as duas coisas.',
+    lesson:
+      'Trate recusa de classificador de segurança como categoria própria de falha, detectável pelo código/mensagem específico que a API devolve — nunca como "erro genérico" a ser tentado de novo. Nunca implemente retry automático que reenvia o mesmo conteúdo esperando passar, e nunca reformule/fragmente prompt especificamente pra escapar da detecção — isso é evasão, não correção de engenharia. Uma rodada sem resultado por esse motivo deve ficar registrada como lacuna visível no histórico e não travar a rodada seguinte; se o padrão se repete, é decisão de produto/política pra escalar, não algo pro próprio pipeline resolver sozinho.',
+    downloads: [
+      { file: 'bloqueio-de-seguranca-de-api-de-llm-nao-e-bug.md', label: 'Checklist: bloqueio de segurança de API de LLM como categoria própria de falha' },
+    ],
+  },
 ]
