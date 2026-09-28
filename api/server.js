@@ -536,7 +536,7 @@ const COMMENT_MAX_LEN = 1000
 app.get('/api/posts/:slug/comments', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT id, author_name, body, created_at
+      `SELECT id, author_name, body, created_at, parent_comment_id
        FROM post_comments
        WHERE slug = $1 AND visible = true
        ORDER BY created_at ASC
@@ -572,11 +572,26 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
     ])
     if (postRows.length === 0) return res.status(404).json({ error: 'not found' })
 
+    // Só um nível de resposta: o pai precisa existir, ser visível, ser do
+    // mesmo post e não ser ele mesmo uma resposta (evita thread infinita na UI).
+    let parentCommentId = null
+    if (req.body?.parentCommentId != null) {
+      const candidate = Number(req.body.parentCommentId)
+      if (!Number.isInteger(candidate)) return res.status(400).json({ error: 'invalid parentCommentId' })
+      const { rows: parentRows } = await pool.query(
+        `SELECT id FROM post_comments
+         WHERE id = $1 AND slug = $2 AND visible = true AND parent_comment_id IS NULL`,
+        [candidate, req.params.slug]
+      )
+      if (parentRows.length === 0) return res.status(400).json({ error: 'comentário-pai inválido' })
+      parentCommentId = candidate
+    }
+
     const { rows } = await pool.query(
-      `INSERT INTO post_comments (slug, author_name, body)
-       VALUES ($1, $2, $3)
-       RETURNING id, author_name, body, created_at`,
-      [req.params.slug, authorName, body]
+      `INSERT INTO post_comments (slug, author_name, body, parent_comment_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, author_name, body, created_at, parent_comment_id`,
+      [req.params.slug, authorName, body, parentCommentId]
     )
     res.status(201).json(rows[0])
   } catch (err) {

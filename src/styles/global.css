@@ -1206,6 +1206,40 @@ a {
   opacity: 0.6;
 }
 
+.comment__reply-toggle {
+  margin: 6px 0 0;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--paper-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.comment__reply-toggle:hover {
+  color: var(--signal-teal);
+}
+
+.comments__replies {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 12px 0 0 16px;
+  border-left: 2px solid rgba(43, 38, 32, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment-form--reply {
+  margin-top: 12px;
+  padding: 12px 0 0 16px;
+  border-left: 2px solid rgba(43, 38, 32, 0.12);
+}
+
 .post-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;

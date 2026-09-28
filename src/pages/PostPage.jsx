@@ -170,6 +170,15 @@ export default function PostPage() {
   const [commentError, setCommentError] = useState('')
   const [flaggedIds, setFlaggedIds] = useState(loadFlagged)
 
+  // Só um comentário por vez tem o form de resposta aberto — reaproveita o
+  // mesmo conjunto de campos em vez de um estado por comentário.
+  const [replyTarget, setReplyTarget] = useState(null)
+  const [replyName, setReplyName] = useState('')
+  const [replyBody, setReplyBody] = useState('')
+  const [replyHoneypot, setReplyHoneypot] = useState('')
+  const [replyStatus, setReplyStatus] = useState('idle')
+  const [replyError, setReplyError] = useState('')
+
   const [autoScroll, setAutoScroll] = useState(false)
   const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const [readProgress, setReadProgress] = useState(0)
@@ -313,6 +322,45 @@ export default function PostPage() {
       .catch((err) => {
         setCommentError(err.message)
         setCommentStatus('idle')
+      })
+  }
+
+  function openReply(commentId) {
+    setReplyTarget((current) => (current === commentId ? null : commentId))
+    setReplyError('')
+    setReplyBody('')
+  }
+
+  function handleReplySubmit(e, parentCommentId) {
+    e.preventDefault()
+    if (!post || replyStatus === 'sending') return
+    setReplyStatus('sending')
+    setReplyError('')
+    fetch(`/api/posts/${post.slug}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        authorName: replyName,
+        body: replyBody,
+        website: replyHoneypot,
+        parentCommentId,
+      }),
+    })
+      .then(async (r) => {
+        const data = await r.json().catch(() => null)
+        if (!r.ok) throw new Error(data?.error || 'não foi possível publicar a resposta')
+        return data
+      })
+      .then((data) => {
+        setComments((prev) => [...prev, data])
+        setReplyBody('')
+        setReplyName('')
+        setReplyStatus('idle')
+        setReplyTarget(null)
+      })
+      .catch((err) => {
+        setReplyError(err.message)
+        setReplyStatus('idle')
       })
   }
 
@@ -532,24 +580,105 @@ export default function PostPage() {
             </p>
             {comments.length > 0 && (
               <ul className="comments__list">
-                {comments.map((c) => (
-                  <li className="comment" key={c.id}>
-                    <div className="comment__meta">
-                      <strong>{c.author_name}</strong>
-                      <span>{commentDateLabel(c.created_at)}</span>
-                      <button
-                        type="button"
-                        className="comment__flag"
-                        onClick={() => handleFlagComment(c.id)}
-                        disabled={flaggedIds.includes(c.id)}
-                        aria-label="Sinalizar este comentário como spam ou problema"
-                      >
-                        {flaggedIds.includes(c.id) ? 'sinalizado' : 'sinalizar'}
-                      </button>
-                    </div>
-                    <p className="comment__body">{c.body}</p>
-                  </li>
-                ))}
+                {comments
+                  .filter((c) => !c.parent_comment_id)
+                  .map((c) => {
+                    const replies = comments.filter((r) => r.parent_comment_id === c.id)
+                    return (
+                      <li className="comment" key={c.id}>
+                        <div className="comment__meta">
+                          <strong>{c.author_name}</strong>
+                          <span>{commentDateLabel(c.created_at)}</span>
+                          <button
+                            type="button"
+                            className="comment__flag"
+                            onClick={() => handleFlagComment(c.id)}
+                            disabled={flaggedIds.includes(c.id)}
+                            aria-label="Sinalizar este comentário como spam ou problema"
+                          >
+                            {flaggedIds.includes(c.id) ? 'sinalizado' : 'sinalizar'}
+                          </button>
+                        </div>
+                        <p className="comment__body">{c.body}</p>
+                        <button
+                          type="button"
+                          className="comment__reply-toggle"
+                          onClick={() => openReply(c.id)}
+                          aria-expanded={replyTarget === c.id}
+                        >
+                          {replyTarget === c.id ? 'cancelar' : 'responder'}
+                        </button>
+
+                        {replies.length > 0 && (
+                          <ul className="comments__replies">
+                            {replies.map((r) => (
+                              <li className="comment comment--reply" key={r.id}>
+                                <div className="comment__meta">
+                                  <strong>{r.author_name}</strong>
+                                  <span>{commentDateLabel(r.created_at)}</span>
+                                  <button
+                                    type="button"
+                                    className="comment__flag"
+                                    onClick={() => handleFlagComment(r.id)}
+                                    disabled={flaggedIds.includes(r.id)}
+                                    aria-label="Sinalizar esta resposta como spam ou problema"
+                                  >
+                                    {flaggedIds.includes(r.id) ? 'sinalizado' : 'sinalizar'}
+                                  </button>
+                                </div>
+                                <p className="comment__body">{r.body}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {replyTarget === c.id && (
+                          <form
+                            className="comment-form comment-form--reply"
+                            onSubmit={(e) => handleReplySubmit(e, c.id)}
+                          >
+                            <input
+                              type="text"
+                              className="comment-form__name"
+                              placeholder="nome (opcional)"
+                              value={replyName}
+                              onChange={(e) => setReplyName(e.target.value)}
+                              maxLength={60}
+                              aria-label={`Seu nome (resposta a ${c.author_name})`}
+                            />
+                            <input
+                              type="text"
+                              name="website"
+                              className="comment-form__honeypot"
+                              tabIndex={-1}
+                              autoComplete="off"
+                              aria-hidden="true"
+                              value={replyHoneypot}
+                              onChange={(e) => setReplyHoneypot(e.target.value)}
+                            />
+                            <textarea
+                              className="comment-form__body"
+                              placeholder="escreva sua resposta"
+                              value={replyBody}
+                              onChange={(e) => setReplyBody(e.target.value)}
+                              maxLength={1000}
+                              rows={2}
+                              required
+                              aria-label={`Sua resposta a ${c.author_name}`}
+                            />
+                            {replyError && <p className="comment-form__error">{replyError}</p>}
+                            <button
+                              type="submit"
+                              className="comment-form__submit"
+                              disabled={replyStatus === 'sending'}
+                            >
+                              {replyStatus === 'sending' ? 'enviando…' : 'responder'}
+                            </button>
+                          </form>
+                        )}
+                      </li>
+                    )
+                  })}
               </ul>
             )}
             <form className="comment-form" onSubmit={handleCommentSubmit}>
