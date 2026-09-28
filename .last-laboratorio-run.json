@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionada lição sobre bloqueio de segurança em tempo real de API de LLM não ser bug de código, com checklist de como tratar essa categoria de falha sem tentar contorná-la.", "needs_input": false }
+{ "shipped": false, "summary": "Verifiquei changelog, log de infra e backlog recente; nenhuma lição nova genuína encontrada além do que já foi catalogado em rodadas anteriores.", "needs_input": false }
