@@ -413,4 +413,16 @@ export const lessons = [
       { file: 'bloqueio-de-seguranca-de-api-de-llm-nao-e-bug.md', label: 'Checklist: bloqueio de segurança de API de LLM como categoria própria de falha' },
     ],
   },
+  {
+    slug: 'cache-de-rede-nao-e-cache-de-estado',
+    title: 'Cache de rede não elimina a espera — cache de estado do app sim',
+    tag: 'frontend',
+    problem:
+      'Um service worker cacheava chamadas de API em modo network-first (tenta a rede primeiro, só cai pro cache se a rede falhar) — resolvendo bem o cenário offline. Mesmo assim, toda abertura fria do app (aba nova, PWA reaberta) continuava mostrando um estado de carregamento antes da lista aparecer: o componente nascia vazio e só se preenchia depois que a chamada de rede resolvia — o service worker decide o que a requisição recebe como resposta, não quando o componente decide renderizar. Nada estava quebrado; a rede geralmente respondia rápido, mas cada abertura pagava o round-trip inteiro pra mostrar um dado que, na maioria das vezes, nem tinha mudado desde a última visita.',
+    lesson:
+      'Cache de rede (service worker, HTTP cache) e cache de estado do app são camadas independentes — resolver a primeira não resolve a segunda. Pra eliminar a espera percebida, o componente precisa nascer com dado sincronamente disponível: leia um cache local que sobrevive entre sessões (`localStorage`, com TTL pra não mostrar algo velho demais) já no estado inicial, mostre isso imediatamente, e dispare a revalidação de rede em segundo plano — stale-while-revalidate na camada do app, não só na camada HTTP. E trate falha de revalidação (offline) como "mantenha o que já tinha na tela", nunca como "esvazie e mostre erro": dado levemente velho é melhor que nada.',
+    downloads: [
+      { file: 'stale-while-revalidate-lista.md', label: 'Template: stale-while-revalidate de lista com seed em localStorage' },
+    ],
+  },
 ]
