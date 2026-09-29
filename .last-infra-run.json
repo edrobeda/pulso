@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "respostas em comentários (um nível de thread), reaproveitando a moderação já existente", "needs_input": false }
+{ "shipped": true, "summary": "feed de posts agora carrega instantaneamente em abertura fria via cache em localStorage com revalidação em segundo plano", "needs_input": false }
