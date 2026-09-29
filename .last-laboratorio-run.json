@@ -1,1 +1,1 @@
-{ "shipped": false, "summary": "Verifiquei changelog, log de infra e backlog recente; nenhuma lição nova genuína encontrada além do que já foi catalogado em rodadas anteriores.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada lição sobre cache de rede (service worker) não eliminar a espera de abertura fria — cache de estado do app (localStorage com revalidação em segundo plano) sim, com template de stale-while-revalidate pra download.", "needs_input": false }
