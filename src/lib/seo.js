@@ -47,9 +47,10 @@ export function setDocumentMeta({
   path = '/',
   type = 'website',
   publishedTime,
+  ogImagePath,
 }) {
   const fullTitle = title ? `${title} — ${SITE_NAME}` : `${SITE_NAME} — sinais sobre IA e código`
-  const image = `${SITE_URL}/og-image.png`
+  const image = ogImagePath ? `${SITE_URL}${ogImagePath}` : `${SITE_URL}/og-image.png`
 
   document.title = fullTitle
   setMetaByName('description', description)
@@ -107,6 +108,12 @@ export function setPostJsonLd(post, wordCount) {
     // 8601 duration, que é o que schema.org/timeRequired espera.
     ...(post.readTime ? { timeRequired: `PT${post.readTime}M` } : {}),
     ...(wordCount ? { wordCount } : {}),
+    image: {
+      '@type': 'ImageObject',
+      url: `${SITE_URL}/api/og/${post.slug}.png`,
+      width: 1200,
+      height: 630,
+    },
     author: {
       '@type': 'Organization',
       name: SITE_NAME,

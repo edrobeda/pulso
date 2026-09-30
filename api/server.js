@@ -3,6 +3,7 @@ import pg from 'pg'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import compression from 'compression'
+import sharp from 'sharp'
 import {
   escapeXml,
   slugifyTag,
@@ -11,6 +12,7 @@ import {
   cdata,
   blocksToHtml,
 } from './lib/validation.js'
+import { buildOgSvg } from './lib/ogImage.js'
 
 const { Pool, types } = pg
 
@@ -451,6 +453,42 @@ app.get('/api/posts/:slug', async (req, res) => {
   }
 })
 
+// Imagem de Open Graph gerada por post: antes de hoje todo /posts/:slug
+// compartilhava o mesmo og-image.png genérico (sem título) — quem recebia o
+// link no WhatsApp/Telegram/X via um card idêntico pra qualquer pulso, sem
+// pista do que era o conteúdo antes de abrir. Gera um SVG com o título
+// (ink/paper/âmbar/teal já usados no resto do site) e rasteriza em PNG via
+// sharp (usa fontconfig + DejaVu instalados no Dockerfile pra desenhar o
+// texto). Cacheável: o conteúdo só muda se o post mudar, e post publicado
+// não muda (ver regra de escopo no topo do prompt do agente de infra).
+app.get('/api/og/:slug.png', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT title, date, read_time FROM posts WHERE slug = $1',
+      [req.params.slug]
+    )
+    if (rows.length === 0) return res.status(404).send('not found')
+    const post = rows[0]
+    const dateLabel = new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'America/Sao_Paulo',
+    }).format(new Date(`${post.date}T12:00:00-03:00`))
+    const footer = [dateLabel, post.read_time ? `${post.read_time} min de leitura` : null]
+      .filter(Boolean)
+      .join('  ·  ')
+    const svg = buildOgSvg({ title: post.title, footer })
+    const png = await sharp(Buffer.from(svg)).png().toBuffer()
+    res.set('Content-Type', 'image/png')
+    res.set('Cache-Control', 'public, max-age=86400, immutable')
+    res.send(png)
+  } catch (err) {
+    console.error('og image error', err)
+    res.status(500).send('error')
+  }
+})
+
 // Incrementa o contador de visualização de um post. Contagem simples por
 // carregamento de página (sem dedupe por visitante) — suficiente pro
 // propósito de mostrar engajamento relativo entre pulsos, sem precisar de
@@ -813,7 +851,7 @@ app.get('/prerender/posts/:slug', async (req, res) => {
       ...(post.read_time ? { timeRequired: `PT${post.read_time}M` } : {}),
       image: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/og-image.png`,
+        url: `${SITE_URL}/api/og/${post.slug}.png`,
         width: 1200,
         height: 630,
       },
@@ -842,10 +880,10 @@ app.get('/prerender/posts/:slug', async (req, res) => {
 <meta property="og:type" content="article" />
 <meta property="og:url" content="${url}" />
 <meta property="og:site_name" content="${SITE_NAME}" />
-<meta property="og:image" content="${SITE_URL}/og-image.png" />
+<meta property="og:image" content="${SITE_URL}/api/og/${post.slug}.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="${escapeXml(SITE_NAME)}" />
+<meta property="og:image:alt" content="${escapeXml(post.title)}" />
 <meta property="article:published_time" content="${publishedIso}" />
 <meta property="article:modified_time" content="${publishedIso}" />
 <meta property="article:author" content="${escapeXml(SITE_NAME)}" />
@@ -853,7 +891,7 @@ ${(post.tags || []).map((t) => `<meta property="article:tag" content="${escapeXm
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${escapeXml(title)}" />
 <meta name="twitter:description" content="${escapeXml(description)}" />
-<meta name="twitter:image" content="${SITE_URL}/og-image.png" />
+<meta name="twitter:image" content="${SITE_URL}/api/og/${post.slug}.png" />
 <script type="application/ld+json">${jsonLd}</script>
 <script type="application/ld+json">${breadcrumbLd}</script>
 </head>

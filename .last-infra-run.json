@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "feed de posts agora carrega instantaneamente em abertura fria via cache em localStorage com revalidação em segundo plano", "needs_input": false }
+{ "shipped": true, "summary": "imagem de Open Graph gerada dinamicamente por post (título, data, tempo de leitura) em vez de um card genérico único", "needs_input": false }

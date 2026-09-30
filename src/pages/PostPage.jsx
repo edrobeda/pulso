@@ -207,6 +207,7 @@ export default function PostPage() {
       path: `/posts/${post.slug}`,
       type: 'article',
       publishedTime: `${post.date}T${post.slot}:00-03:00`,
+      ogImagePath: `/api/og/${post.slug}.png`,
     })
     const wordCount = postBody
       ? postBody.blocks.reduce((sum, b) => sum + (b.text ? b.text.trim().split(/\s+/).filter(Boolean).length : 0), 0)
