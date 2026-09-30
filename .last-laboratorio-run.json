@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionada lição sobre cache de rede (service worker) não eliminar a espera de abertura fria — cache de estado do app (localStorage com revalidação em segundo plano) sim, com template de stale-while-revalidate pra download.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada lição nova sobre cartão de preview de link (OG image) genérico vs. dinâmico por entidade, com checklist e esqueleto de código.", "needs_input": false }

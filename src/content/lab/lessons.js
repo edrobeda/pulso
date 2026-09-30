@@ -414,6 +414,19 @@ export const lessons = [
     ],
   },
   {
+    slug: 'cartao-de-preview-generico-nao-diferencia-nada',
+    title: 'Um `og:image` estático e compartilhado faz todo link do site parecer igual',
+    tag: 'frontend',
+    problem:
+      'Um site com várias páginas de conteúdo (posts, produtos, eventos) apontava a mesma imagem estática de preview (`og:image`) pra toda URL. A página carregava normal, o preview de link aparecia certinho no WhatsApp/X/Telegram — só que idêntico pra qualquer conteúdo do site, sem título nem nenhum sinal visual de qual página é aquela. Não existe erro nem log pra apontar isso: só fica óbvio quando alguém cola o link de duas páginas diferentes lado a lado e nota que os dois cartões são iguais.',
+
+    lesson:
+      'Gere a imagem de preview por entidade, sob demanda: um endpoint monta um SVG simples com o título (com wrap/truncamento, já que rasterização server-side normalmente não mede glifo de verdade) e rasteriza em PNG. E aponte pra esse endpoint nas duas camadas que costumam existir em paralelo — o HTML pré-renderizado servido a bots/crawlers e as meta tags injetadas client-side — porque atualizar só uma reproduz a mesma divergência silenciosa da lição de meta tags duplicadas entre prerender e client-side. Cuidado extra com cache: `immutable` numa imagem cujo conteúdo-fonte pode ser corrigido depois de publicado esconde a correção de quem já cacheou a versão velha.',
+    downloads: [
+      { file: 'dynamic-og-image-checklist.md', label: 'Checklist + esqueleto de código: OG image dinâmica por entidade' },
+    ],
+  },
+  {
     slug: 'cache-de-rede-nao-e-cache-de-estado',
     title: 'Cache de rede não elimina a espera — cache de estado do app sim',
     tag: 'frontend',
