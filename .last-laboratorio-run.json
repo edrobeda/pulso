@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Adicionada lição nova sobre cartão de preview de link (OG image) genérico vs. dinâmico por entidade, com checklist e esqueleto de código.", "needs_input": false }
+{ "shipped": true, "summary": "Lição nova sobre preferência de layout aplicada antes do primeiro paint (evita CLS/reflow), mais revisão semanal do iaBrain publicando v0.03 com a peça de harness de confinamento.", "needs_input": false }
