@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { nextPulseLabel } from '../lib/schedule'
-import { getTextSize, applyTextSize, stepTextSize, SIZES } from '../lib/textSize'
+import { getTextSize, stepTextSize, SIZES } from '../lib/textSize'
 import { initWebVitals } from '../lib/vitals'
 import BugReportWidget from './BugReportWidget'
 import ErrorBoundary from './ErrorBoundary'
@@ -11,10 +11,6 @@ export default function Layout() {
   const [textSize, setTextSizeState] = useState(() => getTextSize())
   const navigate = useNavigate()
   const location = useLocation()
-
-  useEffect(() => {
-    applyTextSize(textSize)
-  }, [])
 
   useEffect(() => {
     const id = setInterval(() => setCountdown(nextPulseLabel()), 30_000)
