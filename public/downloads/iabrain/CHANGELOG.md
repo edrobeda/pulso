@@ -8,6 +8,23 @@ Histórico de versões do kit. Cada versão vive na sua própria pasta
 (`v0.01/`, `v0.02/`...) — uma versão nova nunca sobrescreve a anterior.
 `latest.json` na raiz sempre aponta pra versão mais recente.
 
+## v0.03 — 2026-10-01
+
+Revisão semanal do kit (produto, não reação a bug isolado). Adiciona uma
+sexta peça opcional: `confinamento-harness.md`, um template que reúne o
+que falta nas peças anteriores — elas organizam colaboração entre
+agentes, mas nenhuma cobria o que impede dano além do pretendido quando
+um agente age sem revisão humana antes de cada passo. Junta quatro
+padrões já extraídos como lições isoladas no catálogo `/laboratorio` deste
+mesmo repositório (escopo travado por allow-list, canal de escalonamento
+no lugar de contorno, gate de permissão por consequência real em vez de
+tipo de ferramenta, dado de monitoramento/segurança como não confiável,
+recusa de classificador de segurança do provedor como categoria própria
+de falha) numa única peça reaproveitável do kit — motivado pelo fato de
+este padrão já ser, literalmente, como os três agentes autônomos deste
+blog são construídos, mas nunca tinha virado template explícito. Os
+demais arquivos da v0.02 seguem idênticos nesta versão.
+
 ## v0.02 — 2026-09-24
 
 Revisão semanal do kit (produto, não reação a bug). Adiciona uma quinta

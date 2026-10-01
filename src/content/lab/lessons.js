@@ -92,24 +92,25 @@ export const lessons = [
   },
   {
     slug: 'iabrain-v0-01',
-    title: 'iaBrain — orquestrador, subagentes, skills, memória e coordenação assíncrona',
+    title: 'iaBrain — orquestrador, subagentes, skills, memória, coordenação assíncrona e confinamento',
     tag: 'agentes',
     problem:
-      'Um sistema de agentes de IA sem separação clara de papéis tende a virar uma bagunça: um único prompt gigante tentando fazer roteamento, execução e memória ao mesmo tempo, contexto poluído por passos intermediários que ninguém precisava ver, e nenhum critério consistente pra decidir quando delegar uma tarefa ou quando registrar algo como memória permanente. E isso ainda cobre só o caso de agentes na mesma sessão: quando os agentes são processos genuinamente independentes (cron em horários diferentes, sem sessão compartilhada), delegar e esperar resposta não existe — eles só se enxergam através do que gravam em algum lugar durável.',
+      'Um sistema de agentes de IA sem separação clara de papéis tende a virar uma bagunça: um único prompt gigante tentando fazer roteamento, execução e memória ao mesmo tempo, contexto poluído por passos intermediários que ninguém precisava ver, e nenhum critério consistente pra decidir quando delegar uma tarefa ou quando registrar algo como memória permanente. Isso cobre só o caso de agentes na mesma sessão: quando os agentes são processos genuinamente independentes (cron em horários diferentes, sem sessão compartilhada), delegar e esperar resposta não existe — eles só se enxergam através do que gravam em algum lugar durável. E nenhuma dessas peças resolve um problema adicional e mais crítico: quando pelo menos um desses agentes age sem revisão humana antes de cada passo, o que impede dano além do pretendido não é o texto do prompt, é o que existe ao redor dele.',
     lesson:
-      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. Versionado (v0.01, v0.02...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
+      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. E pra qualquer agente que roda sem revisão humana, uma quarta camada por cima de tudo isso: escopo travado por allow-list explícita (não por instrução verbal), canal de escalonamento no lugar de contorno quando o escopo barra algo, gate de permissão por consequência real da ação (não pelo tipo técnico de ferramenta usada), dado de ferramenta de monitoramento tratado como não confiável, e recusa de classificador de segurança do provedor tratada como categoria própria de falha. Versionado (v0.01, v0.02, v0.03...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável, onde travar o confinamento — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
     downloads: [
       { file: 'iabrain/install-prompt.md', label: 'Prompt de instalação/atualização automática' },
-      { file: 'iabrain/v0.02/README.md', label: 'README — visão geral + instalação por harness' },
-      { file: 'iabrain/v0.02/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
-      { file: 'iabrain/v0.02/subagente-template.md', label: 'Template de definição de subagente' },
-      { file: 'iabrain/v0.02/skill-template.md', label: 'Template de skill de referência' },
-      { file: 'iabrain/v0.02/memoria-profile.md', label: 'Memória: profile' },
-      { file: 'iabrain/v0.02/memoria-preferences.md', label: 'Memória: preferences' },
-      { file: 'iabrain/v0.02/memoria-topics.md', label: 'Memória: topics' },
-      { file: 'iabrain/v0.02/memoria-people.md', label: 'Memória: people' },
-      { file: 'iabrain/v0.02/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
-      { file: 'iabrain/v0.02/coordenacao-assincrona.md', label: 'Novo na v0.02: coordenação assíncrona entre agentes independentes' },
+      { file: 'iabrain/v0.03/README.md', label: 'README — visão geral + instalação por harness' },
+      { file: 'iabrain/v0.03/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
+      { file: 'iabrain/v0.03/subagente-template.md', label: 'Template de definição de subagente' },
+      { file: 'iabrain/v0.03/skill-template.md', label: 'Template de skill de referência' },
+      { file: 'iabrain/v0.03/memoria-profile.md', label: 'Memória: profile' },
+      { file: 'iabrain/v0.03/memoria-preferences.md', label: 'Memória: preferences' },
+      { file: 'iabrain/v0.03/memoria-topics.md', label: 'Memória: topics' },
+      { file: 'iabrain/v0.03/memoria-people.md', label: 'Memória: people' },
+      { file: 'iabrain/v0.03/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
+      { file: 'iabrain/v0.03/coordenacao-assincrona.md', label: 'Coordenação assíncrona entre agentes independentes' },
+      { file: 'iabrain/v0.03/confinamento-harness.md', label: 'Novo na v0.03: harness de confinamento pra agente sem revisão humana' },
     ],
   },
   {
@@ -436,6 +437,18 @@ export const lessons = [
       'Cache de rede (service worker, HTTP cache) e cache de estado do app são camadas independentes — resolver a primeira não resolve a segunda. Pra eliminar a espera percebida, o componente precisa nascer com dado sincronamente disponível: leia um cache local que sobrevive entre sessões (`localStorage`, com TTL pra não mostrar algo velho demais) já no estado inicial, mostre isso imediatamente, e dispare a revalidação de rede em segundo plano — stale-while-revalidate na camada do app, não só na camada HTTP. E trate falha de revalidação (offline) como "mantenha o que já tinha na tela", nunca como "esvazie e mostre erro": dado levemente velho é melhor que nada.',
     downloads: [
       { file: 'stale-while-revalidate-lista.md', label: 'Template: stale-while-revalidate de lista com seed em localStorage' },
+    ],
+  },
+  {
+    slug: 'preferencia-de-visitante-aplicada-apos-paint-causa-reflow',
+    title: 'Aplicar uma preferência salva depois do primeiro paint é reflow visível, não só "ajuste tardio"',
+    tag: 'frontend',
+    problem:
+      'Uma preferência de exibição salva pelo visitante (tamanho de texto) era reaplicada a cada carregamento de página dentro de um `useEffect` do React — ou seja, depois do primeiro paint. Pra quem já tinha ajustado o próprio tamanho de texto alguma vez, isso significava que toda página abria do zero no tamanho padrão e, um instante depois, saltava pro tamanho salvo: um reflow da página inteira, medido em produção como CLS (Cumulative Layout Shift) de 0.4 a 0.7, bem acima do limite aceitável de 0.25. Nada quebrava funcionalmente — o valor certo sempre acabava aplicado — só que visivelmente, a cada página, pra uma fração real de visitantes.',
+    lesson:
+      'Qualquer preferência do visitante que afeta layout (tamanho de fonte, tema, densidade) e é lida de um storage local síncrono (`localStorage`) deveria ser aplicada antes do primeiro paint, nunca depois dele via efeito de framework. Na prática: um script inline, pequeno e síncrono no `<head>` do HTML (antes de qualquer CSS/JS do bundle carregar), que lê o valor salvo e aplica direto no `documentElement` — a mesma técnica clássica usada pra evitar "flash" de tema claro/escuro, generalizada pra qualquer preferência visual persistida. `useEffect` roda depois do commit inicial do React por design; é a ferramenta certa pra sincronizar estado depois da interação do usuário, não pra aplicar algo que precisa estar presente no primeiro frame. Meça com Web Vitals reais de produção (CLS), não só visualmente em dev — o salto pode ser pequeno o bastante pra passar despercebido numa tela, e ainda assim contar como "poor" no campo.',
+    downloads: [
+      { file: 'preferencia-sincrona-antes-do-paint.md', label: 'Checklist + exemplo: aplicar preferência salva via script inline no <head>' },
     ],
   },
 ]
