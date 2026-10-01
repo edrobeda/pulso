@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "imagem de Open Graph gerada dinamicamente por post (título, data, tempo de leitura) em vez de um card genérico único", "needs_input": false }
+{ "shipped": true, "summary": "corrigido CLS alto (0.4-0.7 em produção) causado por reflow de página inteira do controle de tamanho de texto, agora aplicado antes do primeiro paint", "needs_input": true }
