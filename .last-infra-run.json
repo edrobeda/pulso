@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "corrigido CLS alto (0.4-0.7 em produção) causado por reflow de página inteira do controle de tamanho de texto, agora aplicado antes do primeiro paint", "needs_input": true }
+{ "shipped": true, "summary": "notificação push opt-in de novo pulso (inscrição + endpoints + service worker), com pedido ao agente de publicação em MEETING.md pra disparar após publicar", "needs_input": false }
