@@ -4,6 +4,7 @@ import { nextPulseLabel } from '../lib/schedule'
 import { getTextSize, stepTextSize, SIZES } from '../lib/textSize'
 import { initWebVitals } from '../lib/vitals'
 import BugReportWidget from './BugReportWidget'
+import PushSubscribeWidget from './PushSubscribeWidget'
 import ErrorBoundary from './ErrorBoundary'
 
 export default function Layout() {
@@ -120,6 +121,7 @@ export default function Layout() {
             A+
           </button>
         </div>
+        <PushSubscribeWidget />
         <BugReportWidget />
       </footer>
     </div>

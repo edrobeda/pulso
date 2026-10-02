@@ -73,3 +73,34 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(request))
   }
 })
+
+// Notificação de post novo (opt-in, ver BugReportWidget-style
+// PushSubscribeWidget). Payload vem em JSON de POST /api/push/notify.
+self.addEventListener('push', (event) => {
+  let data = { title: 'Novo pulso no ar', body: '', url: '/' }
+  try {
+    if (event.data) data = { ...data, ...event.data.json() }
+  } catch (err) {
+    // payload não-JSON: mantém o fallback acima em vez de quebrar a notificação
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      data: { url: data.url },
+      icon: '/favicon-192.png',
+      badge: '/favicon-32x32.png',
+    })
+  )
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url || '/'
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window' }).then((clients) => {
+      const existing = clients.find((c) => new URL(c.url).pathname === url)
+      if (existing) return existing.focus()
+      return self.clients.openWindow(url)
+    })
+  )
+})

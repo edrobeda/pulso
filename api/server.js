@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import compression from 'compression'
 import sharp from 'sharp'
+import webpush from 'web-push'
 import {
   escapeXml,
   slugifyTag,
@@ -28,6 +29,18 @@ const pool = new Pool({
   password: process.env.BLOG_DB_PASSWORD,
   database: process.env.BLOG_DB_NAME,
 })
+
+// Web Push (notificação de post novo) é opt-in e só funciona se as chaves
+// VAPID existirem no .env (ver db/migrations/0020_push_subscriptions.sql) —
+// sem chave, os endpoints abaixo respondem 503 em vez de quebrar o boot.
+const vapidConfigured = Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY)
+if (vapidConfigured) {
+  webpush.setVapidDetails(
+    'mailto:edrobeda@gmail.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  )
+}
 
 const app = express()
 
@@ -730,6 +743,94 @@ app.get('/api/bug-reports', async (_req, res) => {
     )
     res.set('Cache-Control', 'public, max-age=30')
     res.json(rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// Web Push: avisa quem se inscreveu quando um post novo sai, sem precisar
+// abrir o site pra descobrir. Chave pública é inerte sem o endpoint do
+// navegador do próprio leitor, então não há segredo pra proteger aqui.
+app.get('/api/push/vapid-public-key', (_req, res) => {
+  if (!vapidConfigured) return res.status(503).json({ error: 'push não configurado' })
+  res.json({ publicKey: process.env.VAPID_PUBLIC_KEY })
+})
+
+app.post('/api/push/subscribe', writeLimiter, async (req, res) => {
+  if (!vapidConfigured) return res.status(503).json({ error: 'push não configurado' })
+  try {
+    const { endpoint, keys } = req.body || {}
+    if (typeof endpoint !== 'string' || !endpoint.startsWith('https://')) {
+      return res.status(400).json({ error: 'endpoint inválido' })
+    }
+    const p256dh = keys?.p256dh
+    const auth = keys?.auth
+    if (typeof p256dh !== 'string' || typeof auth !== 'string') {
+      return res.status(400).json({ error: 'keys inválidas' })
+    }
+    await pool.query(
+      `INSERT INTO push_subscriptions (endpoint, p256dh, auth)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (endpoint) DO UPDATE SET p256dh = $2, auth = $3`,
+      [endpoint, p256dh, auth]
+    )
+    res.status(201).json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+app.post('/api/push/unsubscribe', writeLimiter, async (req, res) => {
+  try {
+    const { endpoint } = req.body || {}
+    if (typeof endpoint !== 'string') return res.status(400).json({ error: 'endpoint inválido' })
+    await pool.query('DELETE FROM push_subscriptions WHERE endpoint = $1', [endpoint])
+    res.json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// Disparo em massa — pensado pro agente de publicação chamar depois de
+// gravar um post novo (ver MEETING.md). Protegido por segredo compartilhado
+// (mesmo .env dos dois agentes) porque, sem isso, qualquer visitante
+// conseguiria mandar notificação pra toda a base de inscritos.
+app.post('/api/push/notify', writeLimiter, async (req, res) => {
+  if (!vapidConfigured) return res.status(503).json({ error: 'push não configurado' })
+  try {
+    const secret = req.headers['x-push-secret']
+    if (!process.env.PUSH_NOTIFY_SECRET || secret !== process.env.PUSH_NOTIFY_SECRET) {
+      return res.status(401).json({ error: 'não autorizado' })
+    }
+    const title = String(req.body?.title || 'Novo pulso no ar').slice(0, 200)
+    const url = String(req.body?.url || '/').slice(0, 300)
+    const body = String(req.body?.body || '').slice(0, 300)
+
+    const { rows: subs } = await pool.query('SELECT endpoint, p256dh, auth FROM push_subscriptions')
+    const payload = JSON.stringify({ title, body, url })
+
+    let sent = 0
+    const gone = []
+    await Promise.all(
+      subs.map(async (sub) => {
+        try {
+          await webpush.sendNotification(
+            { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+            payload
+          )
+          sent += 1
+        } catch (err) {
+          if (err.statusCode === 404 || err.statusCode === 410) gone.push(sub.endpoint)
+        }
+      })
+    )
+    if (gone.length > 0) {
+      await pool.query('DELETE FROM push_subscriptions WHERE endpoint = ANY($1)', [gone])
+    }
+    res.json({ sent, pruned: gone.length, total: subs.length })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'internal error' })
