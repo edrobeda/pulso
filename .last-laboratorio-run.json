@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Lição nova sobre preferência de layout aplicada antes do primeiro paint (evita CLS/reflow), mais revisão semanal do iaBrain publicando v0.03 com a peça de harness de confinamento.", "needs_input": false }
+{ "shipped": false, "summary": "Verificado CHANGELOG, log de infra e backlog recente; nenhuma lição genuinamente nova surgiu, revisão semanal do iaBrain já feita ontem.", "needs_input": false }
