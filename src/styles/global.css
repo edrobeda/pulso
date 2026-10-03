@@ -1206,6 +1206,13 @@ a {
   color: var(--signal-amber-dim);
 }
 
+.comment-form__status {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--signal-teal);
+}
+
 .comment-form__submit {
   align-self: flex-start;
   padding: 10px 20px;

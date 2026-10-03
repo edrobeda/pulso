@@ -168,6 +168,7 @@ export default function PostPage() {
   const [commentHoneypot, setCommentHoneypot] = useState('')
   const [commentStatus, setCommentStatus] = useState('idle')
   const [commentError, setCommentError] = useState('')
+  const [commentSuccess, setCommentSuccess] = useState('')
   const [flaggedIds, setFlaggedIds] = useState(loadFlagged)
 
   // Só um comentário por vez tem o form de resposta aberto — reaproveita o
@@ -178,6 +179,10 @@ export default function PostPage() {
   const [replyHoneypot, setReplyHoneypot] = useState('')
   const [replyStatus, setReplyStatus] = useState('idle')
   const [replyError, setReplyError] = useState('')
+  // Form de resposta fecha ao publicar (replyTarget volta a null), então a
+  // confirmação não pode morar dentro do form — fica ligada ao comentário-pai
+  // em vez do estado do form, pra sobreviver ao fechamento.
+  const [replySuccessFor, setReplySuccessFor] = useState(null)
 
   const [autoScroll, setAutoScroll] = useState(false)
   const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
@@ -304,6 +309,7 @@ export default function PostPage() {
     if (!post || commentStatus === 'sending') return
     setCommentStatus('sending')
     setCommentError('')
+    setCommentSuccess('')
     fetch(`/api/posts/${post.slug}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -319,6 +325,7 @@ export default function PostPage() {
         setCommentBody('')
         setCommentName('')
         setCommentStatus('idle')
+        setCommentSuccess('comentário publicado.')
       })
       .catch((err) => {
         setCommentError(err.message)
@@ -329,6 +336,7 @@ export default function PostPage() {
   function openReply(commentId) {
     setReplyTarget((current) => (current === commentId ? null : commentId))
     setReplyError('')
+    setReplySuccessFor(null)
     setReplyBody('')
   }
 
@@ -358,6 +366,7 @@ export default function PostPage() {
         setReplyName('')
         setReplyStatus('idle')
         setReplyTarget(null)
+        setReplySuccessFor(parentCommentId)
       })
       .catch((err) => {
         setReplyError(err.message)
@@ -609,6 +618,11 @@ export default function PostPage() {
                         >
                           {replyTarget === c.id ? 'cancelar' : 'responder'}
                         </button>
+                        {replySuccessFor === c.id && (
+                          <p className="comment-form__status" role="status" aria-live="polite">
+                            resposta publicada.
+                          </p>
+                        )}
 
                         {replies.length > 0 && (
                           <ul className="comments__replies">
@@ -667,7 +681,11 @@ export default function PostPage() {
                               required
                               aria-label={`Sua resposta a ${c.author_name}`}
                             />
-                            {replyError && <p className="comment-form__error">{replyError}</p>}
+                            {replyError && (
+                              <p className="comment-form__error" role="alert">
+                                {replyError}
+                              </p>
+                            )}
                             <button
                               type="submit"
                               className="comment-form__submit"
@@ -712,7 +730,16 @@ export default function PostPage() {
                 required
                 aria-label="Seu comentário"
               />
-              {commentError && <p className="comment-form__error">{commentError}</p>}
+              {commentError && (
+                <p className="comment-form__error" role="alert">
+                  {commentError}
+                </p>
+              )}
+              {!commentError && commentSuccess && (
+                <p className="comment-form__status" role="status" aria-live="polite">
+                  {commentSuccess}
+                </p>
+              )}
               <button type="submit" className="comment-form__submit" disabled={commentStatus === 'sending'}>
                 {commentStatus === 'sending' ? 'enviando…' : 'comentar'}
               </button>

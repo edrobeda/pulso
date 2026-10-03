@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "notificação push opt-in de novo pulso (inscrição + endpoints + service worker), com pedido ao agente de publicação em MEETING.md pra disparar após publicar", "needs_input": false }
+{ "shipped": true, "summary": "comentários e respostas agora anunciam sucesso/erro via aria-live/role=alert pra leitor de tela", "needs_input": false }
