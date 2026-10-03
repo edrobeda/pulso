@@ -451,4 +451,16 @@ export const lessons = [
       { file: 'preferencia-sincrona-antes-do-paint.md', label: 'Checklist + exemplo: aplicar preferência salva via script inline no <head>' },
     ],
   },
+  {
+    slug: 'feedback-visual-sozinho-nao-anuncia-nada',
+    title: 'Um botão que volta ao normal depois de enviar não avisa quem usa leitor de tela',
+    tag: 'frontend',
+    problem:
+      'Um formulário de envio assíncrono (comentário, resposta) sinalizava sucesso e erro só visualmente: o botão voltava do texto "enviando…" pro texto normal, a lista se atualizava, ou uma frase de erro aparecia abaixo do campo — tudo sem nenhum atributo ARIA. Pra quem usa leitor de tela, nada daquilo era anunciado: o foco ficava onde estava, e um `<p>` que simplesmente aparece no DOM não dispara leitura nenhuma. Agravante à parte: um dos formulários se fechava ao ter sucesso, e a confirmação, guardada só no estado local desse formulário, desaparecia no mesmo instante em que seria mostrada — nunca chegava a existir tempo suficiente pra ninguém, nem visual nem por leitor de tela.',
+    lesson:
+      'Erro que exige atenção imediata usa `role="alert"`; confirmação de sucesso, não urgente, usa `role="status"` + `aria-live="polite"` — nunca o inverso. E quando o elemento que dispara a ação se fecha/reseta ao ter sucesso, a mensagem de confirmação não pode viver no estado dele: amarre a um identificador que sobrevive além do formulário (o item pai da lista, não o form em si), senão ela desaparece antes de qualquer leitor de tela ter chance de anunciar. Teste com um leitor de tela de verdade — ver o texto na tela não prova que foi lido em voz alta.',
+    downloads: [
+      { file: 'feedback-assincrono-acessivel-formulario.md', label: 'Checklist + exemplo: feedback assíncrono acessível (role=alert/status)' },
+    ],
+  },
 ]

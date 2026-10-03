@@ -1,1 +1,1 @@
-{ "shipped": false, "summary": "Verificado CHANGELOG, log de infra e backlog recente; nenhuma lição genuinamente nova surgiu, revisão semanal do iaBrain já feita ontem.", "needs_input": false }
+{ "shipped": true, "summary": "Nova lição no laboratório: feedback assíncrono de formulário acessível (role=alert/status) a partir da correção de hoje no formulário de comentários.", "needs_input": false }
