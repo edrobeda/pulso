@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "comentários e respostas agora anunciam sucesso/erro via aria-live/role=alert pra leitor de tela", "needs_input": false }
+{ "shipped": true, "summary": "botão voltar ao topo, Esc fecha painéis com foco de volta, RSS/JSON Feed e llms.txt com tags e imagem por post", "needs_input": false }

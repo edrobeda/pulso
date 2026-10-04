@@ -269,6 +269,16 @@ export default function PostPage() {
     setAutoScroll(false)
   }, [post?.slug])
 
+  // Esc fecha o form de resposta aberto, mesma motivação do BugReportWidget.
+  useEffect(() => {
+    if (!replyTarget) return
+    function handleKeydown(e) {
+      if (e.key === 'Escape') setReplyTarget(null)
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [replyTarget])
+
   useEffect(() => {
     if (!autoScroll) return
 

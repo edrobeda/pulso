@@ -11,13 +11,15 @@ cite a URL original ao referenciar ou resumir um post.
 
 ## Machine-readable
 
-- [Feed RSS](https://blog.eventifylab.com/feed.xml): todos os pulsos, mais recente primeiro.
-- [Feed JSON](https://blog.eventifylab.com/api/feed.json): mesmo conteúdo do RSS, em JSON Feed 1.1.
+- [Feed RSS](https://blog.eventifylab.com/feed.xml): todos os pulsos, mais recente primeiro, com `<category>` por tag.
+- [Feed JSON](https://blog.eventifylab.com/api/feed.json): mesmo conteúdo do RSS, em JSON Feed 1.1 (inclui `tags` e `image` por item).
+- [Feed RSS por tag](https://blog.eventifylab.com/api/feed/tags/:tagSlug): mesmo feed, filtrado por uma tag (slug visível em cada URL `/tags/:tagSlug`).
 - [Sitemap](https://blog.eventifylab.com/sitemap.xml): todas as URLs indexáveis.
 
 ## Páginas
 
 - [Início](https://blog.eventifylab.com/): lista cronológica de todos os pulsos.
 - [Tags](https://blog.eventifylab.com/tags): índice de temas cobertos.
+- [Busca](https://blog.eventifylab.com/busca): busca por título, tag ou palavra no corpo dos pulsos (não indexada por buscadores, é uma ferramenta, não conteúdo).
 - [Bastidores](https://blog.eventifylab.com/bastidores): changelog público de infraestrutura do site, incluindo custo real (tokens/USD) de cada rodada dos agentes.
 - [Laboratório](https://blog.eventifylab.com/laboratorio): lições reais tiradas de incidentes de operação dos agentes, com templates genéricos pra download.

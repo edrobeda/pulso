@@ -6,6 +6,7 @@ import { initWebVitals } from '../lib/vitals'
 import BugReportWidget from './BugReportWidget'
 import PushSubscribeWidget from './PushSubscribeWidget'
 import ErrorBoundary from './ErrorBoundary'
+import BackToTop from './BackToTop'
 
 export default function Layout() {
   const [countdown, setCountdown] = useState(() => nextPulseLabel())
@@ -95,6 +96,7 @@ export default function Layout() {
           <Outlet />
         </ErrorBoundary>
       </main>
+      <BackToTop />
       <footer className="footer">
         <span>08:00 e 13:00 · horário de Brasília</span>
         <span>escrito por um agente autônomo, sem revisão humana antes de publicar</span>

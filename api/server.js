@@ -1373,19 +1373,20 @@ app.get('/api/search/top-queries', async (_req, res) => {
 app.get('/feed.xml', async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT slug, title, excerpt, date, slot, blocks FROM posts ORDER BY date DESC, slot DESC`
+      `SELECT slug, title, excerpt, date, slot, blocks, tags FROM posts ORDER BY date DESC, slot DESC`
     )
     const items = rows
       .map((p) => {
         const link = `${SITE_URL}/posts/${p.slug}`
         const pubDate = new Date(`${p.date}T${p.slot}:00-03:00`).toUTCString()
+        const categories = (p.tags || []).map((t) => `      <category>${escapeXml(t)}</category>`).join('\n')
         return `    <item>
       <title>${escapeXml(p.title)}</title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${pubDate}</pubDate>
       <description>${escapeXml(p.excerpt || '')}</description>
-      <content:encoded>${cdata(blocksToHtml(p.blocks))}</content:encoded>
+${categories ? categories + '\n' : ''}      <content:encoded>${cdata(blocksToHtml(p.blocks))}</content:encoded>
     </item>`
       })
       .join('\n')
@@ -1421,7 +1422,7 @@ ${items}
 app.get('/api/feed.json', async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT slug, title, excerpt, date, slot, blocks FROM posts ORDER BY date DESC, slot DESC`
+      `SELECT slug, title, excerpt, date, slot, blocks, tags FROM posts ORDER BY date DESC, slot DESC`
     )
     const items = rows.map((p) => {
       const link = `${SITE_URL}/posts/${p.slug}`
@@ -1432,6 +1433,8 @@ app.get('/api/feed.json', async (_req, res) => {
         summary: p.excerpt || '',
         content_html: blocksToHtml(p.blocks),
         date_published: `${p.date}T${p.slot}:00-03:00`,
+        tags: p.tags || [],
+        image: `${SITE_URL}/api/og/${p.slug}.png`,
       }
     })
     res.set('Content-Type', 'application/feed+json; charset=utf-8')
@@ -1470,13 +1473,14 @@ app.get('/api/feed/tags/:tagSlug', async (req, res) => {
       .map((p) => {
         const link = `${SITE_URL}/posts/${p.slug}`
         const pubDate = new Date(`${p.date}T${p.slot}:00-03:00`).toUTCString()
+        const categories = (p.tags || []).map((t) => `      <category>${escapeXml(t)}</category>`).join('\n')
         return `    <item>
       <title>${escapeXml(p.title)}</title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${pubDate}</pubDate>
       <description>${escapeXml(p.excerpt || '')}</description>
-      <content:encoded>${cdata(blocksToHtml(p.blocks))}</content:encoded>
+${categories ? categories + '\n' : ''}      <content:encoded>${cdata(blocksToHtml(p.blocks))}</content:encoded>
     </item>`
       })
       .join('\n')

@@ -762,6 +762,33 @@ a {
   }
 }
 
+/* Canto esquerdo de propósito — nunca colide com .autoscroll-btn (direita). */
+.back-to-top {
+  position: fixed;
+  left: clamp(16px, 4vw, 40px);
+  bottom: clamp(16px, 4vw, 40px);
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink-800);
+  border: 1px solid var(--ink-600);
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--mist-200);
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.back-to-top:hover {
+  border-color: var(--signal-teal);
+  color: var(--signal-teal);
+}
+
 .post-card {
   background: var(--paper-100);
   color: var(--paper-text);
@@ -1976,6 +2003,7 @@ a {
   .skip-link,
   .read-progress,
   .autoscroll-btn,
+  .back-to-top,
   .reactions,
   .share,
   .related-posts,

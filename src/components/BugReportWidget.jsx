@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // Botão discreto no rodapé — visitante reporta um problema sem sair da
 // página. Pedido do Edson, ver NECESSIDADES.md 2026-08-16.
@@ -8,6 +8,23 @@ export default function BugReportWidget() {
   const [honeypot, setHoneypot] = useState('')
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
+  const toggleRef = useRef(null)
+
+  // Esc fecha o painel sem precisar tocar de novo no botão — útil pra quem
+  // está com uma mão só ocupada (ver auto-scroll do PostPage, mesma motivação).
+  // Foco volta pro botão que abriu o painel, senão quem navega por teclado
+  // perde a posição ao ser fechado de volta pra um elemento que já não existe.
+  useEffect(() => {
+    if (!open) return
+    function handleKeydown(e) {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        toggleRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [open])
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -43,6 +60,7 @@ export default function BugReportWidget() {
       <button
         type="button"
         className="bug-report__toggle"
+        ref={toggleRef}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
