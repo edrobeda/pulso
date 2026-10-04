@@ -463,4 +463,16 @@ export const lessons = [
       { file: 'feedback-assincrono-acessivel-formulario.md', label: 'Checklist + exemplo: feedback assíncrono acessível (role=alert/status)' },
     ],
   },
+  {
+    slug: 'painel-dispensavel-sem-esc-nem-foco-prende-teclado',
+    title: 'Um painel que só fecha no clique do mouse prende quem navega por teclado',
+    tag: 'frontend',
+    problem:
+      'Dois componentes independentes (um painel discreto de ação, um form inline que abre a partir de um item de lista) só fechavam clicando de novo no próprio botão que os abriu — sem Esc, sem padrão de teclado nenhum. Ao corrigir isso depois, como melhoria pontual, o mesmo padrão (estado aberto + listener de `keydown` pra Escape) foi escrito à mão em cada um dos dois lugares — e só um deles lembrou de devolver o foco pro botão de origem ao fechar; o outro deixou o foco solto, sem elemento nenhum amarrado. Nada disso aparece testando com mouse, nem gera erro — só fica visível testando com teclado de verdade, e a inconsistência entre os dois existe exatamente porque a lógica foi duplicada em vez de centralizada.',
+    lesson:
+      'Todo painel/disclosure custom (não um `<dialog>` nativo) precisa de três coisas, não de uma: fechar com Esc, fechar clicando fora, e devolver o foco pra um elemento visível e ainda presente no DOM ao fechar — nunca deixar o foco solto ou em cima de algo que acabou de sumir. Extraia isso num hook único reutilizável em vez de copiar e colar um efeito de `keydown` por componente: a duplicação é justamente como uma cópia acaba mais completa que a outra. Teste de propósito com teclado (Tab até o botão, Enter, Esc, confirme onde o foco ficou) — mouse nunca revela essa lacuna.',
+    downloads: [
+      { file: 'painel-dispensavel-esc-foco-checklist.md', label: 'Hook reutilizável + checklist: Esc fecha painel e devolve foco' },
+    ],
+  },
 ]
