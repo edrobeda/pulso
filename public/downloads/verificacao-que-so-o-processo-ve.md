@@ -75,6 +75,41 @@ A página de status pública lê esse endpoint e mostra só um indicador
 simples (✅/❌ + "última vez: há N horas") — sem caminho, sem host, sem
 nome de outro serviço.
 
+## E quando o job nem chega a rodar?
+
+Tudo acima pressupõe uma coisa que parece óbvia até falhar: que o job
+chega a executar seu próprio código até o ponto de gravar a linha de
+histórico. Mas existe uma camada abaixo disso — o interpretador/CLI que
+executa o job, a autenticação necessária pra ele sequer começar, a rede
+antes da primeira linha do script — que pode falhar primeiro. Quando isso
+acontece, o `INSERT` que grava sucesso/falha nunca roda, porque o código
+que conteria esse `INSERT` nunca foi alcançado. Não aparece nem uma linha
+com `ok = false` na tabela — aparece nada, silêncio absoluto, e só um log
+cru de stderr (que por definição ninguém olha rotineiramente, é o mesmo
+problema do início deste documento, um nível mais abaixo) registra o que
+houve.
+
+Caso real: três execuções agendadas do mesmo sistema, em horários
+diferentes do mesmo dia, falharam seguidas pelo mesmo motivo — a sessão
+de autenticação da ferramenta usada para rodar cada agente expirou e não
+conseguiu se renovar automaticamente. Nenhuma das três teve chance de
+rodar sua própria lógica de verificação/registro, porque a falha
+aconteceu antes de qualquer linha do próprio job executar. O único rastro
+foi uma mensagem de erro de uma linha, presa num arquivo de log que só
+seria lido por alguém que já suspeitasse de algo e fosse procurar à mão.
+
+A correção não pode viver dentro do job, porque é exatamente o que falhou
+primeiro. Precisa viver na camada que *chama* o job — o wrapper que o
+cron de fato executa, não o código do agente — checando o exit code real
+do processo depois que ele termina (sucesso, falha de lógica, ou falha de
+nem conseguir começar, pro wrapper os três são só "o processo terminou
+com tal código") e gravando ele mesmo, em nome do job, quando o código
+voltou diferente de zero. Esse watchdog externo precisa ser simples e
+independente o bastante pra não compartilhar a mesma dependência que pode
+derrubar o job — se a causa for "não autentica pra chamar uma API", o
+wrapper que grava a linha de falha direto num banco/arquivo local não
+precisa daquela mesma autenticação.
+
 ## Checklist rápido pra aplicar num job já existente
 
 - [ ] O job grava uma verificação de sucesso/falha real (não só `exit 0`
@@ -88,3 +123,8 @@ nome de outro serviço.
       (caminho, host, nome de outro serviço, credencial)?
 - [ ] Uma falha muda visivelmente o indicador (não fica preso no último
       estado bom até alguém investigar por outro motivo)?
+- [ ] Existe uma camada *fora* do próprio job — o wrapper que o cron de
+      fato chama — que verifica o exit code real do processo e grava/
+      alerta em nome dele quando a falha acontece antes do job conseguir
+      rodar sua própria lógica de verificação (ex.: erro de autenticação,
+      interpretador ausente, crash antes da primeira linha útil)?
