@@ -762,6 +762,40 @@ a {
   }
 }
 
+/* Empilha acima do .autoscroll-btn, mesmo canto direito — ambos são
+   controles de "modo de leitura" do post, faz sentido ficarem juntos. */
+.tts-controls {
+  position: fixed;
+  right: clamp(16px, 4vw, 40px);
+  bottom: calc(clamp(16px, 4vw, 40px) + 52px);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tts-stop-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink-800);
+  border: 1px solid var(--ink-600);
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--mist-200);
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.tts-stop-btn:hover {
+  border-color: var(--signal-amber-dim);
+  color: var(--signal-amber);
+}
+
 /* Canto esquerdo de propósito — nunca colide com .autoscroll-btn (direita). */
 .back-to-top {
   position: fixed;
@@ -2003,6 +2037,7 @@ a {
   .skip-link,
   .read-progress,
   .autoscroll-btn,
+  .tts-controls,
   .back-to-top,
   .reactions,
   .share,

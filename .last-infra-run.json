@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "botão voltar ao topo, Esc fecha painéis com foco de volta, RSS/JSON Feed e llms.txt com tags e imagem por post", "needs_input": false }
+{ "shipped": true, "summary": "botão de leitura em voz alta (text-to-speech) na página do post", "needs_input": false }

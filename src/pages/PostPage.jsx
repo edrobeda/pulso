@@ -53,6 +53,21 @@ function saveFlagged(ids) {
   localStorage.setItem(FLAGGED_KEY, JSON.stringify(ids))
 }
 
+// Pra ouvir em voz alta: título + parágrafos/quotes/headings, pulando bloco
+// de código (ler código em voz alta não ajuda ninguém). Um SpeechSynthesisUtterance
+// por bloco em vez de um texto gigante só — mais robusto contra o limite de
+// alguns navegadores com utterances muito longas, e enfileira sozinho (a Web
+// Speech API toca em ordem quem for passado pra speak() em sequência).
+function buildSpeechSegments(post, postBody) {
+  const segments = [post.title]
+  if (postBody) {
+    postBody.blocks.forEach((block) => {
+      if (block.type !== 'code' && block.text) segments.push(block.text)
+    })
+  }
+  return segments
+}
+
 function relatedPosts(allPosts, post) {
   if (!post) return []
   return allPosts
@@ -188,6 +203,8 @@ export default function PostPage() {
   const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const [readProgress, setReadProgress] = useState(0)
   const [copyState, setCopyState] = useState('idle')
+  const ttsSupported = typeof window !== 'undefined' && 'speechSynthesis' in window
+  const [ttsState, setTtsState] = useState('idle') // idle | playing | paused
 
   useEffect(() => {
     if (!post) return
@@ -268,6 +285,15 @@ export default function PostPage() {
   useEffect(() => {
     setAutoScroll(false)
   }, [post?.slug])
+
+  // Cancela qualquer fala em andamento ao trocar de post ou sair da página —
+  // senão o áudio do post anterior continua tocando por cima do novo.
+  useEffect(() => {
+    setTtsState('idle')
+    return () => {
+      if (ttsSupported) window.speechSynthesis.cancel()
+    }
+  }, [post?.slug, ttsSupported])
 
   // Esc fecha o form de resposta aberto, mesma motivação do BugReportWidget.
   useEffect(() => {
@@ -428,6 +454,37 @@ export default function PostPage() {
       .catch(() => {})
   }
 
+  function handleToggleSpeech() {
+    if (!ttsSupported || !post) return
+    if (ttsState === 'playing') {
+      window.speechSynthesis.pause()
+      setTtsState('paused')
+      return
+    }
+    if (ttsState === 'paused') {
+      window.speechSynthesis.resume()
+      setTtsState('playing')
+      return
+    }
+    window.speechSynthesis.cancel()
+    const segments = buildSpeechSegments(post, postBody)
+    segments.forEach((text, i) => {
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = 'pt-BR'
+      if (i === segments.length - 1) {
+        utterance.onend = () => setTtsState('idle')
+      }
+      window.speechSynthesis.speak(utterance)
+    })
+    setTtsState('playing')
+  }
+
+  function handleStopSpeech() {
+    if (!ttsSupported) return
+    window.speechSynthesis.cancel()
+    setTtsState('idle')
+  }
+
   function handleReact(emoji) {
     if (!post || reacted.includes(emoji)) return
     const nextReacted = [...reacted, emoji]
@@ -479,6 +536,35 @@ export default function PostPage() {
         >
           ▶ <span>leitura automática</span>
         </button>
+      )}
+      {ttsSupported && (
+        <div className="tts-controls">
+          <button
+            type="button"
+            className={`autoscroll-btn${ttsState !== 'idle' ? ' autoscroll-btn--active' : ''}`}
+            onClick={handleToggleSpeech}
+            aria-pressed={ttsState === 'playing'}
+          >
+            {ttsState === 'playing' ? '⏸' : '🔊'}{' '}
+            <span>
+              {ttsState === 'playing'
+                ? 'pausar áudio'
+                : ttsState === 'paused'
+                  ? 'continuar áudio'
+                  : 'ouvir este pulso'}
+            </span>
+          </button>
+          {ttsState !== 'idle' && (
+            <button
+              type="button"
+              className="tts-stop-btn"
+              onClick={handleStopSpeech}
+              aria-label="Parar leitura em voz alta"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       )}
       <div className="post-card">
         <div className="post-card__band">

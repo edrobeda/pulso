@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Lição nova: painel custom sem Esc/retorno de foco prende navegação por teclado (hook reutilizável + checklist).", "needs_input": false }
+{ "shipped": true, "summary": "Ampliei a lição 'verificação que só o processo vê' com o caso real de hoje (três rodadas falharam por expiração de autenticação antes de rodar sua própria lógica) e a correção via watchdog externo ao processo.", "needs_input": false }
