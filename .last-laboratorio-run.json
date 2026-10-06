@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Ampliei a lição 'verificação que só o processo vê' com o caso real de hoje (três rodadas falharam por expiração de autenticação antes de rodar sua própria lógica) e a correção via watchdog externo ao processo.", "needs_input": false }
+{ "shipped": false, "summary": "Nenhuma lição nova genuína encontrada hoje; revisão semanal do iaBrain ainda não vence (5 de 7 dias)", "needs_input": false }
