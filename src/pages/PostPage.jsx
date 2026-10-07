@@ -14,6 +14,7 @@ import {
 import { slugifyTag } from '../lib/tags'
 import { isSaved, toggleSaved } from '../lib/saved'
 import { getClientToken } from '../lib/clientToken'
+import { useEscapeToClose } from '../hooks/useEscapeToClose'
 
 function viewsLabel(count) {
   return count === 1 ? '1 leitura' : `${count} leituras`
@@ -189,6 +190,10 @@ export default function PostPage() {
   // Só um comentário por vez tem o form de resposta aberto — reaproveita o
   // mesmo conjunto de campos em vez de um estado por comentário.
   const [replyTarget, setReplyTarget] = useState(null)
+  // Guarda o botão "responder" que abriu o form atual, pra devolver o foco
+  // nele quando Esc fechar (useEscapeToClose) — não dá pra usar um único
+  // useRef fixo porque há um botão por comentário.
+  const replyToggleRef = useRef(null)
   const [replyName, setReplyName] = useState('')
   const [replyBody, setReplyBody] = useState('')
   const [replyHoneypot, setReplyHoneypot] = useState('')
@@ -295,15 +300,7 @@ export default function PostPage() {
     }
   }, [post?.slug, ttsSupported])
 
-  // Esc fecha o form de resposta aberto, mesma motivação do BugReportWidget.
-  useEffect(() => {
-    if (!replyTarget) return
-    function handleKeydown(e) {
-      if (e.key === 'Escape') setReplyTarget(null)
-    }
-    window.addEventListener('keydown', handleKeydown)
-    return () => window.removeEventListener('keydown', handleKeydown)
-  }, [replyTarget])
+  useEscapeToClose(!!replyTarget, () => setReplyTarget(null), replyToggleRef)
 
   useEffect(() => {
     if (!autoScroll) return
@@ -369,8 +366,9 @@ export default function PostPage() {
       })
   }
 
-  function openReply(commentId) {
+  function openReply(commentId, triggerEl) {
     setReplyTarget((current) => (current === commentId ? null : commentId))
+    replyToggleRef.current = triggerEl
     setReplyError('')
     setReplySuccessFor(null)
     setReplyBody('')
@@ -709,7 +707,7 @@ export default function PostPage() {
                         <button
                           type="button"
                           className="comment__reply-toggle"
-                          onClick={() => openReply(c.id)}
+                          onClick={(e) => openReply(c.id, e.currentTarget)}
                           aria-expanded={replyTarget === c.id}
                         >
                           {replyTarget === c.id ? 'cancelar' : 'responder'}

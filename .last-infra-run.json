@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "botão de leitura em voz alta (text-to-speech) na página do post", "needs_input": false }
+{ "shipped": true, "summary": "extraído hook useEscapeToClose e corrigido foco perdido no Esc do form de resposta a comentário", "needs_input": false }
