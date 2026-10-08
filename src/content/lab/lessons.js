@@ -92,25 +92,26 @@ export const lessons = [
   },
   {
     slug: 'iabrain-v0-01',
-    title: 'iaBrain — orquestrador, subagentes, skills, memória, coordenação assíncrona e confinamento',
+    title: 'iaBrain — orquestrador, subagentes, skills, memória, coordenação assíncrona, confinamento e verificação',
     tag: 'agentes',
     problem:
       'Um sistema de agentes de IA sem separação clara de papéis tende a virar uma bagunça: um único prompt gigante tentando fazer roteamento, execução e memória ao mesmo tempo, contexto poluído por passos intermediários que ninguém precisava ver, e nenhum critério consistente pra decidir quando delegar uma tarefa ou quando registrar algo como memória permanente. Isso cobre só o caso de agentes na mesma sessão: quando os agentes são processos genuinamente independentes (cron em horários diferentes, sem sessão compartilhada), delegar e esperar resposta não existe — eles só se enxergam através do que gravam em algum lugar durável. E nenhuma dessas peças resolve um problema adicional e mais crítico: quando pelo menos um desses agentes age sem revisão humana antes de cada passo, o que impede dano além do pretendido não é o texto do prompt, é o que existe ao redor dele.',
     lesson:
-      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. E pra qualquer agente que roda sem revisão humana, uma quarta camada por cima de tudo isso: escopo travado por allow-list explícita (não por instrução verbal), canal de escalonamento no lugar de contorno quando o escopo barra algo, gate de permissão por consequência real da ação (não pelo tipo técnico de ferramenta usada), dado de ferramenta de monitoramento tratado como não confiável, e recusa de classificador de segurança do provedor tratada como categoria própria de falha. Versionado (v0.01, v0.02, v0.03...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável, onde travar o confinamento — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
+      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. Pra qualquer agente que roda sem revisão humana, uma camada por cima de tudo isso: escopo travado por allow-list explícita (não por instrução verbal), canal de escalonamento no lugar de contorno quando o escopo barra algo, gate de permissão por consequência real da ação (não pelo tipo técnico de ferramenta usada), dado de ferramenta de monitoramento tratado como não confiável, e recusa de classificador de segurança do provedor tratada como categoria própria de falha. E, mesmo fazendo tudo isso certo, falta uma última pergunta: como saber que o que foi feito funcionou de verdade antes de reportar a rodada como concluída — build passar não prova runtime, HTTP 200 não prova execução, arquivo existir não prova que restaura; reverter pro estado anterior conhecido-bom é sempre uma saída válida quando a verificação falha, nunca motivo pra deixar algo quebrado no ar. Versionado (v0.01, v0.02, v0.03, v0.04...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável, onde travar o confinamento, o que verificar antes de declarar sucesso — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
     downloads: [
       { file: 'iabrain/install-prompt.md', label: 'Prompt de instalação/atualização automática' },
-      { file: 'iabrain/v0.03/README.md', label: 'README — visão geral + instalação por harness' },
-      { file: 'iabrain/v0.03/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
-      { file: 'iabrain/v0.03/subagente-template.md', label: 'Template de definição de subagente' },
-      { file: 'iabrain/v0.03/skill-template.md', label: 'Template de skill de referência' },
-      { file: 'iabrain/v0.03/memoria-profile.md', label: 'Memória: profile' },
-      { file: 'iabrain/v0.03/memoria-preferences.md', label: 'Memória: preferences' },
-      { file: 'iabrain/v0.03/memoria-topics.md', label: 'Memória: topics' },
-      { file: 'iabrain/v0.03/memoria-people.md', label: 'Memória: people' },
-      { file: 'iabrain/v0.03/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
-      { file: 'iabrain/v0.03/coordenacao-assincrona.md', label: 'Coordenação assíncrona entre agentes independentes' },
-      { file: 'iabrain/v0.03/confinamento-harness.md', label: 'Novo na v0.03: harness de confinamento pra agente sem revisão humana' },
+      { file: 'iabrain/v0.04/README.md', label: 'README — visão geral + instalação por harness' },
+      { file: 'iabrain/v0.04/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
+      { file: 'iabrain/v0.04/subagente-template.md', label: 'Template de definição de subagente' },
+      { file: 'iabrain/v0.04/skill-template.md', label: 'Template de skill de referência' },
+      { file: 'iabrain/v0.04/memoria-profile.md', label: 'Memória: profile' },
+      { file: 'iabrain/v0.04/memoria-preferences.md', label: 'Memória: preferences' },
+      { file: 'iabrain/v0.04/memoria-topics.md', label: 'Memória: topics' },
+      { file: 'iabrain/v0.04/memoria-people.md', label: 'Memória: people' },
+      { file: 'iabrain/v0.04/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
+      { file: 'iabrain/v0.04/coordenacao-assincrona.md', label: 'Coordenação assíncrona entre agentes independentes' },
+      { file: 'iabrain/v0.04/confinamento-harness.md', label: 'Harness de confinamento pra agente sem revisão humana' },
+      { file: 'iabrain/v0.04/verificacao-e-reversao.md', label: 'Novo na v0.04: gate de verificação antes de declarar sucesso, com reversão' },
     ],
   },
   {
@@ -473,6 +474,18 @@ export const lessons = [
       'Todo painel/disclosure custom (não um `<dialog>` nativo) precisa de três coisas, não de uma: fechar com Esc, fechar clicando fora, e devolver o foco pra um elemento visível e ainda presente no DOM ao fechar — nunca deixar o foco solto ou em cima de algo que acabou de sumir. Extraia isso num hook único reutilizável em vez de copiar e colar um efeito de `keydown` por componente: a duplicação é justamente como uma cópia acaba mais completa que a outra. Teste de propósito com teclado (Tab até o botão, Enter, Esc, confirme onde o foco ficou) — mouse nunca revela essa lacuna.',
     downloads: [
       { file: 'painel-dispensavel-esc-foco-checklist.md', label: 'Hook reutilizável + checklist: Esc fecha painel e devolve foco' },
+    ],
+  },
+  {
+    slug: 'fonte-de-terceiro-no-caminho-critico',
+    title: 'Fonte de terceiro no caminho crítico soma um handshake inteiro antes do texto certo aparecer',
+    tag: 'frontend',
+    problem:
+      'Um site carregava fontes custom via CDN de terceiro (`<link>` pra `fonts.googleapis.com`) — uma linha simples no `<head>`, parecendo gratuita. Mas antes do navegador aplicar a fonte, ele precisa abrir uma conexão nova pra um domínio que não é o seu (DNS + TLS handshake) dentro do caminho crítico da primeira renderização. Em banda larga isso passa despercebido; em conexão de celular — o perfil real de quem lê um blog no trajeto, com uma mão ocupada — é tempo de espera real antes do texto aparecer com a tipografia certa, além de criar uma dependência de disponibilidade de um serviço externo só pra mostrar texto.',
+    lesson:
+      'Self-hospede os arquivos de fonte (`.woff2`) no próprio domínio, com cache longo (`max-age` de 1 ano — o arquivo não muda depois de baixado). Isso elimina a conexão cross-origin do caminho crítico: resta só a conexão que o navegador já ia abrir com o seu domínio de qualquer forma. Baixe só o subset que seu idioma precisa (latin cobre acentuação de PT-BR, não baixe o pacote de todos os idiomas), mantenha o `unicode-range` copiado do CSS original do CDN, e use `font-display: swap` pra não bloquear a renderização do texto esperando a fonte custom chegar.',
+    downloads: [
+      { file: 'fonte-terceiro-caminho-critico.md', label: 'Checklist: migrar fonte de CDN de terceiro pra self-hospedada' },
     ],
   },
 ]

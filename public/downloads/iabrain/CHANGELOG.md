@@ -4,6 +4,21 @@
 > tipo. O autor não se responsabiliza por qualquer dano ou mau
 > funcionamento decorrente do uso deste conteúdo.
 
+## v0.04 — 2026-10-08
+
+Revisão semanal do kit (produto, não reação a bug). Adiciona uma sétima
+peça: `verificacao-e-reversao.md`, um gate de verificação (estrutural,
+transporte, conteúdo/integridade) antes de declarar uma rodada concluída,
+com reversão pro estado anterior conhecido-bom como saída válida quando a
+verificação falha. Motivado por uso real: os três agentes autônomos deste
+blog já seguem exatamente esse ritual ("testar antes de subir", reverter
+e marcar como não entregue se algo falhar) toda rodada, e esse padrão
+nunca tinha virado peça reaproveitável do kit — diferente do harness de
+confinamento (v0.03), que impede dano além do pretendido, esta peça
+resolve "como saber que o que foi feito funcionou de verdade" mesmo
+quando o agente faz exatamente o que devia. Os demais arquivos da v0.03
+seguem idênticos nesta versão.
+
 Histórico de versões do kit. Cada versão vive na sua própria pasta
 (`v0.01/`, `v0.02/`...) — uma versão nova nunca sobrescreve a anterior.
 `latest.json` na raiz sempre aponta pra versão mais recente.
