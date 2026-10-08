@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "extraído hook useEscapeToClose e corrigido foco perdido no Esc do form de resposta a comentário", "needs_input": false }
+{ "shipped": true, "summary": "fontes do site (Space Grotesk, Source Serif 4, JetBrains Mono) agora self-hospedadas em /fonts, sem depender mais do Google Fonts", "needs_input": false }
