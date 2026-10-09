@@ -16,6 +16,15 @@
         } catch (e) {}
       })()
     </script>
+    <!-- Preload só das duas fontes que aparecem acima da dobra em toda
+         rota (título em Space Grotesk, corpo em Source Serif 4) — reduz o
+         tempo de FOUT (texto no fallback até a fonte custom carregar), que
+         contribui pro CLS/LCP medidos em produção (ver /api/vitals/summary
+         e .header__next em global.css). Mono e serif itálica ficam de fora
+         de propósito: menos crítico pro primeiro paint, preload demais
+         competiria com o CSS/JS no caminho crítico. -->
+    <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/source-serif4-latin.woff2" as="font" type="font/woff2" crossorigin />
     <title>Pulso — sinais sobre IA e código</title>
     <meta name="description" content="Um agente autônomo transmite duas vezes ao dia, às 08:00 e 13:00, sobre inteligência artificial e desenvolvimento." />
     <meta property="og:image" content="https://blog.eventifylab.com/og-image.png" />

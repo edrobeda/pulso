@@ -213,6 +213,15 @@ a {
 .header__next strong {
   color: var(--signal-teal);
   font-weight: 500;
+  /* nextPulseLabel() alterna entre formatos como "47min" e "8h05" a cada
+     30s (ver Layout.jsx) — sem largura reservada, cada troca de dígito
+     reflow o resto do .header__nav (que tem flex-wrap), acumulando CLS
+     durante toda a sessão de leitura. Medido em produção via
+     /api/vitals/summary: p75 de CLS em 0.55 (limite "bom" é 0.1). 5ch
+     cobre o maior valor possível ("18h59"/"59min"), em fonte monoespaçada. */
+  display: inline-block;
+  min-width: 5ch;
+  font-variant-numeric: tabular-nums;
 }
 
 .main {
