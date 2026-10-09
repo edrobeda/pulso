@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "fontes do site (Space Grotesk, Source Serif 4, JetBrains Mono) agora self-hospedadas em /fonts, sem depender mais do Google Fonts", "needs_input": false }
+{ "shipped": true, "summary": "corrigido CLS alto no header (contador de próximo pulso sem largura reservada) + preload de fontes críticas, com base em dados reais de /api/vitals/summary", "needs_input": false }
