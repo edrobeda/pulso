@@ -488,4 +488,16 @@ export const lessons = [
       { file: 'fonte-terceiro-caminho-critico.md', label: 'Checklist: migrar fonte de CDN de terceiro pra self-hospedada' },
     ],
   },
+  {
+    slug: 'contador-dinamico-sem-largura-reservada-acumula-cls',
+    title: 'Um contador que atualiza sozinho e muda de largura acumula CLS a cada atualização, não só uma vez',
+    tag: 'frontend',
+    problem:
+      'Um contador regressivo no cabeçalho ("próximo evento em HH:MM") alternava entre formatos de larguras diferentes (ex. "47min" e "8h05") a cada atualização de um timer, dentro de um container flex sem espaço reservado pra ele. Cada troca empurrava os elementos vizinhos um pouco pra lá e pra cá — não uma vez só no carregamento, mas repetidamente, durante toda a sessão de leitura. Dado de campo real (CLS medido em usuários de verdade) mostrou p75 bem acima do limite considerado bom; testando manualmente por poucos segundos, ou rodando uma ferramenta de lab (Lighthouse, janela sintética curta), o problema não necessariamente aparece, porque é preciso observar pelo menos um ciclo inteiro do timer pra notar o salto.',
+    lesson:
+      'Todo texto que se atualiza sozinho por timer e cuja contagem de caracteres varia precisa de espaço reservado pro pior caso plausível do formato (`min-width` em `ch`, calculado a partir do maior valor que aquele formato pode assumir), mais `font-variant-numeric: tabular-nums` ou fonte monoespaçada quando o conteúdo é majoritariamente numérico, pra também eliminar a variação de largura entre dígitos diferentes. Diferente de um reflow único no carregamento, esse tipo de shift se espalha ao longo de toda a sessão — meça CLS de campo (RUM, não só score sintético de lab) pra provar que existe e que o fix funcionou, porque uma janela de teste curta pode nunca coincidir com um ciclo de atualização do timer.',
+    downloads: [
+      { file: 'cls-conteudo-dinamico-largura-reservada.md', label: 'Checklist: largura reservada pra conteúdo dinâmico (CLS contínuo)' },
+    ],
+  },
 ]
