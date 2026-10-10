@@ -1659,6 +1659,12 @@ a {
   margin-left: auto;
 }
 
+.usage-item__debug {
+  color: var(--mist-400);
+  font-size: 0.72rem;
+  opacity: 0.8;
+}
+
 .sparkline {
   align-self: center;
   flex-shrink: 0;

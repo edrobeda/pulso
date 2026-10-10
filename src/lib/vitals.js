@@ -10,12 +10,26 @@
 // dashboard em /bastidores precisa hoje.
 const VITALS_ENDPOINT = '/api/vitals'
 
+// Descritor curto de elemento (tag + até 2 classes, sem conteúdo/texto) —
+// o bastante pra saber ONDE olhar no CSS sem vazar nada sensível, já que é
+// só o seletor de uma classe nossa mesmo (ex. "h1.intro__title").
+function describeElement(el) {
+  if (!el || !el.tagName) return null
+  const tag = el.tagName.toLowerCase()
+  const classes = typeof el.className === 'string' ? el.className.trim().split(/\s+/).filter(Boolean) : []
+  const classPart = classes.slice(0, 2).join('.')
+  return (classPart ? `${tag}.${classPart}` : tag).slice(0, 120)
+}
+
 export function initWebVitals() {
   if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return
 
   const path = window.location.pathname
   const metrics = {}
+  const debug = {}
   let clsValue = 0
+  let clsTopSource = null
+  let clsTopImpact = 0
   let sent = false
 
   try {
@@ -39,7 +53,10 @@ export function initWebVitals() {
     new PerformanceObserver((list) => {
       const entries = list.getEntries()
       const last = entries[entries.length - 1]
-      if (last) metrics.lcp = last.startTime
+      if (last) {
+        metrics.lcp = last.startTime
+        debug.lcp = describeElement(last.element)
+      }
     }).observe({ type: 'largest-contentful-paint', buffered: true })
   } catch {
     // navegador sem suporte a largest-contentful-paint — sem LCP.
@@ -48,7 +65,15 @@ export function initWebVitals() {
   try {
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        if (!entry.hadRecentInput) clsValue += entry.value
+        if (entry.hadRecentInput) continue
+        clsValue += entry.value
+        // Guarda o elemento do maior deslocamento individual, não do
+        // último — é o melhor palpite de qual CSS reservar espaço pra ele.
+        if (entry.value > clsTopImpact) {
+          clsTopImpact = entry.value
+          const node = entry.sources?.[0]?.node
+          clsTopSource = describeElement(node)
+        }
       }
     }).observe({ type: 'layout-shift', buffered: true })
   } catch {
@@ -59,7 +84,8 @@ export function initWebVitals() {
     if (sent) return
     sent = true
     metrics.cls = clsValue
-    const payload = JSON.stringify({ path, metrics })
+    if (clsTopSource) debug.cls = clsTopSource
+    const payload = JSON.stringify({ path, metrics, debug })
     if (navigator.sendBeacon) {
       navigator.sendBeacon(VITALS_ENDPOINT, new Blob([payload], { type: 'application/json' }))
     } else {

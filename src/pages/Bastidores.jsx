@@ -567,7 +567,17 @@ export default function Bastidores() {
               <ul className="usage-list">
                 {VITALS_ORDER.filter((m) => vitals.byMetric[m]).map((m) => (
                   <li className="usage-item" key={m}>
-                    <span className="usage-item__agent">{vitals.byMetric[m].label}</span>
+                    <span className="usage-item__agent">
+                      {vitals.byMetric[m].label}
+                      {vitals.byMetric[m].lastDebugInfo && (
+                        <>
+                          {' '}
+                          <code className="usage-item__debug">
+                            {vitals.byMetric[m].lastDebugInfo}
+                          </code>
+                        </>
+                      )}
+                    </span>
                     <span className="usage-item__tokens">
                       {vitalValueLabel(m, vitals.byMetric[m].p75)}
                     </span>

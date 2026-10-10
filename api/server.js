@@ -257,6 +257,7 @@ app.post('/api/vitals', writeLimiter, async (req, res) => {
   try {
     const path = String(req.body?.path || '').trim().slice(0, 200)
     const metrics = req.body?.metrics
+    const debug = req.body?.debug
     if (!path || !metrics || typeof metrics !== 'object') {
       return res.status(400).json({ error: 'invalid' })
     }
@@ -267,11 +268,14 @@ app.post('/api/vitals', writeLimiter, async (req, res) => {
     if (entries.length === 0) return res.status(400).json({ error: 'no valid metrics' })
 
     for (const [metric, value] of entries) {
-      await pool.query(`INSERT INTO web_vitals (metric, value, path) VALUES ($1, $2, $3)`, [
-        metric,
-        Number(value),
-        path,
-      ])
+      const debugInfo =
+        debug && typeof debug === 'object' && typeof debug[metric] === 'string'
+          ? debug[metric].slice(0, 120)
+          : null
+      await pool.query(
+        `INSERT INTO web_vitals (metric, value, path, debug_info) VALUES ($1, $2, $3, $4)`,
+        [metric, Number(value), path, debugInfo]
+      )
     }
     res.status(201).json({ ok: true })
   } catch (err) {
@@ -288,7 +292,9 @@ app.get('/api/vitals/summary', async (_req, res) => {
     const { rows } = await pool.query(
       `SELECT metric,
               count(*)::int AS sample_count,
-              percentile_cont(0.75) WITHIN GROUP (ORDER BY value) AS p75
+              percentile_cont(0.75) WITHIN GROUP (ORDER BY value) AS p75,
+              (array_agg(debug_info ORDER BY created_at DESC) FILTER (WHERE debug_info IS NOT NULL))[1]
+                AS last_debug_info
        FROM web_vitals
        WHERE created_at > now() - interval '7 days'
        GROUP BY metric`
@@ -299,6 +305,7 @@ app.get('/api/vitals/summary', async (_req, res) => {
         label: VITALS_LABELS[row.metric] || row.metric,
         p75: Number(row.p75),
         sampleCount: row.sample_count,
+        lastDebugInfo: row.last_debug_info || null,
       }
     }
     res.set('Cache-Control', 'public, max-age=300')
