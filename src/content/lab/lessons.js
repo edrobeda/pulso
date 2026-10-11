@@ -502,14 +502,14 @@ export const lessons = [
   },
   {
     slug: 'metrica-de-campo-sem-elemento-e-meio-diagnostico',
-    title: 'Saber que o CLS/LCP está ruim não diz onde olhar — falta o elemento causador',
+    title: 'Saber que o CLS/LCP/INP está ruim não diz onde olhar — falta o elemento causador',
     tag: 'frontend',
     problem:
       'Um RUM (Real User Monitoring) caseiro coletava os valores agregados de Web Vitals (CLS, LCP) de visitantes reais e parava aí — provando que a página estava ruim, sem nenhuma pista de qual elemento específico causou cada métrica naquela sessão. Sem essa atribuição, toda investigação virava tentativa e erro: suspeitar de um componente, aplicar uma correção, publicar, esperar dado novo chegar, medir de novo — repetindo até acertar o culpado, com o custo desses ciclos crescendo junto com o número de componentes candidatos.',
     lesson:
-      'As APIs de performance do navegador já carregam essa atribuição estruturalmente — a entry de `largest-contentful-paint` tem `.element` (o nó real pintado como maior conteúdo visível), e a entry de `layout-shift` tem `.sources[]`, cada um com `.node` do elemento que se moveu. Capture isso no momento da medição (reduzido a um identificador curto e seguro — tag + id/classe, nunca o HTML inteiro nem referência viva ao DOM) e grave junto com o valor agregado, exibindo os dois lado a lado no mesmo painel já consultado pra olhar a métrica — não como dado separado que exigiria correlação manual depois. Isso elimina a etapa de "qual componente é esse", que sem atribuição só se resolve lendo código candidato por candidato ou tentando reproduzir algo que pode depender de dado real (tamanho de conteúdo dinâmico, conexão lenta) ausente em ambiente de teste.',
+      'As APIs de performance do navegador já carregam essa atribuição estruturalmente — a entry de `largest-contentful-paint` tem `.element` (o nó real pintado como maior conteúdo visível), e a entry de `layout-shift` tem `.sources[]`, cada um com `.node` do elemento que se moveu. Capture isso no momento da medição (reduzido a um identificador curto e seguro — tag + id/classe, nunca o HTML inteiro nem referência viva ao DOM) e grave junto com o valor agregado, exibindo os dois lado a lado no mesmo painel já consultado pra olhar a métrica — não como dado separado que exigiria correlação manual depois. Isso elimina a etapa de "qual componente é esse", que sem atribuição só se resolve lendo código candidato por candidato ou tentando reproduzir algo que pode depender de dado real (tamanho de conteúdo dinâmico, conexão lenta) ausente em ambiente de teste. O mesmo padrão generaliza pra uma terceira métrica, confirmado na prática: a entry de `event` (usada pra medir INP, que substituiu FID como Core Web Vital oficial) tem `.target`, o nó que recebeu a interação — mesma estrutura de atribuição, API diferente.',
     downloads: [
-      { file: 'web-vitals-sem-elemento-causador.md', label: 'Checklist + exemplo: capturar o elemento causador de LCP/CLS via PerformanceObserver' },
+      { file: 'web-vitals-sem-elemento-causador.md', label: 'Checklist + exemplo: capturar o elemento causador de LCP/CLS/INP via PerformanceObserver' },
     ],
   },
 ]

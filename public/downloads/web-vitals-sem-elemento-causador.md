@@ -5,6 +5,10 @@
 > entenda e adapte antes de usar. O autor não se responsabiliza por qualquer
 > dano ou mau funcionamento decorrente do uso deste conteúdo.
 
+> **Atualização:** o padrão abaixo (capturar o elemento no momento da
+> medição) generaliza pra INP, não só LCP/CLS — ver seção "E o INP?" mais
+> abaixo.
+
 ## O problema
 
 Um sistema de RUM (Real User Monitoring) simples, caseiro, costuma coletar
@@ -91,12 +95,41 @@ No fim da sessão (ou a cada envio periódico), mande `piorShift` junto com
 o valor agregado de CLS — o elemento isolado que mais contribuiu, não só
 a soma.
 
+### E o INP?
+
+INP (Interaction to Next Paint) substituiu FID como Core Web Vital
+oficial, e mede a interação mais lenta da sessão (clique, toque, tecla) até
+o próximo paint. O mesmo padrão de atribuição existe aqui também, só com
+nome de campo diferente: a entry do tipo `event` tem `.target`, o nó que
+recebeu a interação que gerou aquele atraso.
+
+```js
+let piorEvento = null;
+new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    const duracao = entry.duration;
+    if (!piorEvento || duracao > piorEvento.value) {
+      piorEvento = { value: duracao, elemento: elementoResumo(entry.target) };
+    }
+  }
+}).observe({ type: 'event', buffered: true, durationThreshold: 40 });
+```
+
+`durationThreshold` evita observar toda interação rápida (a maioria) — só
+as que já são candidatas a interação lenta o bastante pra interessar.
+`entry.target` pode vir `null` se o elemento já foi removido do DOM entre
+a interação e a medição (comum em listas que re-renderizam); trate como
+"elemento desconhecido" em vez de deixar `elementoResumo` quebrar.
+
 ## Checklist rápido
 
 - [ ] O RUM caseiro captura `.element` da entry de
       `largest-contentful-paint`, não só o `startTime`?
 - [ ] O RUM caseiro captura o `.node` do maior `source` de cada entry de
       `layout-shift` (ignorando shifts com `hadRecentInput: true`)?
+- [ ] O RUM caseiro captura o `.target` da entry de `event` usada pra medir
+      INP, tratando `target` ausente (elemento já removido do DOM) sem
+      quebrar?
 - [ ] O identificador do elemento gravado é curto e seguro (tag + id/classe
       truncado), nunca o HTML inteiro nem uma referência viva ao DOM?
 - [ ] O painel onde a métrica agregada já é exibida mostra também o
