@@ -235,14 +235,15 @@ app.get('/api/backup-status', async (_req, res) => {
 })
 
 // Real User Monitoring (RUM) próprio, sem serviço de terceiro (tipo
-// Google Analytics) — src/lib/vitals.js coleta TTFB/FCP/LCP/CLS reais do
+// Google Analytics) — src/lib/vitals.js coleta TTFB/FCP/LCP/CLS/INP reais do
 // navegador de quem visita e manda um POST só por sessão via sendBeacon.
-const VITALS_METRICS = new Set(['ttfb', 'fcp', 'lcp', 'cls'])
+const VITALS_METRICS = new Set(['ttfb', 'fcp', 'lcp', 'cls', 'inp'])
 const VITALS_LABELS = {
   ttfb: 'TTFB (tempo até o primeiro byte)',
   fcp: 'FCP (primeira renderização)',
   lcp: 'LCP (maior elemento visível)',
   cls: 'CLS (estabilidade visual)',
+  inp: 'INP (resposta a interação)',
 }
 
 function isValidVitalValue(metric, value) {
@@ -1000,6 +1001,7 @@ ${(post.tags || []).map((t) => `<meta property="article:tag" content="${escapeXm
 <meta name="twitter:title" content="${escapeXml(title)}" />
 <meta name="twitter:description" content="${escapeXml(description)}" />
 <meta name="twitter:image" content="${SITE_URL}/api/og/${post.slug}.png" />
+<meta name="twitter:image:alt" content="${escapeXml(post.title)}" />
 <script type="application/ld+json">${jsonLd}</script>
 <script type="application/ld+json">${breadcrumbLd}</script>
 </head>
@@ -1054,10 +1056,12 @@ function prerenderShell({ title, description, canonicalPath, jsonLd, bodyHtml })
 <meta property="og:image" content="${SITE_URL}/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="${escapeXml(title)}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${escapeXml(title)}" />
 <meta name="twitter:description" content="${escapeXml(description)}" />
 <meta name="twitter:image" content="${SITE_URL}/og-image.png" />
+<meta name="twitter:image:alt" content="${escapeXml(title)}" />
 <link rel="alternate" type="application/rss+xml" title="${escapeXml(SITE_NAME)}" href="${SITE_URL}/feed.xml" />
 ${ldTags}
 </head>

@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "corrigido CLS alto no header (contador de próximo pulso sem largura reservada) + preload de fontes críticas, com base em dados reais de /api/vitals/summary", "needs_input": false }
+{ "shipped": true, "summary": "métrica INP no RUM próprio, atalhos de instalação no manifest PWA, botão de instalar app, buscas recentes salvas localmente, og:image:alt/twitter:image:alt completos em todas as rotas", "needs_input": false }

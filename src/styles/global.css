@@ -301,6 +301,21 @@ a {
   color: var(--signal-teal);
 }
 
+.install-prompt {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--mist-400);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.install-prompt:hover {
+  color: var(--signal-amber);
+}
+
 .bug-report {
   position: relative;
 }
@@ -2044,6 +2059,21 @@ a {
 .search-form__submit:hover {
   border-color: var(--signal-teal);
   color: var(--signal-teal);
+}
+
+.recent-searches {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.recent-searches__label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--mist-400);
 }
 
 .search-status {

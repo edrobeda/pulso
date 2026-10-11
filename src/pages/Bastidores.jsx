@@ -109,7 +109,7 @@ function vitalValueLabel(metric, value) {
   return value >= 1000 ? `${(value / 1000).toFixed(2)}s` : `${Math.round(value)}ms`
 }
 
-const VITALS_ORDER = ['ttfb', 'fcp', 'lcp', 'cls']
+const VITALS_ORDER = ['ttfb', 'fcp', 'lcp', 'cls', 'inp']
 
 function bugReportDateLabel(isoTimestamp) {
   return new Intl.DateTimeFormat('pt-BR', {

@@ -5,6 +5,7 @@ import { getTextSize, stepTextSize, SIZES } from '../lib/textSize'
 import { initWebVitals } from '../lib/vitals'
 import BugReportWidget from './BugReportWidget'
 import PushSubscribeWidget from './PushSubscribeWidget'
+import InstallPromptWidget from './InstallPromptWidget'
 import ErrorBoundary from './ErrorBoundary'
 import BackToTop from './BackToTop'
 
@@ -124,6 +125,7 @@ export default function Layout() {
           </button>
         </div>
         <PushSubscribeWidget />
+        <InstallPromptWidget />
         <BugReportWidget />
       </footer>
     </div>

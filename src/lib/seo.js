@@ -62,6 +62,7 @@ export function setDocumentMeta({
   setMetaByProperty('og:url', `${SITE_URL}${path}`)
   setMetaByProperty('og:site_name', SITE_NAME)
   setMetaByProperty('og:image', image)
+  setMetaByProperty('og:image:alt', fullTitle)
   setMetaByProperty('og:locale', 'pt_BR')
 
   if (type === 'article' && publishedTime) {
@@ -76,6 +77,7 @@ export function setDocumentMeta({
   setMetaByName('twitter:title', fullTitle)
   setMetaByName('twitter:description', description)
   setMetaByName('twitter:image', image)
+  setMetaByName('twitter:image:alt', fullTitle)
 }
 
 function setJsonLd(id, data) {

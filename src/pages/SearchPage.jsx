@@ -4,6 +4,35 @@ import { dayLabel } from '../lib/format'
 import { setDocumentMeta, setRobotsNoIndex, clearRobotsNoIndex } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 
+// Histórico só local (nunca sai do dispositivo) das últimas buscas — pra
+// quem lê no celular não precisar redigitar a mesma busca de um dia pro
+// outro. Separado do /api/search/top-queries em Bastidores, que é
+// agregado entre todo mundo; isto aqui é pessoal.
+const RECENT_SEARCHES_KEY = 'pulso-recent-searches'
+const MAX_RECENT_SEARCHES = 5
+
+function loadRecentSearches() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || '[]')
+    return Array.isArray(stored) ? stored : []
+  } catch {
+    return []
+  }
+}
+
+function saveRecentSearch(query) {
+  const trimmed = query.trim()
+  if (!trimmed) return
+  const current = loadRecentSearches().filter((q) => q.toLowerCase() !== trimmed.toLowerCase())
+  const updated = [trimmed, ...current].slice(0, MAX_RECENT_SEARCHES)
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated))
+  } catch {
+    // localStorage indisponível (modo privado etc.) — sem histórico, sem drama.
+  }
+  return updated
+}
+
 function highlightMatches(text, query) {
   const trimmed = query.trim()
   if (!trimmed) return text
@@ -33,6 +62,7 @@ export default function SearchPage() {
   const [input, setInput] = useState(query)
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
+  const [recentSearches, setRecentSearches] = useState(() => loadRecentSearches())
 
   useEffect(() => {
     setDocumentMeta({ title: 'Busca', path: '/busca' })
@@ -50,6 +80,8 @@ export default function SearchPage() {
       setResults([])
       return
     }
+    const updated = saveRecentSearch(trimmed)
+    if (updated) setRecentSearches(updated)
     let cancelled = false
     setLoading(true)
     fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
@@ -93,6 +125,18 @@ export default function SearchPage() {
             buscar
           </button>
         </form>
+        {!query.trim() && recentSearches.length > 0 && (
+          <div className="recent-searches">
+            <span className="recent-searches__label">buscas recentes:</span>
+            <ul className="tag-list">
+              {recentSearches.map((q) => (
+                <li className="tag-pill" key={q}>
+                  <Link to={`/busca?q=${encodeURIComponent(q)}`}>{q}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       <section className="feed">

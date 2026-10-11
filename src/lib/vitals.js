@@ -1,5 +1,5 @@
 // RUM (Real User Monitoring) próprio, sem serviço de terceiro — captura
-// TTFB/FCP/LCP/CLS reais do navegador com PerformanceObserver nativo e
+// TTFB/FCP/LCP/CLS/INP reais do navegador com PerformanceObserver nativo e
 // manda um POST só por sessão (ver /api/vitals em api/server.js), no
 // pagehide/hidden, em vez de uma requisição por métrica.
 //
@@ -30,6 +30,8 @@ export function initWebVitals() {
   let clsValue = 0
   let clsTopSource = null
   let clsTopImpact = 0
+  let inpValue = 0
+  let inpSource = null
   let sent = false
 
   try {
@@ -80,11 +82,35 @@ export function initWebVitals() {
     // navegador sem suporte a layout-shift — sem CLS.
   }
 
+  // INP de verdade é o percentil 98 de todas as interações da sessão —
+  // aproximamos com a pior (maior `duration`) observada até o envio, que já
+  // é o suficiente pra apontar se alguma interação travou a página (a
+  // informação que importa pra decidir se vale investigar). durationThreshold
+  // 40 é o mínimo que a spec garante reportar; abaixo disso o navegador pode
+  // não emitir o entry.
+  try {
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        const duration = entry.duration
+        if (duration > inpValue) {
+          inpValue = duration
+          inpSource = describeElement(entry.target)
+        }
+      }
+    }).observe({ type: 'event', buffered: true, durationThreshold: 40 })
+  } catch {
+    // navegador sem suporte a event timing — sem INP.
+  }
+
   function send() {
     if (sent) return
     sent = true
     metrics.cls = clsValue
     if (clsTopSource) debug.cls = clsTopSource
+    if (inpValue > 0) {
+      metrics.inp = inpValue
+      if (inpSource) debug.inp = inpSource
+    }
     const payload = JSON.stringify({ path, metrics, debug })
     if (navigator.sendBeacon) {
       navigator.sendBeacon(VITALS_ENDPOINT, new Blob([payload], { type: 'application/json' }))
