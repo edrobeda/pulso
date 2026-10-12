@@ -117,20 +117,23 @@ export default function HomePage() {
                             </li>
                           ))}
                         </ul>
-                        {stats && (stats.reactionCount > 0 || stats.commentCount > 0) && (
-                          <span className="slot-row__stats">
-                            {stats.reactionCount > 0 && (
-                              <span className="slot-row__stat">
-                                <span aria-hidden="true">👍</span> {stats.reactionCount}
-                              </span>
-                            )}
-                            {stats.commentCount > 0 && (
-                              <span className="slot-row__stat">
-                                <span aria-hidden="true">💬</span> {stats.commentCount}
-                              </span>
-                            )}
-                          </span>
-                        )}
+                        <span className="slot-row__stats">
+                          {post.readTime && (
+                            <span className="slot-row__stat">
+                              <span aria-hidden="true">⏱</span> {post.readTime} min
+                            </span>
+                          )}
+                          {stats && stats.reactionCount > 0 && (
+                            <span className="slot-row__stat">
+                              <span aria-hidden="true">👍</span> {stats.reactionCount}
+                            </span>
+                          )}
+                          {stats && stats.commentCount > 0 && (
+                            <span className="slot-row__stat">
+                              <span aria-hidden="true">💬</span> {stats.commentCount}
+                            </span>
+                          )}
+                        </span>
                       </div>
                     </div>
                   </article>

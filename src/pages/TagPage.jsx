@@ -46,13 +46,22 @@ export default function TagPage() {
                 <h2 className="slot-row__title">{post.title}</h2>
               </Link>
               <p className="slot-row__excerpt">{post.excerpt}</p>
-              <ul className="tag-list">
-                {post.tags.map((t) => (
-                  <li className="tag-pill" key={t}>
-                    <Link to={`/tags/${slugifyTag(t)}`}>{t}</Link>
-                  </li>
-                ))}
-              </ul>
+              <div className="slot-row__footer">
+                <ul className="tag-list">
+                  {post.tags.map((t) => (
+                    <li className="tag-pill" key={t}>
+                      <Link to={`/tags/${slugifyTag(t)}`}>{t}</Link>
+                    </li>
+                  ))}
+                </ul>
+                {post.readTime && (
+                  <span className="slot-row__stats">
+                    <span className="slot-row__stat">
+                      <span aria-hidden="true">⏱</span> {post.readTime} min
+                    </span>
+                  </span>
+                )}
+              </div>
             </div>
           </article>
         ))}

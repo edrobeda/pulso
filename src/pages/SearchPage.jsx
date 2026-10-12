@@ -157,13 +157,22 @@ export default function SearchPage() {
                   <h2 className="slot-row__title">{highlightMatches(post.title, query)}</h2>
                 </Link>
                 <p className="slot-row__excerpt">{highlightMatches(post.excerpt, query)}</p>
-                <ul className="tag-list">
-                  {post.tags.map((tag) => (
-                    <li className="tag-pill" key={tag}>
-                      <Link to={`/tags/${slugifyTag(tag)}`}>{tag}</Link>
-                    </li>
-                  ))}
-                </ul>
+                <div className="slot-row__footer">
+                  <ul className="tag-list">
+                    {post.tags.map((tag) => (
+                      <li className="tag-pill" key={tag}>
+                        <Link to={`/tags/${slugifyTag(tag)}`}>{tag}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                  {post.readTime && (
+                    <span className="slot-row__stats">
+                      <span className="slot-row__stat">
+                        <span aria-hidden="true">⏱</span> {post.readTime} min
+                      </span>
+                    </span>
+                  )}
+                </div>
               </div>
             </article>
           ))}
