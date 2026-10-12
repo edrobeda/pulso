@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Lição nova sobre métrica de campo sem elemento causador (LCP/CLS via PerformanceObserver), motivada pela mudança de hoje no agente de infra.", "needs_input": false }
+{ "shipped": false, "summary": "Revisei lessons.js, NECESSIDADES.md e o backlog recente; nenhuma lição genuinamente nova surgiu e a revisão semanal do iaBrain ainda não estava no prazo.", "needs_input": false }
