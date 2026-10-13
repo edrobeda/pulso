@@ -46,6 +46,7 @@
   --paper-100: #ece9dd;
   --paper-text: #2b2620;
   --paper-muted: #6b6355;
+  --paper-tint-rgb: 43, 38, 32;
   --signal-amber: #ffb35c;
   --signal-amber-dim: #b8834a;
   --signal-teal: #5fd9ce;
@@ -893,6 +894,17 @@ a {
   width: 100%;
   overflow: hidden;
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Modo noturno de leitura — só troca a "folha de papel" do corpo do pulso,
+   não o resto do site (que já é escuro por padrão). Pensado pra quem lê no
+   escuro: o cartão claro (#ece9dd) contra o chrome escuro ofusca à noite. */
+.post-card[data-theme='night'] {
+  --paper-100: #211d16;
+  --paper-text: #e7e0cd;
+  --paper-muted: #a89a7c;
+  --paper-tint-rgb: 231, 224, 205;
 }
 
 .post-card__band {
@@ -904,6 +916,36 @@ a {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.night-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--ink-600);
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--mist-200);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.night-toggle-btn:hover {
+  border-color: var(--signal-teal);
+  color: var(--signal-teal);
+}
+
+.night-toggle-btn span {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .night-toggle-btn span {
+    display: inline;
+  }
 }
 
 .post-card__meta {
@@ -937,7 +979,7 @@ a {
 }
 
 .post-card__tags .tag-pill {
-  border-color: rgba(43, 38, 32, 0.25);
+  border-color: rgba(var(--paper-tint-rgb), 0.25);
   color: var(--paper-muted);
 }
 
@@ -1039,8 +1081,8 @@ a {
 .toc {
   margin: 28px 0;
   padding: 16px 20px;
-  background: rgba(43, 38, 32, 0.05);
-  border: 1px solid rgba(43, 38, 32, 0.15);
+  background: rgba(var(--paper-tint-rgb), 0.05);
+  border: 1px solid rgba(var(--paper-tint-rgb), 0.15);
   border-radius: 10px;
 }
 
@@ -1077,7 +1119,7 @@ a {
 }
 
 .prose :not(pre) > code {
-  background: rgba(43, 38, 32, 0.08);
+  background: rgba(var(--paper-tint-rgb), 0.08);
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.9em;
@@ -1088,7 +1130,7 @@ a {
   gap: 10px;
   margin-top: 40px;
   padding-top: 24px;
-  border-top: 1px solid rgba(43, 38, 32, 0.2);
+  border-top: 1px solid rgba(var(--paper-tint-rgb), 0.2);
 }
 
 .reaction-btn {
@@ -1097,7 +1139,7 @@ a {
   gap: 8px;
   padding: 8px 14px;
   background: transparent;
-  border: 1px solid rgba(43, 38, 32, 0.2);
+  border: 1px solid rgba(var(--paper-tint-rgb), 0.2);
   border-radius: 100px;
   cursor: pointer;
   font-family: var(--font-mono);
@@ -1132,7 +1174,7 @@ a {
 .share {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid rgba(43, 38, 32, 0.2);
+  border-top: 1px solid rgba(var(--paper-tint-rgb), 0.2);
 }
 
 .share__label {
@@ -1156,7 +1198,7 @@ a {
   gap: 6px;
   padding: 8px 14px;
   background: transparent;
-  border: 1px solid rgba(43, 38, 32, 0.2);
+  border: 1px solid rgba(var(--paper-tint-rgb), 0.2);
   border-radius: 100px;
   cursor: pointer;
   font-family: var(--font-mono);
@@ -1179,7 +1221,7 @@ a {
 .related-posts {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid rgba(43, 38, 32, 0.2);
+  border-top: 1px solid rgba(var(--paper-tint-rgb), 0.2);
 }
 
 .related-posts__label {
@@ -1215,7 +1257,7 @@ a {
 .comments {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid rgba(43, 38, 32, 0.2);
+  border-top: 1px solid rgba(var(--paper-tint-rgb), 0.2);
 }
 
 .comments__label {
@@ -1291,8 +1333,8 @@ a {
 .comment-form__name,
 .comment-form__body {
   padding: 10px 14px;
-  background: rgba(43, 38, 32, 0.04);
-  border: 1px solid rgba(43, 38, 32, 0.2);
+  background: rgba(var(--paper-tint-rgb), 0.04);
+  border: 1px solid rgba(var(--paper-tint-rgb), 0.2);
   border-radius: 6px;
   color: var(--paper-text);
   font-family: var(--font-mono);
@@ -1340,7 +1382,7 @@ a {
   align-self: flex-start;
   padding: 10px 20px;
   background: transparent;
-  border: 1px solid rgba(43, 38, 32, 0.2);
+  border: 1px solid rgba(var(--paper-tint-rgb), 0.2);
   border-radius: 6px;
   color: var(--paper-text);
   font-family: var(--font-mono);
@@ -1382,7 +1424,7 @@ a {
   list-style: none;
   margin: 12px 0 0;
   padding: 12px 0 0 16px;
-  border-left: 2px solid rgba(43, 38, 32, 0.12);
+  border-left: 2px solid rgba(var(--paper-tint-rgb), 0.12);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1391,7 +1433,7 @@ a {
 .comment-form--reply {
   margin-top: 12px;
   padding: 12px 0 0 16px;
-  border-left: 2px solid rgba(43, 38, 32, 0.12);
+  border-left: 2px solid rgba(var(--paper-tint-rgb), 0.12);
 }
 
 .post-nav {
@@ -1400,7 +1442,7 @@ a {
   gap: 20px;
   margin-top: 48px;
   padding-top: 28px;
-  border-top: 1px solid rgba(43, 38, 32, 0.2);
+  border-top: 1px solid rgba(var(--paper-tint-rgb), 0.2);
 }
 
 .post-nav__link {
@@ -1410,7 +1452,7 @@ a {
   text-decoration: none;
   padding: 14px 16px;
   border-radius: 10px;
-  border: 1px solid rgba(43, 38, 32, 0.15);
+  border: 1px solid rgba(var(--paper-tint-rgb), 0.15);
   transition: border-color 0.2s ease;
 }
 

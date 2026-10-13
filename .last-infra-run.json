@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "tempo de leitura agora aparece nos cards da home, tags e busca, não só dentro do post", "needs_input": false }
+{ "shipped": true, "summary": "modo noturno de leitura no cartão do pulso (toggle 🌙/☀️, respeita prefers-color-scheme, persistido no navegador)", "needs_input": false }

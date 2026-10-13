@@ -40,6 +40,18 @@ function loadReacted(slug) {
   }
 }
 
+const NIGHT_READING_KEY = 'pulso-night-reading'
+
+function loadNightReading() {
+  try {
+    const stored = localStorage.getItem(NIGHT_READING_KEY)
+    if (stored !== null) return stored === '1'
+  } catch {
+    // ignora, cai no fallback de preferência de sistema abaixo
+  }
+  return typeof window !== 'undefined' && (window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false)
+}
+
 const FLAGGED_KEY = 'pulso-flagged-comments'
 
 function loadFlagged() {
@@ -204,12 +216,21 @@ export default function PostPage() {
   // em vez do estado do form, pra sobreviver ao fechamento.
   const [replySuccessFor, setReplySuccessFor] = useState(null)
 
+  const [nightReading, setNightReading] = useState(loadNightReading)
   const [autoScroll, setAutoScroll] = useState(false)
   const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const [readProgress, setReadProgress] = useState(0)
   const [copyState, setCopyState] = useState('idle')
   const ttsSupported = typeof window !== 'undefined' && 'speechSynthesis' in window
   const [ttsState, setTtsState] = useState('idle') // idle | playing | paused
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(NIGHT_READING_KEY, nightReading ? '1' : '0')
+    } catch {
+      // modo privado/quota cheia: a preferência só não sobrevive à sessão
+    }
+  }, [nightReading])
 
   useEffect(() => {
     if (!post) return
@@ -564,7 +585,7 @@ export default function PostPage() {
           )}
         </div>
       )}
-      <div className="post-card">
+      <div className="post-card" data-theme={nightReading ? 'night' : 'paper'}>
         <div className="post-card__band">
           <div className="post-card__meta">
             <PulseSignature slug={post.slug} size="lg" />
@@ -573,6 +594,15 @@ export default function PostPage() {
               {viewsLabel(viewCount)}
             </span>
           </div>
+          <button
+            type="button"
+            className="night-toggle-btn"
+            onClick={() => setNightReading((v) => !v)}
+            aria-pressed={nightReading}
+          >
+            {nightReading ? '☀️' : '🌙'}{' '}
+            <span>{nightReading ? 'papel claro' : 'modo noturno'}</span>
+          </button>
         </div>
         <div className="post-card__body">
           <Link to="/" className="back-link">
