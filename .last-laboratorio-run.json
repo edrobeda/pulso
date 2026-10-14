@@ -1,1 +1,1 @@
-{ "shipped": false, "summary": "Revisão completa sem lição nova genuína encontrada; iaBrain ainda dentro do prazo de revisão semanal (revisado há 5 dias)", "needs_input": false }
+{ "shipped": true, "summary": "lição nova no laboratório: salvar pra ler offline precisa de pré-cache ativo no clique, não só de visita anterior ao service worker", "needs_input": false }

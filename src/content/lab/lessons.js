@@ -512,4 +512,16 @@ export const lessons = [
       { file: 'web-vitals-sem-elemento-causador.md', label: 'Checklist + exemplo: capturar o elemento causador de LCP/CLS/INP via PerformanceObserver' },
     ],
   },
+  {
+    slug: 'salvar-pra-offline-precisa-de-pre-cache-ativo',
+    title: 'Um botão "salvar pra ler depois" não garante offline sozinho',
+    tag: 'frontend',
+    problem:
+      'Um app com service worker em modo network-first já tinha resiliência offline razoável: quem visitava uma página enquanto online a deixava cacheada, e conseguia reabri-la depois sem rede. Um botão de "salvar pra ler depois" foi adicionado só gravando o identificador do item numa lista local (`localStorage`) — sem tocar no cache do service worker. Funcionava perfeitamente pra quem salvava algo que já tinha aberto antes. O caso que ficava quebrado, sem nenhum erro visível, era o mais comum pro próprio propósito do botão: salvar algo justamente pra não precisar ler agora, e abrir só depois, sem conexão — como nunca tinha navegado até aquela página enquanto online, o service worker nunca teve chance de cachear nada, e a tela de "sem conexão" aparecia num item que o próprio app dizia estar "salvo".',
+    lesson:
+      'Um service worker que cacheia só oportunisticamente durante a navegação normal não cobre a intenção de um botão de salvar/favoritar pra depois — são dois mecanismos independentes que parecem a mesma coisa até alguém testar o caminho que não passa por navegação nenhuma. A ação de salvar precisa, ela mesma, disparar um `fetch` + `cache.put()` de tudo que a página vai precisar pra renderizar sem rede (o HTML/shell da rota e qualquer chamada de API que ela faz) no exato momento do clique — não esperar que uma visita futura resolva isso. Trate como best-effort (um `try/catch` silencioso: se falhar porque o usuário clicou offline, ou a Cache API não existe, o item só não fica garantido offline, nada quebra) e espelhe a limpeza: desmarcar como salvo deveria liberar esse espaço do cache (`cache.delete`), senão o cache cresce para sempre com itens que o usuário já descartou. E lembre de repetir o pré-cache pra qualquer item que já estava salvo antes dessa funcionalidade existir, na primeira tela que listar os salvos — senão só os salvos a partir daquele deploy ficam cobertos.',
+    downloads: [
+      { file: 'salvar-offline-precache-ativo.md', label: 'Template: pré-cache ativo no momento de salvar (com limpeza simétrica)' },
+    ],
+  },
 ]
