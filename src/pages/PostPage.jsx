@@ -13,6 +13,7 @@ import {
 } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 import { isSaved, toggleSaved } from '../lib/saved'
+import { precachePostOffline, dropPostOfflineCache } from '../lib/offlineCache'
 import { getClientToken } from '../lib/clientToken'
 import { useEscapeToClose } from '../hooks/useEscapeToClose'
 
@@ -451,7 +452,10 @@ export default function PostPage() {
   function handleToggleSaved() {
     if (!post) return
     const next = toggleSaved(post.slug)
-    setSaved(next.includes(post.slug))
+    const nowSaved = next.includes(post.slug)
+    setSaved(nowSaved)
+    if (nowSaved) precachePostOffline(post.slug)
+    else dropPostOfflineCache(post.slug)
   }
 
   function handleCopyLink() {

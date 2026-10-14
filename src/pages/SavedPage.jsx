@@ -5,6 +5,7 @@ import { dayLabel } from '../lib/format'
 import { setDocumentMeta, setRobotsNoIndex, clearRobotsNoIndex } from '../lib/seo'
 import { slugifyTag } from '../lib/tags'
 import { getSavedSlugs } from '../lib/saved'
+import { precachePostOffline } from '../lib/offlineCache'
 
 export default function SavedPage() {
   const { posts, loading } = usePosts()
@@ -20,7 +21,11 @@ export default function SavedPage() {
   // post em outra aba/rota, sem precisar de um listener de storage global
   // pra uma lista que só o próprio visitante altera nessa mesma sessão.
   useEffect(() => {
-    setSavedSlugs(getSavedSlugs())
+    const slugs = getSavedSlugs()
+    setSavedSlugs(slugs)
+    // garante leitura offline mesmo pra quem salvou antes dessa página
+    // existir pré-cachear no momento do clique em "salvar"
+    slugs.forEach(precachePostOffline)
   }, [])
 
   const saved = sortPosts(posts.filter((p) => savedSlugs.includes(p.slug)))
