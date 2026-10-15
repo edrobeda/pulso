@@ -49,6 +49,12 @@
   --paper-tint-rgb: 43, 38, 32;
   --signal-amber: #ffb35c;
   --signal-amber-dim: #b8834a;
+  /* --signal-amber-dim só passa WCAG AA (4.5:1) em fundo escuro (ink-*);
+     em paper-100 claro cai pra ~2.7:1. Usada em texto (não borda) sobre a
+     folha de papel do post (.post-card) — tom mais escuro aqui, sobrescrito
+     de volta pro --signal-amber-dim original no modo noturno de leitura,
+     onde o papel já é escuro e o tom original volta a passar. */
+  --signal-amber-dim-on-paper: #7a4e20;
   --signal-teal: #5fd9ce;
   --signal-red: #e5686b;
 
@@ -905,6 +911,7 @@ a {
   --paper-text: #e7e0cd;
   --paper-muted: #a89a7c;
   --paper-tint-rgb: 231, 224, 205;
+  --signal-amber-dim-on-paper: var(--signal-amber-dim);
 }
 
 .post-card__band {
@@ -984,8 +991,8 @@ a {
 }
 
 .post-card__tags .tag-pill:hover {
-  border-color: var(--signal-amber-dim);
-  color: var(--signal-amber-dim);
+  border-color: var(--signal-amber-dim-on-paper);
+  color: var(--signal-amber-dim-on-paper);
 }
 
 .prose p {
@@ -1007,7 +1014,7 @@ a {
   position: absolute;
   left: -1.1em;
   top: 0.15em;
-  color: var(--signal-amber-dim);
+  color: var(--signal-amber-dim-on-paper);
   font-family: var(--font-mono);
   font-size: 1rem;
   text-decoration: none;
@@ -1110,7 +1117,7 @@ a {
 }
 
 .toc__list a:hover {
-  color: var(--signal-amber-dim);
+  color: var(--signal-amber-dim-on-paper);
   text-decoration: underline;
 }
 
@@ -1149,8 +1156,8 @@ a {
 }
 
 .reaction-btn:hover:not(:disabled) {
-  border-color: var(--signal-amber-dim);
-  color: var(--signal-amber-dim);
+  border-color: var(--signal-amber-dim-on-paper);
+  color: var(--signal-amber-dim-on-paper);
 }
 
 .reaction-btn--active {
@@ -1209,8 +1216,8 @@ a {
 }
 
 .share-btn:hover {
-  border-color: var(--signal-amber-dim);
-  color: var(--signal-amber-dim);
+  border-color: var(--signal-amber-dim-on-paper);
+  color: var(--signal-amber-dim-on-paper);
 }
 
 .share-btn--active {
@@ -1251,7 +1258,7 @@ a {
 }
 
 .related-posts__link:hover {
-  color: var(--signal-amber-dim);
+  color: var(--signal-amber-dim-on-paper);
 }
 
 .comments {
@@ -1305,7 +1312,7 @@ a {
 }
 
 .comment__flag:hover:not(:disabled) {
-  color: var(--signal-amber-dim);
+  color: var(--signal-amber-dim-on-paper);
 }
 
 .comment__flag:disabled {
@@ -1368,7 +1375,7 @@ a {
   margin: 0;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: var(--signal-amber-dim);
+  color: var(--signal-amber-dim-on-paper);
 }
 
 .comment-form__status {
