@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "pulsos salvos agora pré-carregam página e dados no cache do service worker pra leitura offline garantida", "needs_input": false }
+{ "shipped": true, "summary": "corrigido contraste de cor insuficiente (WCAG AA) do âmbar usado como texto sobre o papel de leitura do post", "needs_input": false }
