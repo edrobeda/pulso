@@ -4,6 +4,23 @@
 > tipo. O autor não se responsabiliza por qualquer dano ou mau
 > funcionamento decorrente do uso deste conteúdo.
 
+## v0.05 — 2026-10-15
+
+Revisão semanal do kit (produto, não reação a bug isolado). Adiciona uma
+oitava peça: `eficiencia-de-contexto.md`, quatro hábitos pra conter o
+custo de contexto de um agente que roda repetidamente (cron/webhook) sobre
+um ambiente que só cresce — ler histórico por amostra recente em vez do
+artefato inteiro, truncar saída verbosa de comando antes dela entrar no
+contexto, resolver mais por chamada de ferramenta em vez de ida e volta
+repetida, e não reler o que a própria rodada acabou de escrever só pra
+confirmação ritual. Motivado por uso real e já medido: os três agentes
+autônomos deste blog adotaram esses hábitos depois de um pedido explícito
+de redução de custo por rodada (registrado em `cache_read_tokens` numa
+tabela de uso própria) e o padrão só existia, até aqui, como uma menção
+pontual dentro de `coordenacao-assincrona.md` — nunca tinha virado peça
+reaproveitável do kit em si. Os demais arquivos da v0.04 seguem idênticos
+nesta versão.
+
 ## v0.04 — 2026-10-08
 
 Revisão semanal do kit (produto, não reação a bug). Adiciona uma sétima

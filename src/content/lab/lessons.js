@@ -92,26 +92,27 @@ export const lessons = [
   },
   {
     slug: 'iabrain-v0-01',
-    title: 'iaBrain — orquestrador, subagentes, skills, memória, coordenação assíncrona, confinamento e verificação',
+    title: 'iaBrain — orquestrador, subagentes, skills, memória, coordenação assíncrona, confinamento, verificação e eficiência de contexto',
     tag: 'agentes',
     problem:
       'Um sistema de agentes de IA sem separação clara de papéis tende a virar uma bagunça: um único prompt gigante tentando fazer roteamento, execução e memória ao mesmo tempo, contexto poluído por passos intermediários que ninguém precisava ver, e nenhum critério consistente pra decidir quando delegar uma tarefa ou quando registrar algo como memória permanente. Isso cobre só o caso de agentes na mesma sessão: quando os agentes são processos genuinamente independentes (cron em horários diferentes, sem sessão compartilhada), delegar e esperar resposta não existe — eles só se enxergam através do que gravam em algum lugar durável. E nenhuma dessas peças resolve um problema adicional e mais crítico: quando pelo menos um desses agentes age sem revisão humana antes de cada passo, o que impede dano além do pretendido não é o texto do prompt, é o que existe ao redor dele.',
     lesson:
-      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. Pra qualquer agente que roda sem revisão humana, uma camada por cima de tudo isso: escopo travado por allow-list explícita (não por instrução verbal), canal de escalonamento no lugar de contorno quando o escopo barra algo, gate de permissão por consequência real da ação (não pelo tipo técnico de ferramenta usada), dado de ferramenta de monitoramento tratado como não confiável, e recusa de classificador de segurança do provedor tratada como categoria própria de falha. E, mesmo fazendo tudo isso certo, falta uma última pergunta: como saber que o que foi feito funcionou de verdade antes de reportar a rodada como concluída — build passar não prova runtime, HTTP 200 não prova execução, arquivo existir não prova que restaura; reverter pro estado anterior conhecido-bom é sempre uma saída válida quando a verificação falha, nunca motivo pra deixar algo quebrado no ar. Versionado (v0.01, v0.02, v0.03, v0.04...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável, onde travar o confinamento, o que verificar antes de declarar sucesso — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
+      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. Pra qualquer agente que roda sem revisão humana, uma camada por cima de tudo isso: escopo travado por allow-list explícita (não por instrução verbal), canal de escalonamento no lugar de contorno quando o escopo barra algo, gate de permissão por consequência real da ação (não pelo tipo técnico de ferramenta usada), dado de ferramenta de monitoramento tratado como não confiável, e recusa de classificador de segurança do provedor tratada como categoria própria de falha. E, mesmo fazendo tudo isso certo, falta uma última pergunta: como saber que o que foi feito funcionou de verdade antes de reportar a rodada como concluída — build passar não prova runtime, HTTP 200 não prova execução, arquivo existir não prova que restaura; reverter pro estado anterior conhecido-bom é sempre uma saída válida quando a verificação falha, nunca motivo pra deixar algo quebrado no ar. E uma última peça que só aparece com o tempo, não desde o primeiro dia: um agente que roda repetidamente sobre um ambiente que só cresce (mais histórico, mais log) paga custo de contexto cada vez maior por rodada se não tiver o hábito deliberado de ler histórico por amostra recente em vez do artefato inteiro, truncar saída verbosa de comando, resolver mais por chamada de ferramenta e não reler o que acabou de escrever só pra confirmar — medido na prática como `cache_read_tokens` caindo depois do ajuste, não só uma impressão de que ficou "mais limpo". Versionado (v0.01, v0.02, v0.03, v0.04, v0.05...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável, onde travar o confinamento, o que verificar antes de declarar sucesso, onde conter o custo de contexto — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
     downloads: [
       { file: 'iabrain/install-prompt.md', label: 'Prompt de instalação/atualização automática' },
-      { file: 'iabrain/v0.04/README.md', label: 'README — visão geral + instalação por harness' },
-      { file: 'iabrain/v0.04/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
-      { file: 'iabrain/v0.04/subagente-template.md', label: 'Template de definição de subagente' },
-      { file: 'iabrain/v0.04/skill-template.md', label: 'Template de skill de referência' },
-      { file: 'iabrain/v0.04/memoria-profile.md', label: 'Memória: profile' },
-      { file: 'iabrain/v0.04/memoria-preferences.md', label: 'Memória: preferences' },
-      { file: 'iabrain/v0.04/memoria-topics.md', label: 'Memória: topics' },
-      { file: 'iabrain/v0.04/memoria-people.md', label: 'Memória: people' },
-      { file: 'iabrain/v0.04/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
-      { file: 'iabrain/v0.04/coordenacao-assincrona.md', label: 'Coordenação assíncrona entre agentes independentes' },
-      { file: 'iabrain/v0.04/confinamento-harness.md', label: 'Harness de confinamento pra agente sem revisão humana' },
-      { file: 'iabrain/v0.04/verificacao-e-reversao.md', label: 'Novo na v0.04: gate de verificação antes de declarar sucesso, com reversão' },
+      { file: 'iabrain/v0.05/README.md', label: 'README — visão geral + instalação por harness' },
+      { file: 'iabrain/v0.05/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
+      { file: 'iabrain/v0.05/subagente-template.md', label: 'Template de definição de subagente' },
+      { file: 'iabrain/v0.05/skill-template.md', label: 'Template de skill de referência' },
+      { file: 'iabrain/v0.05/memoria-profile.md', label: 'Memória: profile' },
+      { file: 'iabrain/v0.05/memoria-preferences.md', label: 'Memória: preferences' },
+      { file: 'iabrain/v0.05/memoria-topics.md', label: 'Memória: topics' },
+      { file: 'iabrain/v0.05/memoria-people.md', label: 'Memória: people' },
+      { file: 'iabrain/v0.05/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
+      { file: 'iabrain/v0.05/coordenacao-assincrona.md', label: 'Coordenação assíncrona entre agentes independentes' },
+      { file: 'iabrain/v0.05/confinamento-harness.md', label: 'Harness de confinamento pra agente sem revisão humana' },
+      { file: 'iabrain/v0.05/verificacao-e-reversao.md', label: 'Gate de verificação antes de declarar sucesso, com reversão' },
+      { file: 'iabrain/v0.05/eficiencia-de-contexto.md', label: 'Novo na v0.05: eficiência de contexto pra agente de rodada repetida' },
     ],
   },
   {
@@ -522,6 +523,18 @@ export const lessons = [
       'Um service worker que cacheia só oportunisticamente durante a navegação normal não cobre a intenção de um botão de salvar/favoritar pra depois — são dois mecanismos independentes que parecem a mesma coisa até alguém testar o caminho que não passa por navegação nenhuma. A ação de salvar precisa, ela mesma, disparar um `fetch` + `cache.put()` de tudo que a página vai precisar pra renderizar sem rede (o HTML/shell da rota e qualquer chamada de API que ela faz) no exato momento do clique — não esperar que uma visita futura resolva isso. Trate como best-effort (um `try/catch` silencioso: se falhar porque o usuário clicou offline, ou a Cache API não existe, o item só não fica garantido offline, nada quebra) e espelhe a limpeza: desmarcar como salvo deveria liberar esse espaço do cache (`cache.delete`), senão o cache cresce para sempre com itens que o usuário já descartou. E lembre de repetir o pré-cache pra qualquer item que já estava salvo antes dessa funcionalidade existir, na primeira tela que listar os salvos — senão só os salvos a partir daquele deploy ficam cobertos.',
     downloads: [
       { file: 'salvar-offline-precache-ativo.md', label: 'Template: pré-cache ativo no momento de salvar (com limpeza simétrica)' },
+    ],
+  },
+  {
+    slug: 'cor-compartilhada-so-foi-validada-num-fundo',
+    title: 'Uma cor de texto compartilhada entre temas só foi validada contra um dos fundos',
+    tag: 'frontend',
+    problem:
+      'Uma variável de cor (tom âmbar) era usada como cor de texto em vários componentes sem relação entre si — hover de link, borda/texto de botão, mensagem de erro de formulário — todos puxando a mesma variável CSS. Ela passava tranquilamente no contraste mínimo (WCAG AA, 4.5:1) contra o fundo escuro predominante do site, que é onde foi escolhida e, provavelmente, onde alguém checou visualmente que "dava pra ler". Um card de leitura com fundo de papel claro reaproveitou a mesma variável sem revalidar contraste nesse fundo novo — ali o mesmo tom caía pra cerca de 2.7:1, bem abaixo do mínimo. Nada quebrava nem dava erro: o texto aparecia, só ficava difícil de ler para quem tem baixa visão ou está num ambiente de luz forte, e passou despercebido porque "a cor já existe e já foi aprovada" em outro contexto.',
+    lesson:
+      'Contraste de cor não é uma propriedade da cor isolada, é uma relação entre ela e o fundo específico onde aparece — a mesma variável pode passar em um tema e falhar em outro sem que o código dê nenhum sinal disso. Ao reaproveitar uma variável de cor de texto num fundo novo (um card, um tema alternativo, um modo de leitura), meça o contraste de novo contra aquele fundo específico, não assuma que "já foi validada" em algum lugar cobre todos os lugares. Quando o mesmo tom precisa de contraste diferente em fundos diferentes, prefira uma segunda variável derivada e explicitamente escopada a esse contexto (ex. `--cor-dim-on-paper`) em vez de escurecer a variável original — isso preserva o tom correto nos fundos onde ela já passava.',
+    downloads: [
+      { file: 'contraste-cor-compartilhada-entre-temas.md', label: 'Checklist + script: validar contraste de uma cor por fundo onde ela é usada' },
     ],
   },
 ]
