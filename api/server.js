@@ -91,10 +91,10 @@ const writeLimiter = rateLimit({
 })
 
 // /api/search foge da regra acima: cada query é livre (`q` variando), então
-// o Cache-Control de 30s não amortece nada, e a query varre unaccent(ILIKE)
-// em 4 colunas por post — incluindo o corpo inteiro em JSON — sem índice.
-// Sem limite, um script batendo com querystring aleatória forçaria scan
-// completo da tabela a cada request.
+// o Cache-Control de 30s não amortece nada. A query usa índice GIN trigram
+// em 4 colunas desde a migration 0023 (antes era Seq Scan completo), mas o
+// limite continua como camada de defesa — um script martelando querystring
+// aleatória ainda gera trabalho real por request, índice ou não.
 const searchLimiter = rateLimit({
   windowMs: 60_000,
   limit: 20,
@@ -1314,13 +1314,13 @@ app.get('/api/search', searchLimiter, async (req, res) => {
               COALESCE(v.view_count, 0) AS view_count
        FROM posts p
        LEFT JOIN post_views v ON v.slug = p.slug
-       WHERE unaccent(p.title) ILIKE unaccent($1)
-          OR unaccent(p.excerpt) ILIKE unaccent($1)
-          OR unaccent(array_to_string(p.tags, ' ')) ILIKE unaccent($1)
-          OR unaccent(p.blocks::text) ILIKE unaccent($1)
+       WHERE immutable_unaccent(p.title) ILIKE immutable_unaccent($1)
+          OR immutable_unaccent(p.excerpt) ILIKE immutable_unaccent($1)
+          OR immutable_unaccent(immutable_tags_text(p.tags)) ILIKE immutable_unaccent($1)
+          OR immutable_unaccent(p.blocks::text) ILIKE immutable_unaccent($1)
        ORDER BY
-         (CASE WHEN unaccent(p.title) ILIKE unaccent($1) THEN 2 ELSE 0 END
-          + CASE WHEN unaccent(p.excerpt) ILIKE unaccent($1) THEN 1 ELSE 0 END) DESC,
+         (CASE WHEN immutable_unaccent(p.title) ILIKE immutable_unaccent($1) THEN 2 ELSE 0 END
+          + CASE WHEN immutable_unaccent(p.excerpt) ILIKE immutable_unaccent($1) THEN 1 ELSE 0 END) DESC,
          p.date DESC, p.slot DESC
        LIMIT 50`,
       [like]
