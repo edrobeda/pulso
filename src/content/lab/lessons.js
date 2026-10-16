@@ -537,4 +537,16 @@ export const lessons = [
       { file: 'contraste-cor-compartilhada-entre-temas.md', label: 'Checklist + script: validar contraste de uma cor por fundo onde ela é usada' },
     ],
   },
+  {
+    slug: 'indice-funcional-precisa-de-funcao-immutable',
+    title: 'Um índice GIN sobre busca com acento não ativa sozinho — a função precisa ser IMMUTABLE',
+    tag: 'infra',
+    problem:
+      'Uma busca por texto (`ILIKE \'%termo%\'`, normalizando acento com `unaccent()`) em várias colunas de uma tabela — incluindo um campo grande de conteúdo — rodava sem nenhum índice: Seq Scan completo a cada consulta, piorando conforme a tabela cresce. `pg_trgm` com índice GIN resolve justamente esse padrão, mas só se a expressão do índice bater exatamente com a expressão usada na query — e `unaccent()` é marcada `STABLE` no catálogo do Postgres (o resultado depende do dicionário resolvido via `search_path` em tempo de execução), não `IMMUTABLE`. O Postgres recusa aceitar `unaccent(coluna)` direto numa expressão de índice, e a mesma restrição vale pra qualquer outra função "normalizadora" composta ali (`array_to_string`, por exemplo, também é `STABLE`, não `IMMUTABLE`, mesmo sendo determinística na prática).',
+    lesson:
+      'A saída é envolver a função num wrapper que fixe explicitamente o que a torna não-determinística pro catálogo (no caso do `unaccent`, passar o dicionário como literal em vez de deixar implícito no `search_path`) e declarar esse wrapper `IMMUTABLE`. Duas pegadinhas adicionais, não óbvias, quebram esse wrapper se ignoradas: se ele for `LANGUAGE sql`, o planner pode "inlinear" o corpo dentro da expressão do índice, recompondo a chamada num contexto que não resolve mais a função original — `plpgsql` nunca sofre esse inlining; e `CREATE INDEX` executa com `search_path` restrito (hardening padrão do Postgres contra search_path hijacking), então uma chamada não qualificada à função de base dentro do wrapper falha mesmo ela existindo — use o nome totalmente qualificado (`public.unaccent`, ajuste o schema). E confirme o ganho real com `EXPLAIN`: se a expressão do índice não bater exatamente com a do `WHERE`, o planner simplesmente ignora o índice e volta pro Seq Scan sem erro nenhum — "a query rodou" não prova que o índice foi usado.',
+    downloads: [
+      { file: 'indice-funcional-immutable-wrapper.sql', label: 'Template: índice GIN trigram com wrapper IMMUTABLE + checklist das 3 pegadinhas' },
+    ],
+  },
 ]
