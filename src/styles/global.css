@@ -114,6 +114,15 @@ a {
   top: 16px;
 }
 
+.offline-banner {
+  background: var(--signal-amber);
+  color: var(--ink-950);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 8px 16px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

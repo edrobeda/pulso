@@ -8,6 +8,7 @@ import PushSubscribeWidget from './PushSubscribeWidget'
 import InstallPromptWidget from './InstallPromptWidget'
 import ErrorBoundary from './ErrorBoundary'
 import BackToTop from './BackToTop'
+import OfflineBanner from './OfflineBanner'
 
 export default function Layout() {
   const [countdown, setCountdown] = useState(() => nextPulseLabel())
@@ -67,6 +68,7 @@ export default function Layout() {
       <a href="#main" className="skip-link">
         pular para o conteúdo
       </a>
+      <OfflineBanner />
       <header className="header">
         <Link to="/" className="wordmark">
           <span className="wordmark__mark">●</span> Pulso
