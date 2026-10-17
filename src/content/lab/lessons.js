@@ -549,4 +549,16 @@ export const lessons = [
       { file: 'indice-funcional-immutable-wrapper.sql', label: 'Template: índice GIN trigram com wrapper IMMUTABLE + checklist das 3 pegadinhas' },
     ],
   },
+  {
+    slug: 'navigator-online-nao-garante-internet',
+    title: '`navigator.onLine` avisa sobre a interface de rede, não sobre a internet',
+    tag: 'frontend',
+    problem:
+      'Um banner que avisa quando a conexão cai foi implementado escutando só os eventos padrão do navegador (`window.addEventListener(\'online\'/\'offline\', ...)`) e lendo `navigator.onLine` como estado inicial. Funciona pro caso óbvio — modo avião, Wi-Fi desligado manualmente — mas não é o que a maior parte das perdas de conexão reais parece: um visitante conectado a uma rede Wi-Fi que ficou sem saída pra internet (roteador do provedor caiu, portal cativo de rede pública, enlace local ainda ativo mas sem rota pra fora) continua com `navigator.onLine === true` e nenhum evento `offline` dispara — o navegador só sabe se existe uma interface de rede associada, não se ela chega à internet de fato. O banner, cujo propósito inteiro era avisar justo esse tipo de situação intermitente (elevador, metrô, sinal fraco), fica mudo exatamente no cenário em que seria mais útil, e nada no código aponta isso: sem erro, sem warning, só ausência silenciosa do aviso.',
+    lesson:
+      '`navigator.onLine` e os eventos `online`/`offline` refletem só a camada de interface de rede do sistema operacional, não conectividade real com a internet — é documentado assim pela própria API, mas fácil de assumir o contrário na primeira leitura. Pra detectar perda de conexão de verdade, complemente com uma checagem ativa periódica: um `fetch` leve e barato (endpoint pequeno do próprio domínio, ou uma URL que já é cacheada) com `cache: \'no-store\'` e timeout curto, repetido a cada N segundos — idealmente só quando a aba volta a ficar visível/focada, pra não gastar bateria/dados sem necessidade. Sucesso confirma conectividade real; falha (incluindo timeout) é o sinal de offline de verdade. Mantenha os eventos `online`/`offline` como sinal rápido e gratuito pro caso óbvio, mas não confie neles como única fonte pro caso que o recurso foi construído justamente pra cobrir.',
+    downloads: [
+      { file: 'navigator-online-nao-garante-internet.md', label: 'Checklist + hook: checagem ativa de conectividade além de navigator.onLine' },
+    ],
+  },
 ]
