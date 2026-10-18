@@ -595,10 +595,14 @@ const COMMENT_MAX_LEN = 1000
 app.get('/api/posts/:slug/comments', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT id, author_name, body, created_at, parent_comment_id
-       FROM post_comments
-       WHERE slug = $1 AND visible = true
-       ORDER BY created_at ASC
+      `SELECT c.id, c.author_name, c.body, c.created_at, c.parent_comment_id,
+              COALESCE(l.like_count, 0)::int AS like_count
+       FROM post_comments c
+       LEFT JOIN (
+         SELECT comment_id, COUNT(*) AS like_count FROM comment_likes GROUP BY comment_id
+       ) l ON l.comment_id = c.id
+       WHERE c.slug = $1 AND c.visible = true
+       ORDER BY c.created_at ASC
        LIMIT 200`,
       [req.params.slug]
     )
@@ -700,6 +704,41 @@ app.post('/api/comments/:id/flag', writeLimiter, async (req, res) => {
     }
 
     res.json({ flagCount, hidden: flagCount >= FLAG_HIDE_THRESHOLD })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// "Útil" por comentário — mesmo dedupe por client_token do flag acima, sem
+// limiar de auto-ação (ver db/migrations/0024_comment_likes.sql).
+app.post('/api/comments/:id/like', writeLimiter, async (req, res) => {
+  try {
+    const commentId = Number(req.params.id)
+    if (!Number.isInteger(commentId)) return res.status(400).json({ error: 'invalid comment id' })
+
+    const clientToken = String(req.body?.clientToken || '').trim().slice(0, 100)
+    if (!clientToken) return res.status(400).json({ error: 'clientToken required' })
+
+    const { rows: commentRows } = await pool.query(
+      'SELECT id FROM post_comments WHERE id = $1 AND visible = true',
+      [commentId]
+    )
+    if (commentRows.length === 0) return res.status(404).json({ error: 'not found' })
+
+    await pool.query(
+      `INSERT INTO comment_likes (comment_id, client_token)
+       VALUES ($1, $2)
+       ON CONFLICT (comment_id, client_token) DO NOTHING`,
+      [commentId, clientToken]
+    )
+
+    const { rows: countRows } = await pool.query(
+      'SELECT count(*)::int AS count FROM comment_likes WHERE comment_id = $1',
+      [commentId]
+    )
+
+    res.json({ likeCount: countRows[0].count })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'internal error' })
@@ -1530,6 +1569,7 @@ app.get('/sitemap.xml', async (_req, res) => {
       lastmod: p.date,
       changefreq: 'monthly',
       priority: '0.8',
+      image: `/api/og/${p.slug}.png`,
     }))
 
     // rows já vem ORDER BY date DESC, então a primeira ocorrência de cada
@@ -1562,14 +1602,17 @@ app.get('/sitemap.xml', async (_req, res) => {
 
     const urls = [...staticRoutes, ...postRoutes, ...tagRoutes]
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urls
   .map((u) => {
     const lastmod = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ''
+    const image = u.image
+      ? `\n    <image:image>\n      <image:loc>${SITE_URL}${u.image}</image:loc>\n    </image:image>`
+      : ''
     return `  <url>
     <loc>${SITE_URL}${u.path}</loc>${lastmod}
     <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>
+    <priority>${u.priority}</priority>${image}
   </url>`
   })
   .join('\n')}

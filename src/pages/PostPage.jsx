@@ -63,6 +63,20 @@ function loadFlagged() {
   }
 }
 
+const LIKED_KEY = 'pulso-liked-comments'
+
+function loadLiked() {
+  try {
+    return JSON.parse(localStorage.getItem(LIKED_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+function saveLiked(ids) {
+  localStorage.setItem(LIKED_KEY, JSON.stringify(ids))
+}
+
 function saveFlagged(ids) {
   localStorage.setItem(FLAGGED_KEY, JSON.stringify(ids))
 }
@@ -199,6 +213,7 @@ export default function PostPage() {
   const [commentError, setCommentError] = useState('')
   const [commentSuccess, setCommentSuccess] = useState('')
   const [flaggedIds, setFlaggedIds] = useState(loadFlagged)
+  const [likedIds, setLikedIds] = useState(loadLiked)
 
   // Só um comentário por vez tem o form de resposta aberto — reaproveita o
   // mesmo conjunto de campos em vez de um estado por comentário.
@@ -444,6 +459,27 @@ export default function PostPage() {
       .then((data) => {
         if (data?.hidden) {
           setComments((prev) => prev.filter((c) => c.id !== commentId))
+        }
+      })
+      .catch(() => {})
+  }
+
+  function handleLikeComment(commentId) {
+    if (likedIds.includes(commentId)) return
+    const next = [...likedIds, commentId]
+    setLikedIds(next)
+    saveLiked(next)
+    fetch(`/api/comments/${commentId}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientToken: getClientToken() }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) {
+          setComments((prev) =>
+            prev.map((c) => (c.id === commentId ? { ...c, like_count: data.likeCount } : c))
+          )
         }
       })
       .catch(() => {})
@@ -727,15 +763,27 @@ export default function PostPage() {
                         <div className="comment__meta">
                           <strong>{c.author_name}</strong>
                           <span>{commentDateLabel(c.created_at)}</span>
-                          <button
-                            type="button"
-                            className="comment__flag"
-                            onClick={() => handleFlagComment(c.id)}
-                            disabled={flaggedIds.includes(c.id)}
-                            aria-label="Sinalizar este comentário como spam ou problema"
-                          >
-                            {flaggedIds.includes(c.id) ? 'sinalizado' : 'sinalizar'}
-                          </button>
+                          <div className="comment__actions">
+                            <button
+                              type="button"
+                              className="comment__like"
+                              onClick={() => handleLikeComment(c.id)}
+                              disabled={likedIds.includes(c.id)}
+                              aria-pressed={likedIds.includes(c.id)}
+                              aria-label="Marcar este comentário como útil"
+                            >
+                              👍{c.like_count > 0 ? ` ${c.like_count}` : ''}
+                            </button>
+                            <button
+                              type="button"
+                              className="comment__flag"
+                              onClick={() => handleFlagComment(c.id)}
+                              disabled={flaggedIds.includes(c.id)}
+                              aria-label="Sinalizar este comentário como spam ou problema"
+                            >
+                              {flaggedIds.includes(c.id) ? 'sinalizado' : 'sinalizar'}
+                            </button>
+                          </div>
                         </div>
                         <p className="comment__body">{c.body}</p>
                         <button
@@ -759,15 +807,27 @@ export default function PostPage() {
                                 <div className="comment__meta">
                                   <strong>{r.author_name}</strong>
                                   <span>{commentDateLabel(r.created_at)}</span>
-                                  <button
-                                    type="button"
-                                    className="comment__flag"
-                                    onClick={() => handleFlagComment(r.id)}
-                                    disabled={flaggedIds.includes(r.id)}
-                                    aria-label="Sinalizar esta resposta como spam ou problema"
-                                  >
-                                    {flaggedIds.includes(r.id) ? 'sinalizado' : 'sinalizar'}
-                                  </button>
+                                  <div className="comment__actions">
+                                    <button
+                                      type="button"
+                                      className="comment__like"
+                                      onClick={() => handleLikeComment(r.id)}
+                                      disabled={likedIds.includes(r.id)}
+                                      aria-pressed={likedIds.includes(r.id)}
+                                      aria-label="Marcar esta resposta como útil"
+                                    >
+                                      👍{r.like_count > 0 ? ` ${r.like_count}` : ''}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="comment__flag"
+                                      onClick={() => handleFlagComment(r.id)}
+                                      disabled={flaggedIds.includes(r.id)}
+                                      aria-label="Sinalizar esta resposta como spam ou problema"
+                                    >
+                                      {flaggedIds.includes(r.id) ? 'sinalizado' : 'sinalizar'}
+                                    </button>
+                                  </div>
                                 </div>
                                 <p className="comment__body">{r.body}</p>
                               </li>

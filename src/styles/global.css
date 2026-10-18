@@ -750,6 +750,34 @@ a {
   font-size: 0.7rem;
 }
 
+.tag-cloud__pill--w1 {
+  font-size: 0.72rem;
+}
+
+.tag-cloud__pill--w2 {
+  font-size: 0.8rem;
+}
+
+.tag-cloud__pill--w3 {
+  font-size: 0.9rem;
+}
+
+.tag-cloud__pill--w4 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.tag-cloud__pill--w5 {
+  font-size: 1.12rem;
+  font-weight: 600;
+  border-color: var(--signal-teal);
+  color: var(--signal-teal);
+}
+
+.tag-cloud__pill--w5 .tag-cloud__count {
+  color: var(--signal-teal);
+}
+
 .tag-cloud__pill:hover .tag-cloud__count {
   color: var(--signal-teal);
 }
@@ -1307,8 +1335,14 @@ a {
   color: var(--paper-text);
 }
 
-.comment__flag {
+.comment__actions {
   margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.comment__flag {
   border: none;
   background: none;
   padding: 0;
@@ -1328,6 +1362,26 @@ a {
   cursor: default;
   text-decoration: none;
   opacity: 0.7;
+}
+
+.comment__like {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--paper-muted);
+  cursor: pointer;
+}
+
+.comment__like:hover:not(:disabled) {
+  color: var(--signal-teal);
+}
+
+.comment__like:disabled {
+  cursor: default;
+  color: var(--signal-teal);
+  opacity: 0.85;
 }
 
 .comment__body {
