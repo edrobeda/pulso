@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição no laboratório sobre índice funcional GIN exigir wrapper IMMUTABLE, genericizada a partir do fix de busca do diretor de infra desta rodada.", "needs_input": false }
+{ "shipped": true, "summary": "Adicionada lição nova (navigator.onLine não garante conectividade real) genericizada do banner de sem-conexão desta rodada de infra, com download de checklist + hook de checagem ativa.", "needs_input": false }
