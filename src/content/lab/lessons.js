@@ -561,4 +561,16 @@ export const lessons = [
       { file: 'navigator-online-nao-garante-internet.md', label: 'Checklist + hook: checagem ativa de conectividade além de navigator.onLine' },
     ],
   },
+  {
+    slug: 'header-seguranca-por-camada-nao-por-dominio',
+    title: 'Um header de segurança setado num middleware não cobre o domínio inteiro',
+    tag: 'seguranca',
+    problem:
+      'Um domínio público era servido por duas camadas independentes: uma API com headers de segurança configurados via middleware (`helmet`), e um proxy reverso servindo o HTML/JS/CSS de uma SPA no mesmo host. O header `Strict-Transport-Security` estava presente nas respostas da API, mas ausente nas respostas do proxy — ativá-lo no middleware da API não "vaza" pras respostas que vêm de outro processo, mesmo que o navegador veja só um domínio só. Nada dava erro, a página carregava normal; só apareceu comparando `curl -I` nas duas rotas lado a lado em produção.',
+    lesson:
+      'Header de resposta HTTP é propriedade de cada resposta, não do domínio — quando mais de um processo serve o mesmo host público (app/API, proxy/estático, CDN), cada um só manda o que foi configurado nele mesmo pra mandar. `HSTS` tem um efeito de memória por origem depois da primeira resposta que o entrega (o navegador passa a forçar HTTPS no domínio inteiro por `max-age`), mas até lá — e pra qualquer rota que nunca manda o header — a proteção não existe; os outros (`CSP`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) não têm nem essa memória, são avaliados resposta por resposta sempre. Decida explicitamente qual camada é dona de cada header e confirme no fio, por rota real (API e estático/SPA separadamente), não só na rota que você tocou — mesma família de lição que compressão na borda e `Vary`: proxy na frente não herda nada do backend automaticamente, e vice-versa.',
+    downloads: [
+      { file: 'header-seguranca-por-camada-nao-por-dominio.md', label: 'Checklist: auditar headers de segurança por camada, não por domínio' },
+    ],
+  },
 ]
