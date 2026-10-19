@@ -1,1 +1,1 @@
-{ "shipped": false, "summary": "Verificado catálogo (45 lições, downloads ok) e backlog recente; nada genuíno pra virar lição nova, revisão semanal do iaBrain ainda não vencida.", "needs_input": false }
+{ "shipped": true, "summary": "Nova lição + download sobre header de segurança (HSTS/CSP/etc) setado só numa camada não cobrir o domínio inteiro, genericizada a partir do fix de HSTS do frontend.", "needs_input": false }
