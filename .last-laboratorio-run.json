@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição + download sobre header de segurança (HSTS/CSP/etc) setado só numa camada não cobrir o domínio inteiro, genericizada a partir do fix de HSTS do frontend.", "needs_input": false }
+{ "shipped": false, "summary": "Nenhuma lição nova genuína encontrada (posts recentes são editoriais sobre segurança de terceiros, backlog de infra recente é feature, não bug); revisão semanal do iaBrain ainda não vencida (5 de 7 dias)", "needs_input": false }
