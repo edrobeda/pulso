@@ -53,6 +53,46 @@ function loadNightReading() {
   return typeof window !== 'undefined' && (window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false)
 }
 
+// Resume de leitura: quem lê no celular com uma mão só (bebê no colo, por
+// exemplo) é interrompido com frequência e perde o lugar. Guarda o % de
+// scroll por post (não a posição em px, que muda se o texto reflui) e
+// oferece voltar pra lá na próxima visita — só dentro de uma faixa que
+// sinaliza "estava no meio", não em quem mal abriu ou já terminou.
+const RESUME_KEY_PREFIX = 'pulso-resume-'
+const RESUME_MAX_AGE_MS = 60 * 24 * 60 * 60 * 1000 // 60 dias
+const RESUME_MIN_PCT = 8
+const RESUME_MAX_PCT = 92
+
+function resumeKey(slug) {
+  return `${RESUME_KEY_PREFIX}${slug}`
+}
+
+function loadResumePct(slug) {
+  try {
+    const raw = localStorage.getItem(resumeKey(slug))
+    if (!raw) return null
+    const { pct, savedAt } = JSON.parse(raw)
+    if (typeof pct !== 'number' || typeof savedAt !== 'number') return null
+    if (Date.now() - savedAt > RESUME_MAX_AGE_MS) return null
+    if (pct < RESUME_MIN_PCT || pct > RESUME_MAX_PCT) return null
+    return pct
+  } catch {
+    return null
+  }
+}
+
+function saveResumePct(slug, pct) {
+  try {
+    if (pct < RESUME_MIN_PCT || pct > RESUME_MAX_PCT) {
+      localStorage.removeItem(resumeKey(slug))
+      return
+    }
+    localStorage.setItem(resumeKey(slug), JSON.stringify({ pct, savedAt: Date.now() }))
+  } catch {
+    // modo privado/quota cheia: só não persiste entre sessões, sem quebrar nada
+  }
+}
+
 const FLAGGED_KEY = 'pulso-flagged-comments'
 
 function loadFlagged() {
@@ -236,6 +276,8 @@ export default function PostPage() {
   const [autoScroll, setAutoScroll] = useState(false)
   const [reducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   const [readProgress, setReadProgress] = useState(0)
+  const [resumeOffer, setResumeOffer] = useState(null)
+  const lastSavedPct = useRef(-1)
   const [copyState, setCopyState] = useState('idle')
   const ttsSupported = typeof window !== 'undefined' && 'speechSynthesis' in window
   const [ttsState, setTtsState] = useState('idle') // idle | playing | paused
@@ -250,18 +292,37 @@ export default function PostPage() {
 
   useEffect(() => {
     if (!post) return
-    function updateProgress() {
+    function computePct() {
       const scrollable = document.documentElement.scrollHeight - window.innerHeight
-      setReadProgress(scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0)
+      return scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0
     }
-    updateProgress()
-    window.addEventListener('scroll', updateProgress, { passive: true })
-    window.addEventListener('resize', updateProgress)
+    // Só grava em localStorage a partir de scroll/resize real do usuário, nunca
+    // na medição inicial do mount (que é sempre ~0% logo após navegar pro
+    // post) — senão a oferta de "continuar de onde parei" seria apagada antes
+    // da pessoa ter a chance de vê-la.
+    function handleScroll() {
+      const pct = computePct()
+      setReadProgress(pct)
+      const rounded = Math.round(pct)
+      if (rounded !== lastSavedPct.current) {
+        lastSavedPct.current = rounded
+        saveResumePct(post.slug, rounded)
+      }
+    }
+    setReadProgress(computePct())
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleScroll)
     return () => {
-      window.removeEventListener('scroll', updateProgress)
-      window.removeEventListener('resize', updateProgress)
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
     }
   }, [post])
+
+  useEffect(() => {
+    if (!post) return
+    setResumeOffer(loadResumePct(post.slug))
+    lastSavedPct.current = -1
+  }, [post?.slug])
 
   useEffect(() => {
     if (!post) return
@@ -544,6 +605,19 @@ export default function PostPage() {
     setTtsState('idle')
   }
 
+  function handleResumeReading() {
+    if (resumeOffer == null) return
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight
+    if (scrollable > 0) {
+      window.scrollTo({ top: (resumeOffer / 100) * scrollable, behavior: reducedMotion ? 'auto' : 'smooth' })
+    }
+    setResumeOffer(null)
+  }
+
+  function dismissResumeOffer() {
+    setResumeOffer(null)
+  }
+
   function handleReact(emoji) {
     if (!post || reacted.includes(emoji)) return
     const nextReacted = [...reacted, emoji]
@@ -656,6 +730,24 @@ export default function PostPage() {
               </li>
             ))}
           </ul>
+          {resumeOffer != null && (
+            <div className="resume-banner" role="status">
+              <span>você parou por volta de {Math.round(resumeOffer)}% deste pulso.</span>
+              <div className="resume-banner__actions">
+                <button type="button" className="resume-banner__btn" onClick={handleResumeReading}>
+                  continuar de onde parei
+                </button>
+                <button
+                  type="button"
+                  className="resume-banner__dismiss"
+                  onClick={dismissResumeOffer}
+                  aria-label="Dispensar aviso de continuar leitura"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
           {toc.length >= 3 && (
             <nav className="toc" aria-label="Sumário do pulso">
               <p className="toc__label">nesse pulso</p>
