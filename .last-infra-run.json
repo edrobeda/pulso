@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "adicionado header Strict-Transport-Security (HSTS) nas respostas do frontend, igualando a API", "needs_input": false }
+{ "shipped": true, "summary": "banner de \"continuar de onde parei\" na leitura de posts, com progresso salvo localmente por post", "needs_input": false }
