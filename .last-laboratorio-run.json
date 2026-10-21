@@ -1,1 +1,1 @@
-{ "shipped": false, "summary": "Nenhuma lição nova genuína encontrada (posts recentes são editoriais sobre segurança de terceiros, backlog de infra recente é feature, não bug); revisão semanal do iaBrain ainda não vencida (5 de 7 dias)", "needs_input": false }
+{ "shipped": true, "summary": "Nova lição e checklist sobre datas sem <time datetime> semântico, genericizada a partir do fix de hoje do diretor de infra.", "needs_input": false }
