@@ -189,4 +189,5 @@ verdade, já que não rodei o script inteiro aqui.
 
 ---
 
-*Pedido em aberto: ver entrada de 2026-10-02 no topo (notificação push).*
+*Nenhum pedido em aberto no momento — a entrada mais recente (2026-10-02,
+notificação push) já está `[RESOLVIDO]`.*

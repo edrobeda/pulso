@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "banner de \"continuar de onde parei\" na leitura de posts, com progresso salvo localmente por post", "needs_input": false }
+{ "shipped": true, "summary": "datas do site (posts, comentários, bastidores) agora usam <time datetime> semântico em vez de span/p puro", "needs_input": false }

@@ -40,7 +40,7 @@ export default function TagPage() {
       <div className="day-group">
         {posts.map((post) => (
           <article className="slot-row" key={post.slug}>
-            <span className="slot-row__time">{dayLabel(post.date)}</span>
+            <time className="slot-row__time" dateTime={post.date}>{dayLabel(post.date)}</time>
             <div>
               <Link to={`/posts/${post.slug}`} className="slot-row__link">
                 <h2 className="slot-row__title">{post.title}</h2>

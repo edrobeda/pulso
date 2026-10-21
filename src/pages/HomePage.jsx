@@ -86,7 +86,9 @@ export default function HomePage() {
 
           return (
             <div className="day-group" key={date}>
-              <p className="day-group__label">{dayLabel(date)}</p>
+              <p className="day-group__label">
+                <time dateTime={date}>{dayLabel(date)}</time>
+              </p>
               {slotsToRender.map((slot) => {
                 const post = slots[slot]
                 if (!post) {

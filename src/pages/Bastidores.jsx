@@ -616,7 +616,7 @@ export default function Bastidores() {
               return (
                 <li className="backlog-item" key={entry.id}>
                   <div className="backlog-item__head">
-                    <span className="backlog-item__date">{dayLabel(entry.entry_date)}</span>
+                    <time className="backlog-item__date" dateTime={entry.entry_date}>{dayLabel(entry.entry_date)}</time>
                     <span className={`backlog-badge ${meta.className}`}>{meta.label}</span>
                   </div>
                   <h3 className="backlog-item__title">{entry.title}</h3>

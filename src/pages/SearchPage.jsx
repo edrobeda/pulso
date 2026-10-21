@@ -151,7 +151,7 @@ export default function SearchPage() {
         <div className="day-group">
           {results.map((post) => (
             <article className="slot-row" key={post.slug}>
-              <span className="slot-row__time">{dayLabel(post.date)}</span>
+              <time className="slot-row__time" dateTime={post.date}>{dayLabel(post.date)}</time>
               <div>
                 <Link to={`/posts/${post.slug}`} className="slot-row__link">
                   <h2 className="slot-row__title">{highlightMatches(post.title, query)}</h2>

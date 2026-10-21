@@ -704,8 +704,8 @@ export default function PostPage() {
           <div className="post-card__meta">
             <PulseSignature slug={post.slug} size="lg" />
             <span>
-              {postDateTimeLabel(post)} · <strong>{post.readTime} min de leitura</strong> ·{' '}
-              {viewsLabel(viewCount)}
+              <time dateTime={`${post.date}T${post.slot}:00-03:00`}>{postDateTimeLabel(post)}</time> ·{' '}
+              <strong>{post.readTime} min de leitura</strong> · {viewsLabel(viewCount)}
             </span>
           </div>
           <button
@@ -854,7 +854,7 @@ export default function PostPage() {
                       <li className="comment" key={c.id}>
                         <div className="comment__meta">
                           <strong>{c.author_name}</strong>
-                          <span>{commentDateLabel(c.created_at)}</span>
+                          <time dateTime={c.created_at}>{commentDateLabel(c.created_at)}</time>
                           <div className="comment__actions">
                             <button
                               type="button"
@@ -898,7 +898,7 @@ export default function PostPage() {
                               <li className="comment comment--reply" key={r.id}>
                                 <div className="comment__meta">
                                   <strong>{r.author_name}</strong>
-                                  <span>{commentDateLabel(r.created_at)}</span>
+                                  <time dateTime={r.created_at}>{commentDateLabel(r.created_at)}</time>
                                   <div className="comment__actions">
                                     <button
                                       type="button"
