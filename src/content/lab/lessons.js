@@ -573,4 +573,16 @@ export const lessons = [
       { file: 'header-seguranca-por-camada-nao-por-dominio.md', label: 'Checklist: auditar headers de segurança por camada, não por domínio' },
     ],
   },
+  {
+    slug: 'data-sem-time-datetime-nao-e-reconhecida-como-data',
+    title: 'Uma data exibida como texto formatado não é reconhecida como data por quem não vê a tela',
+    tag: 'frontend',
+    problem:
+      'Um site exibia toda data visível (data de post, data de comentário/resposta, data de item de histórico) dentro de elementos genéricos (`<span>`, `<p>`) com texto já formatado — visualmente perfeito, sem nenhum sinal estrutural no DOM de que aquele texto representa uma data. Nada quebrava nem dava erro: um leitor de tela lia o texto literal sem contexto temporal algum, e um crawler de busca/extrator de dados estruturados não tinha como extrair um valor confiável sem parsear a string formatada, adivinhando idioma e fuso.',
+    lesson:
+      'Troque qualquer texto de data visível por `<time dateTime="valor-ISO-8601">texto formatado livre</time>` — zero mudança visual, zero custo real de implementação, resolve as duas audiências ao mesmo tempo (leitor de tela e crawler/dados estruturados) com a mesma troca de tag. Faça isso em todas as ocorrências do site de uma vez (grep por onde data é renderizada), não só na tela que motivou a mudança — é comum a mesma lacuna existir em paralelo em componente de post, comentário e qualquer outra lista com timestamp, cada um escrito sem reaproveitar um componente comum.',
+    downloads: [
+      { file: 'data-sem-time-datetime.md', label: 'Checklist: datas visíveis com <time datetime> semântico' },
+    ],
+  },
 ]
