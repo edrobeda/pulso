@@ -136,6 +136,7 @@ export default function Bastidores() {
   const [diskUsage, setDiskUsage] = useState({ status: 'loading', rows: [] })
   const [vitals, setVitals] = useState({ status: 'loading', byMetric: {} })
   const [uptime, setUptime] = useState({ status: 'loading', rows: [] })
+  const [serverErrors, setServerErrors] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -338,6 +339,24 @@ export default function Bastidores() {
       })
       .catch(() => {
         if (!cancelled) setUptime({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/errors/recent')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setServerErrors({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setServerErrors({ status: 'error', rows: [] })
       })
     return () => {
       cancelled = true
@@ -713,6 +732,26 @@ export default function Bastidores() {
                 <span className="usage-item__cost">
                   {d.count === 1 ? '1 download' : `${d.count} downloads`}
                 </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {serverErrors.status === 'ready' && serverErrors.rows.length > 0 && (
+        <div className="server-errors-section">
+          <h2 className="section-heading">
+            <span className="section-heading__icon" aria-hidden="true">⚠</span>
+            erros recentes da API
+          </h2>
+          <ul className="bug-reports-list">
+            {serverErrors.rows.map((e, i) => (
+              <li className="bug-reports-item" key={`${e.created_at}-${i}`}>
+                <div className="bug-reports-item__head">
+                  <span className="bug-reports-item__when">{bugReportDateLabel(e.created_at)}</span>
+                  <span className="bug-reports-item__url">{e.route}</span>
+                </div>
+                <p className="bug-reports-item__message">{e.message}</p>
               </li>
             ))}
           </ul>

@@ -80,6 +80,26 @@ app.use((req, res, next) => {
   next()
 })
 
+// `console.error` dentro de cada catch (abaixo) só sobrevive enquanto o log
+// do container não rotacionar/reiniciar — sem persistir, não dá pra ver
+// taxa/tendência de erro 500 sem reproduzir o bug de novo. Mesmo padrão de
+// observabilidade de web_vitals/uptime_checks/backup_log (tabela própria +
+// endpoint + seção em /bastidores). Best-effort de propósito: se o INSERT
+// falhar (ex.: banco fora do ar, que é justo quando mais precisaríamos
+// disso), não pode travar a resposta que o catch já está enviando.
+// /bastidores é público — a mensagem crua de um erro de conexão (ex. do
+// pg quando o Postgres está fora do ar) tende a incluir IP:porta interno do
+// Docker. Redige antes mesmo de persistir (defesa em profundidade: mais
+// barato nunca gravar do que lembrar de redigir em todo lugar que lê depois).
+function redactInternalDetails(message) {
+  return message.replace(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?\b/g, '[ip]')
+}
+
+function logServerError(route, err) {
+  const message = redactInternalDetails(String(err?.message || err)).slice(0, 500)
+  pool.query('INSERT INTO server_errors (route, message) VALUES ($1, $2)', [route, message]).catch(() => {})
+}
+
 // Só os endpoints de escrita (incrementar view/reação) levam limite — são
 // os únicos que um script poderia martelar pra inflar número; leitura fica
 // livre porque cache de CDN/browser já amortece.
@@ -108,6 +128,7 @@ app.get('/api/health', async (_req, res) => {
     res.json({ ok: true })
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/health', err)
     res.status(503).json({ ok: false, error: err.message })
   }
 })
@@ -124,6 +145,7 @@ app.get('/api/backlog', async (_req, res) => {
     res.json(rows)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/backlog', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -143,6 +165,7 @@ app.get('/api/usage', async (_req, res) => {
     res.json(rows)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/usage', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -160,6 +183,7 @@ app.get('/api/db-size', async (_req, res) => {
     res.json(rows)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/db-size', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -178,6 +202,7 @@ app.get('/api/disk-usage', async (_req, res) => {
     res.json(rows)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/disk-usage', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -214,6 +239,7 @@ app.get('/api/uptime', async (_req, res) => {
     res.json(summary)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/uptime', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -230,6 +256,7 @@ app.get('/api/backup-status', async (_req, res) => {
     res.json(rows)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/backup-status', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -281,6 +308,7 @@ app.post('/api/vitals', writeLimiter, async (req, res) => {
     res.status(201).json({ ok: true })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/vitals', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -313,6 +341,7 @@ app.get('/api/vitals/summary', async (_req, res) => {
     res.json(byMetric)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/vitals/summary', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -331,6 +360,7 @@ app.post('/api/visits', writeLimiter, async (_req, res) => {
     res.json({ visitCount: Number(rows[0].visit_count) })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/visits', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -344,6 +374,7 @@ app.get('/api/visits', async (_req, res) => {
     res.json(rows.map((r) => ({ date: r.visit_date, count: Number(r.visit_count) })))
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/visits', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -369,6 +400,7 @@ app.post('/api/downloads', writeLimiter, async (req, res) => {
     res.json({ downloadCount: Number(rows[0].download_count) })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/downloads', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -382,6 +414,7 @@ app.get('/api/downloads', async (_req, res) => {
     res.json(rows.map((r) => ({ file: r.file, count: Number(r.download_count) })))
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/downloads', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -420,6 +453,7 @@ app.get('/api/posts', async (_req, res) => {
     res.json(rows.map(toPost))
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/posts', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -451,6 +485,7 @@ app.get('/api/posts/summary', async (_req, res) => {
     res.json(summary)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/posts/summary', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -470,6 +505,7 @@ app.get('/api/posts/:slug', async (req, res) => {
     res.json(toPost(rows[0]))
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/posts/:slug', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -506,6 +542,7 @@ app.get('/api/og/:slug.png', async (req, res) => {
     res.send(png)
   } catch (err) {
     console.error('og image error', err)
+    logServerError("GET /api/og/:slug.png", err)
     res.status(500).send('error')
   }
 })
@@ -531,6 +568,7 @@ app.post('/api/posts/:slug/view', writeLimiter, async (req, res) => {
     res.json({ viewCount: Number(rows[0].view_count) })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/posts/:slug/view', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -555,6 +593,7 @@ app.get('/api/posts/:slug/reactions', async (req, res) => {
     res.json(counts)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/posts/:slug/reactions', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -580,6 +619,7 @@ app.post('/api/posts/:slug/reactions', writeLimiter, async (req, res) => {
     res.json({ emoji, count: Number(rows[0].count) })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/posts/:slug/reactions', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -610,6 +650,7 @@ app.get('/api/posts/:slug/comments', async (req, res) => {
     res.json(rows)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/posts/:slug/comments', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -659,6 +700,7 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
     res.status(201).json(rows[0])
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/posts/:slug/comments', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -706,6 +748,7 @@ app.post('/api/comments/:id/flag', writeLimiter, async (req, res) => {
     res.json({ flagCount, hidden: flagCount >= FLAG_HIDE_THRESHOLD })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/comments/:id/flag', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -741,6 +784,7 @@ app.post('/api/comments/:id/like', writeLimiter, async (req, res) => {
     res.json({ likeCount: countRows[0].count })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/comments/:id/like', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -776,6 +820,7 @@ app.post('/api/bug-reports', writeLimiter, async (req, res) => {
     res.status(201).json(rows[0])
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/bug-reports', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -792,6 +837,7 @@ app.get('/api/bug-reports', async (_req, res) => {
     res.json(rows)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/bug-reports', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -825,6 +871,7 @@ app.post('/api/push/subscribe', writeLimiter, async (req, res) => {
     res.status(201).json({ ok: true })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/push/subscribe', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -837,6 +884,7 @@ app.post('/api/push/unsubscribe', writeLimiter, async (req, res) => {
     res.json({ ok: true })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/push/unsubscribe', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -880,6 +928,7 @@ app.post('/api/push/notify', writeLimiter, async (req, res) => {
     res.json({ sent, pruned: gone.length, total: subs.length })
   } catch (err) {
     console.error(err)
+    logServerError('POST /api/push/notify', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -896,6 +945,26 @@ app.get('/api/comments/recent', async (_req, res) => {
        JOIN posts p ON p.slug = c.slug
        WHERE c.visible = true
        ORDER BY c.created_at DESC
+       LIMIT 50`
+    )
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(rows)
+  } catch (err) {
+    console.error(err)
+    logServerError('GET /api/comments/recent', err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// Visibilidade dos próprios erros 500 (ver logServerError acima) —
+// mesmo padrão de "operacional recente" de /api/comments/recent e
+// /api/bug-reports, exposto em /bastidores.
+app.get('/api/errors/recent', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT route, message, created_at
+       FROM server_errors
+       ORDER BY created_at DESC
        LIMIT 50`
     )
     res.set('Cache-Control', 'public, max-age=30')
@@ -1063,6 +1132,7 @@ ${navHtml}
     res.send(html)
   } catch (err) {
     console.error(err)
+    logServerError('GET /prerender/posts/:slug', err)
     res.status(500).send('error')
   }
 })
@@ -1189,6 +1259,7 @@ ${prerenderPostList(rows)}
     )
   } catch (err) {
     console.error(err)
+    logServerError('GET /prerender/home', err)
     res.status(500).send('error')
   }
 })
@@ -1239,6 +1310,7 @@ ${tags
     )
   } catch (err) {
     console.error(err)
+    logServerError('GET /prerender/tags', err)
     res.status(500).send('error')
   }
 })
@@ -1286,6 +1358,7 @@ ${prerenderPostList(matching)}
     )
   } catch (err) {
     console.error(err)
+    logServerError('GET /prerender/tag/:tagSlug', err)
     res.status(500).send('error')
   }
 })
@@ -1333,6 +1406,7 @@ ${rows
     )
   } catch (err) {
     console.error(err)
+    logServerError('GET /prerender/bastidores', err)
     res.status(500).send('error')
   }
 })
@@ -1378,6 +1452,7 @@ app.get('/api/search', searchLimiter, async (req, res) => {
       .catch(() => {})
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/search', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -1416,6 +1491,7 @@ app.get('/api/search/top-queries', async (_req, res) => {
     })
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/search/top-queries', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -1459,6 +1535,7 @@ ${items}
     res.send(xml)
   } catch (err) {
     console.error(err)
+    logServerError('GET /feed.xml', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -1500,6 +1577,7 @@ app.get('/api/feed.json', async (_req, res) => {
     })
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/feed.json', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -1553,6 +1631,7 @@ ${items}
     res.send(xml)
   } catch (err) {
     console.error(err)
+    logServerError('GET /api/feed/tags/:tagSlug', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
@@ -1623,6 +1702,7 @@ ${urls
     res.send(xml)
   } catch (err) {
     console.error(err)
+    logServerError('GET /sitemap.xml', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
