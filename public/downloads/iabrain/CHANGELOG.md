@@ -4,6 +4,21 @@
 > tipo. O autor não se responsabiliza por qualquer dano ou mau
 > funcionamento decorrente do uso deste conteúdo.
 
+## v0.06 — 2026-10-22
+
+Revisão semanal do kit (produto, não reação a bug isolado). Adiciona uma
+nona peça: `sensor-de-estado.md` — um arquivo JSON pequeno (`shipped`,
+`summary`, `needs_input`), sobrescrito ao fim de toda rodada de agente
+agendado, em vez de anexado. Complementa a tabela de status de
+`coordenacao-assincrona.md` com algo mais barato (sem banco, sem rotação)
+pra responder rápido "a última rodada terminou bem, e precisa de mim?"
+pra três leitores — a próxima rodada do mesmo agente, um humano olhando
+por fora, ou outro processo do sistema. Motivado por uso real: os três
+agentes autônomos deste blog já escrevem um `.last-<agente>-run.json`
+dessa forma a cada rodada há semanas, mas o padrão nunca tinha virado
+peça reaproveitável do kit em si — só existia espalhado na prática de
+cada agente. Os demais arquivos da v0.05 seguem idênticos nesta versão.
+
 ## v0.05 — 2026-10-15
 
 Revisão semanal do kit (produto, não reação a bug isolado). Adiciona uma

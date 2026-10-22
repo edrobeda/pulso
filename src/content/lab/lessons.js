@@ -92,27 +92,28 @@ export const lessons = [
   },
   {
     slug: 'iabrain-v0-01',
-    title: 'iaBrain — orquestrador, subagentes, skills, memória, coordenação assíncrona, confinamento, verificação e eficiência de contexto',
+    title: 'iaBrain — orquestrador, subagentes, skills, memória, coordenação assíncrona, confinamento, verificação, eficiência de contexto e sensor de estado',
     tag: 'agentes',
     problem:
       'Um sistema de agentes de IA sem separação clara de papéis tende a virar uma bagunça: um único prompt gigante tentando fazer roteamento, execução e memória ao mesmo tempo, contexto poluído por passos intermediários que ninguém precisava ver, e nenhum critério consistente pra decidir quando delegar uma tarefa ou quando registrar algo como memória permanente. Isso cobre só o caso de agentes na mesma sessão: quando os agentes são processos genuinamente independentes (cron em horários diferentes, sem sessão compartilhada), delegar e esperar resposta não existe — eles só se enxergam através do que gravam em algum lugar durável. E nenhuma dessas peças resolve um problema adicional e mais crítico: quando pelo menos um desses agentes age sem revisão humana antes de cada passo, o que impede dano além do pretendido não é o texto do prompt, é o que existe ao redor dele.',
     lesson:
-      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. Pra qualquer agente que roda sem revisão humana, uma camada por cima de tudo isso: escopo travado por allow-list explícita (não por instrução verbal), canal de escalonamento no lugar de contorno quando o escopo barra algo, gate de permissão por consequência real da ação (não pelo tipo técnico de ferramenta usada), dado de ferramenta de monitoramento tratado como não confiável, e recusa de classificador de segurança do provedor tratada como categoria própria de falha. E, mesmo fazendo tudo isso certo, falta uma última pergunta: como saber que o que foi feito funcionou de verdade antes de reportar a rodada como concluída — build passar não prova runtime, HTTP 200 não prova execução, arquivo existir não prova que restaura; reverter pro estado anterior conhecido-bom é sempre uma saída válida quando a verificação falha, nunca motivo pra deixar algo quebrado no ar. E uma última peça que só aparece com o tempo, não desde o primeiro dia: um agente que roda repetidamente sobre um ambiente que só cresce (mais histórico, mais log) paga custo de contexto cada vez maior por rodada se não tiver o hábito deliberado de ler histórico por amostra recente em vez do artefato inteiro, truncar saída verbosa de comando, resolver mais por chamada de ferramenta e não reler o que acabou de escrever só pra confirmar — medido na prática como `cache_read_tokens` caindo depois do ajuste, não só uma impressão de que ficou "mais limpo". Versionado (v0.01, v0.02, v0.03, v0.04, v0.05...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável, onde travar o confinamento, o que verificar antes de declarar sucesso, onde conter o custo de contexto — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
+      'Separar em peças que se combinam sempre do mesmo jeito — um orquestrador que só ele fala com o usuário, subagentes de escopo estreito que rodam isolados, skills como documentos de referência (não agentes), memória dividida em quatro categorias com regra própria de quando atualizar — resolve a bagunça estrutural de agentes que dividem sessão. Pra agentes que não dividem sessão (o caso deste próprio blog: publicação, infraestrutura e este catálogo rodam em horários separados, sem se ver ao vivo), o padrão que sobra é outro: um canal de pedido/resposta em arquivo, um log append-only lido por amostra recente (não inteiro a cada rodada), e uma tabela de status que é visível por um humano, não só gravada. Pra qualquer agente que roda sem revisão humana, uma camada por cima de tudo isso: escopo travado por allow-list explícita (não por instrução verbal), canal de escalonamento no lugar de contorno quando o escopo barra algo, gate de permissão por consequência real da ação (não pelo tipo técnico de ferramenta usada), dado de ferramenta de monitoramento tratado como não confiável, e recusa de classificador de segurança do provedor tratada como categoria própria de falha. E, mesmo fazendo tudo isso certo, falta uma última pergunta: como saber que o que foi feito funcionou de verdade antes de reportar a rodada como concluída — build passar não prova runtime, HTTP 200 não prova execução, arquivo existir não prova que restaura; reverter pro estado anterior conhecido-bom é sempre uma saída válida quando a verificação falha, nunca motivo pra deixar algo quebrado no ar. E uma última peça que só aparece com o tempo, não desde o primeiro dia: um agente que roda repetidamente sobre um ambiente que só cresce (mais histórico, mais log) paga custo de contexto cada vez maior por rodada se não tiver o hábito deliberado de ler histórico por amostra recente em vez do artefato inteiro, truncar saída verbosa de comando, resolver mais por chamada de ferramenta e não reler o que acabou de escrever só pra confirmar — medido na prática como `cache_read_tokens` caindo depois do ajuste, não só uma impressão de que ficou "mais limpo". E uma peça final, mais barata que a tabela de status: um arquivo JSON pequeno (`shipped`/`summary`/`needs_input`), sobrescrito a cada rodada em vez de anexado, que responde em menos de um segundo "a última rodada terminou bem, e precisa de mim?" sem exigir banco, consulta nem rotação. Versionado (v0.01, v0.02, v0.03, v0.04, v0.05, v0.06...) de propósito, porque a parte mais difícil — quando escrever memória, quando delegar, quando coordenar por estado durável, onde travar o confinamento, o que verificar antes de declarar sucesso, onde conter o custo de contexto, como sinalizar o resultado de uma rodada sem exigir que alguém leia log — só se ajusta testando contra uso real. Tem um prompt de instalação/atualização automática: cole no seu agente e ele mesmo verifica a versão mais recente e baixa tudo.',
     downloads: [
       { file: 'iabrain/install-prompt.md', label: 'Prompt de instalação/atualização automática' },
-      { file: 'iabrain/v0.05/README.md', label: 'README — visão geral + instalação por harness' },
-      { file: 'iabrain/v0.05/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
-      { file: 'iabrain/v0.05/subagente-template.md', label: 'Template de definição de subagente' },
-      { file: 'iabrain/v0.05/skill-template.md', label: 'Template de skill de referência' },
-      { file: 'iabrain/v0.05/memoria-profile.md', label: 'Memória: profile' },
-      { file: 'iabrain/v0.05/memoria-preferences.md', label: 'Memória: preferences' },
-      { file: 'iabrain/v0.05/memoria-topics.md', label: 'Memória: topics' },
-      { file: 'iabrain/v0.05/memoria-people.md', label: 'Memória: people' },
-      { file: 'iabrain/v0.05/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
-      { file: 'iabrain/v0.05/coordenacao-assincrona.md', label: 'Coordenação assíncrona entre agentes independentes' },
-      { file: 'iabrain/v0.05/confinamento-harness.md', label: 'Harness de confinamento pra agente sem revisão humana' },
-      { file: 'iabrain/v0.05/verificacao-e-reversao.md', label: 'Gate de verificação antes de declarar sucesso, com reversão' },
-      { file: 'iabrain/v0.05/eficiencia-de-contexto.md', label: 'Novo na v0.05: eficiência de contexto pra agente de rodada repetida' },
+      { file: 'iabrain/v0.06/README.md', label: 'README — visão geral + instalação por harness' },
+      { file: 'iabrain/v0.06/orquestrador-prompt.md', label: 'Template de prompt do orquestrador' },
+      { file: 'iabrain/v0.06/subagente-template.md', label: 'Template de definição de subagente' },
+      { file: 'iabrain/v0.06/skill-template.md', label: 'Template de skill de referência' },
+      { file: 'iabrain/v0.06/memoria-profile.md', label: 'Memória: profile' },
+      { file: 'iabrain/v0.06/memoria-preferences.md', label: 'Memória: preferences' },
+      { file: 'iabrain/v0.06/memoria-topics.md', label: 'Memória: topics' },
+      { file: 'iabrain/v0.06/memoria-people.md', label: 'Memória: people' },
+      { file: 'iabrain/v0.06/notas-de-design.md', label: 'Notas de design: quando gravar memória, quando delegar' },
+      { file: 'iabrain/v0.06/coordenacao-assincrona.md', label: 'Coordenação assíncrona entre agentes independentes' },
+      { file: 'iabrain/v0.06/confinamento-harness.md', label: 'Harness de confinamento pra agente sem revisão humana' },
+      { file: 'iabrain/v0.06/verificacao-e-reversao.md', label: 'Gate de verificação antes de declarar sucesso, com reversão' },
+      { file: 'iabrain/v0.06/eficiencia-de-contexto.md', label: 'Eficiência de contexto pra agente de rodada repetida' },
+      { file: 'iabrain/v0.06/sensor-de-estado.md', label: 'Novo na v0.06: sensor de estado por rodada (JSON sobrescrito)' },
     ],
   },
   {
@@ -583,6 +584,18 @@ export const lessons = [
       'Troque qualquer texto de data visível por `<time dateTime="valor-ISO-8601">texto formatado livre</time>` — zero mudança visual, zero custo real de implementação, resolve as duas audiências ao mesmo tempo (leitor de tela e crawler/dados estruturados) com a mesma troca de tag. Faça isso em todas as ocorrências do site de uma vez (grep por onde data é renderizada), não só na tela que motivou a mudança — é comum a mesma lacuna existir em paralelo em componente de post, comentário e qualquer outra lista com timestamp, cada um escrito sem reaproveitar um componente comum.',
     downloads: [
       { file: 'data-sem-time-datetime.md', label: 'Checklist: datas visíveis com <time datetime> semântico' },
+    ],
+  },
+  {
+    slug: 'redacao-em-escrita-nao-em-leitura',
+    title: 'Redigir só na hora de exibir deixa o dado sensível vivendo sem necessidade dentro do banco',
+    tag: 'infra',
+    problem:
+      'Uma API passou a persistir seus próprios erros internos (500) numa tabela, pensando numa página de status pública que mostraria os últimos erros por rota — um padrão de observabilidade saudável. A mensagem de erro gravada ainda carregava detalhe interno (IP de origem da conexão, entre outros) no momento do `INSERT`, com o plano de filtrar esse detalhe depois, só na hora de montar a resposta da rota pública que lê essa tabela. Entre a escrita e esse filtro existia uma janela real em que o dado sensível já estava gravado em texto puro — visível a qualquer leitura direta da tabela (consulta ad-hoc, backup restaurado, um endpoint futuro que leia os mesmos dados), não só pela rota pública original.',
+    lesson:
+      'Redija o dado sensível no momento de gravar, não no momento de servir. Existe só um caminho de escrita, mas podem existir vários de leitura — cada leitura nova precisaria lembrar de repetir o mesmo filtro, e esquecer uma não dá erro nenhum, só vaza silenciosamente pra quem tiver acesso de leitura direto ao banco (uma permissão diferente da de quem só pode alterar o código da rota pública). Mantenha uma lista pequena e nomeada do que precisa sair (IP, caminho de arquivo, hostname interno) em vez de uma blocklist implícita que só cresce quando alguém notar um vazamento. Redigir na leitura ainda vale como camada extra de defesa em profundidade — só não pode ser a única.',
+    downloads: [
+      { file: 'redacao-em-escrita-nao-em-leitura.md', label: 'Checklist + exemplo: redigir dado sensível antes de persistir, não só antes de exibir' },
     ],
   },
 ]

@@ -1,1 +1,5 @@
-{ "shipped": true, "summary": "Nova lição e checklist sobre datas sem <time datetime> semântico, genericizada a partir do fix de hoje do diretor de infra.", "needs_input": false }
+{
+  "shipped": true,
+  "summary": "Lição nova sobre redigir dado sensível na escrita (não só na leitura) e revisão semanal do iaBrain publicada como v0.06 (peça nova: sensor de estado por rodada)",
+  "needs_input": false
+}
