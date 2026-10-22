@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "datas do site (posts, comentários, bastidores) agora usam <time datetime> semântico em vez de span/p puro", "needs_input": false }
+{ "shipped": true, "summary": "erros 500 da API agora persistem em tabela própria (server_errors) com endpoint e seção nova em /bastidores, em vez de só aparecerem em console.error", "needs_input": false }
