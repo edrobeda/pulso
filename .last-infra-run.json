@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "erros 500 da API agora persistem em tabela própria (server_errors) com endpoint e seção nova em /bastidores, em vez de só aparecerem em console.error", "needs_input": false }
+{ "shipped": true, "summary": "aviso push por resposta a um comentário específico, reaproveitando a inscrição de push já existente", "needs_input": false }

@@ -113,12 +113,54 @@ function loadLiked() {
   }
 }
 
+const WATCHED_KEY = 'pulso-watched-comments'
+
+function loadWatched() {
+  try {
+    return JSON.parse(localStorage.getItem(WATCHED_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+const PUSH_SUPPORTED =
+  typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
+
+// Mesma conversão de chave VAPID do PushSubscribeWidget — duplicada aqui de
+// propósito (função de 5 linhas, sem estado) em vez de criar um módulo
+// compartilhado só pra isso.
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = atob(base64)
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)))
+}
+
+async function ensurePushSubscription() {
+  const permission = await Notification.requestPermission()
+  if (permission !== 'granted') throw new Error('permissão negada')
+  const reg = await navigator.serviceWorker.ready
+  const existing = await reg.pushManager.getSubscription()
+  if (existing) return existing
+  const keyRes = await fetch('/api/push/vapid-public-key')
+  if (!keyRes.ok) throw new Error('push indisponível')
+  const { publicKey } = await keyRes.json()
+  return reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicKey),
+  })
+}
+
 function saveLiked(ids) {
   localStorage.setItem(LIKED_KEY, JSON.stringify(ids))
 }
 
 function saveFlagged(ids) {
   localStorage.setItem(FLAGGED_KEY, JSON.stringify(ids))
+}
+
+function saveWatched(ids) {
+  localStorage.setItem(WATCHED_KEY, JSON.stringify(ids))
 }
 
 // Pra ouvir em voz alta: título + parágrafos/quotes/headings, pulando bloco
@@ -254,6 +296,8 @@ export default function PostPage() {
   const [commentSuccess, setCommentSuccess] = useState('')
   const [flaggedIds, setFlaggedIds] = useState(loadFlagged)
   const [likedIds, setLikedIds] = useState(loadLiked)
+  const [watchedIds, setWatchedIds] = useState(loadWatched)
+  const [watchError, setWatchError] = useState('')
 
   // Só um comentário por vez tem o form de resposta aberto — reaproveita o
   // mesmo conjunto de campos em vez de um estado por comentário.
@@ -544,6 +588,49 @@ export default function PostPage() {
         }
       })
       .catch(() => {})
+  }
+
+  async function handleWatchComment(commentId) {
+    if (!PUSH_SUPPORTED || watchedIds.includes(commentId)) return
+    setWatchError('')
+    try {
+      const sub = await ensurePushSubscription()
+      const res = await fetch(`/api/comments/${commentId}/watch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sub.toJSON()),
+      })
+      if (!res.ok) throw new Error('não deu pra ativar o aviso')
+      const next = [...watchedIds, commentId]
+      setWatchedIds(next)
+      saveWatched(next)
+    } catch (err) {
+      setWatchError(
+        err.message === 'permissão negada'
+          ? 'notificações bloqueadas no navegador'
+          : 'não deu pra ativar o aviso — tenta de novo'
+      )
+    }
+  }
+
+  async function handleUnwatchComment(commentId) {
+    if (!PUSH_SUPPORTED) return
+    try {
+      const reg = await navigator.serviceWorker.ready
+      const sub = await reg.pushManager.getSubscription()
+      if (sub) {
+        await fetch(`/api/comments/${commentId}/unwatch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: sub.endpoint }),
+        })
+      }
+    } catch {
+      // melhor esforço: mesmo se a chamada falhar, tira do estado local
+    }
+    const next = watchedIds.filter((id) => id !== commentId)
+    setWatchedIds(next)
+    saveWatched(next)
   }
 
   function handleToggleSaved() {
@@ -844,6 +931,11 @@ export default function PostPage() {
             <p className="comments__label">
               {comments.length === 0 ? 'comentários' : `comentários (${comments.length})`}
             </p>
+            {watchError && (
+              <p className="comment-form__error" role="alert">
+                {watchError}
+              </p>
+            )}
             {comments.length > 0 && (
               <ul className="comments__list">
                 {comments
@@ -851,7 +943,7 @@ export default function PostPage() {
                   .map((c) => {
                     const replies = comments.filter((r) => r.parent_comment_id === c.id)
                     return (
-                      <li className="comment" key={c.id}>
+                      <li className="comment" key={c.id} id={`comment-${c.id}`}>
                         <div className="comment__meta">
                           <strong>{c.author_name}</strong>
                           <time dateTime={c.created_at}>{commentDateLabel(c.created_at)}</time>
@@ -866,6 +958,21 @@ export default function PostPage() {
                             >
                               👍{c.like_count > 0 ? ` ${c.like_count}` : ''}
                             </button>
+                            {PUSH_SUPPORTED && (
+                              <button
+                                type="button"
+                                className="comment__watch"
+                                onClick={() =>
+                                  watchedIds.includes(c.id)
+                                    ? handleUnwatchComment(c.id)
+                                    : handleWatchComment(c.id)
+                                }
+                                aria-pressed={watchedIds.includes(c.id)}
+                                aria-label="Avisar quando alguém responder este comentário"
+                              >
+                                {watchedIds.includes(c.id) ? '🔔 avisando' : '🔕 avisar resposta'}
+                              </button>
+                            )}
                             <button
                               type="button"
                               className="comment__flag"

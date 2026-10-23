@@ -632,6 +632,49 @@ app.post('/api/posts/:slug/reactions', writeLimiter, async (req, res) => {
 const COMMENT_MIN_LEN = 2
 const COMMENT_MAX_LEN = 1000
 
+// Best-effort, nunca bloqueia a resposta do POST de comentário (mesma
+// filosofia do POST /api/push/notify): manda um Web Push só pra quem marcou
+// "avisar quando responderem" naquele comentário específico, podando
+// inscrição morta (404/410) do jeito já feito pro broadcast de post novo.
+async function notifyReplyWatchers(parentCommentId, slug) {
+  if (!vapidConfigured) return
+  try {
+    const { rows: watchers } = await pool.query(
+      `SELECT ps.id, ps.endpoint, ps.p256dh, ps.auth
+       FROM comment_reply_watches w
+       JOIN push_subscriptions ps ON ps.id = w.subscription_id
+       WHERE w.comment_id = $1`,
+      [parentCommentId]
+    )
+    if (watchers.length === 0) return
+
+    const payload = JSON.stringify({
+      title: 'Alguém respondeu seu comentário',
+      body: 'Toca pra ver a resposta no Pulso.',
+      url: `/posts/${slug}#comment-${parentCommentId}`,
+    })
+    const gone = []
+    await Promise.all(
+      watchers.map(async (sub) => {
+        try {
+          await webpush.sendNotification(
+            { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+            payload
+          )
+        } catch (err) {
+          if (err.statusCode === 404 || err.statusCode === 410) gone.push(sub.endpoint)
+        }
+      })
+    )
+    if (gone.length > 0) {
+      await pool.query('DELETE FROM push_subscriptions WHERE endpoint = ANY($1)', [gone])
+    }
+  } catch (err) {
+    console.error(err)
+    logServerError('notifyReplyWatchers', err)
+  }
+}
+
 app.get('/api/posts/:slug/comments', async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -698,6 +741,7 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
       [req.params.slug, authorName, body, parentCommentId]
     )
     res.status(201).json(rows[0])
+    if (parentCommentId) notifyReplyWatchers(parentCommentId, req.params.slug)
   } catch (err) {
     console.error(err)
     logServerError('POST /api/posts/:slug/comments', err)
@@ -785,6 +829,75 @@ app.post('/api/comments/:id/like', writeLimiter, async (req, res) => {
   } catch (err) {
     console.error(err)
     logServerError('POST /api/comments/:id/like', err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// "Avisar quando responderem" por comentário — reaproveita a mesma
+// inscrição Web Push de push_subscriptions (endpoint é chave natural), só
+// linkando ela a um comentário específico via comment_reply_watches (ver
+// db/migrations/0026). Só comentário de primeiro nível é "assistível" (só
+// eles recebem resposta, ver regra de 1 nível no POST de comments acima).
+app.post('/api/comments/:id/watch', writeLimiter, async (req, res) => {
+  if (!vapidConfigured) return res.status(503).json({ error: 'push não configurado' })
+  try {
+    const commentId = Number(req.params.id)
+    if (!Number.isInteger(commentId)) return res.status(400).json({ error: 'invalid comment id' })
+
+    const { rows: commentRows } = await pool.query(
+      'SELECT id FROM post_comments WHERE id = $1 AND visible = true AND parent_comment_id IS NULL',
+      [commentId]
+    )
+    if (commentRows.length === 0) return res.status(404).json({ error: 'not found' })
+
+    const { endpoint, keys } = req.body || {}
+    if (typeof endpoint !== 'string' || !endpoint.startsWith('https://')) {
+      return res.status(400).json({ error: 'endpoint inválido' })
+    }
+    const p256dh = keys?.p256dh
+    const auth = keys?.auth
+    if (typeof p256dh !== 'string' || typeof auth !== 'string') {
+      return res.status(400).json({ error: 'keys inválidas' })
+    }
+
+    const { rows: subRows } = await pool.query(
+      `INSERT INTO push_subscriptions (endpoint, p256dh, auth)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (endpoint) DO UPDATE SET p256dh = $2, auth = $3
+       RETURNING id`,
+      [endpoint, p256dh, auth]
+    )
+    await pool.query(
+      `INSERT INTO comment_reply_watches (comment_id, subscription_id)
+       VALUES ($1, $2)
+       ON CONFLICT (comment_id, subscription_id) DO NOTHING`,
+      [commentId, subRows[0].id]
+    )
+    res.status(201).json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    logServerError('POST /api/comments/:id/watch', err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+app.post('/api/comments/:id/unwatch', writeLimiter, async (req, res) => {
+  try {
+    const commentId = Number(req.params.id)
+    if (!Number.isInteger(commentId)) return res.status(400).json({ error: 'invalid comment id' })
+    const { endpoint } = req.body || {}
+    if (typeof endpoint !== 'string') return res.status(400).json({ error: 'endpoint inválido' })
+
+    await pool.query(
+      `DELETE FROM comment_reply_watches
+       WHERE comment_id = $1
+         AND subscription_id = (SELECT id FROM push_subscriptions WHERE endpoint = $2)`,
+      [commentId, endpoint]
+    )
+    res.json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    logServerError('POST /api/comments/:id/unwatch', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
