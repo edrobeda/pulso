@@ -1,5 +1,1 @@
-{
-  "shipped": true,
-  "summary": "Lição nova sobre redigir dado sensível na escrita (não só na leitura) e revisão semanal do iaBrain publicada como v0.06 (peça nova: sensor de estado por rodada)",
-  "needs_input": false
-}
+{ "shipped": false, "summary": "Revisão de lessons.js, NECESSIDADES.md e backlog recente não encontrou lição genérica nova genuína; revisão semanal do iaBrain não é devida ainda (feita em 2026-10-22).", "needs_input": false }
