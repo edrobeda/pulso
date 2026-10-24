@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "aviso push por resposta a um comentário específico, reaproveitando a inscrição de push já existente", "needs_input": false }
+{ "shipped": true, "summary": "autor de comentário/resposta pode excluir o próprio em até 15 minutos, sem conta, via token anônimo já usado em curtidas/sinalizações", "needs_input": false }

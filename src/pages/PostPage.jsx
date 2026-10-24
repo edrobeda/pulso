@@ -123,6 +123,32 @@ function loadWatched() {
   }
 }
 
+// Comentários publicados a partir deste navegador, pra mostrar o botão
+// "excluir" só pro autor — mesma ideia do token em comment_likes/flags, só
+// que guardado localmente (o servidor não devolve author_token em nenhuma
+// resposta). `postedAt` decide quando o botão para de aparecer (ver
+// COMMENT_DELETE_WINDOW_MS abaixo); corta pra 50 entradas mais recentes pra
+// não crescer sem limite ao longo de muitas visitas.
+const MY_COMMENTS_KEY = 'pulso-my-comments'
+const COMMENT_DELETE_WINDOW_MS = 15 * 60 * 1000
+
+function loadMyComments() {
+  try {
+    return JSON.parse(localStorage.getItem(MY_COMMENTS_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+function saveMyComments(list) {
+  try {
+    localStorage.setItem(MY_COMMENTS_KEY, JSON.stringify(list.slice(-50)))
+  } catch {
+    // modo privado/quota cheia: o comentário publica normalmente, só não
+    // vai ter botão de excluir nesta sessão
+  }
+}
+
 const PUSH_SUPPORTED =
   typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
 
@@ -297,6 +323,8 @@ export default function PostPage() {
   const [flaggedIds, setFlaggedIds] = useState(loadFlagged)
   const [likedIds, setLikedIds] = useState(loadLiked)
   const [watchedIds, setWatchedIds] = useState(loadWatched)
+  const [myComments, setMyComments] = useState(loadMyComments)
+  const [deleteError, setDeleteError] = useState('')
   const [watchError, setWatchError] = useState('')
 
   // Só um comentário por vez tem o form de resposta aberto — reaproveita o
@@ -488,7 +516,12 @@ export default function PostPage() {
     fetch(`/api/posts/${post.slug}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ authorName: commentName, body: commentBody, website: commentHoneypot }),
+      body: JSON.stringify({
+        authorName: commentName,
+        body: commentBody,
+        website: commentHoneypot,
+        clientToken: getClientToken(),
+      }),
     })
       .then(async (r) => {
         const data = await r.json().catch(() => null)
@@ -497,6 +530,9 @@ export default function PostPage() {
       })
       .then((data) => {
         setComments((prev) => [...prev, data])
+        const next = [...myComments, { id: data.id, postedAt: Date.now() }]
+        setMyComments(next)
+        saveMyComments(next)
         setCommentBody('')
         setCommentName('')
         setCommentStatus('idle')
@@ -529,6 +565,7 @@ export default function PostPage() {
         body: replyBody,
         website: replyHoneypot,
         parentCommentId,
+        clientToken: getClientToken(),
       }),
     })
       .then(async (r) => {
@@ -538,6 +575,9 @@ export default function PostPage() {
       })
       .then((data) => {
         setComments((prev) => [...prev, data])
+        const next = [...myComments, { id: data.id, postedAt: Date.now() }]
+        setMyComments(next)
+        saveMyComments(next)
         setReplyBody('')
         setReplyName('')
         setReplyStatus('idle')
@@ -588,6 +628,33 @@ export default function PostPage() {
         }
       })
       .catch(() => {})
+  }
+
+  function isOwnComment(commentId) {
+    const entry = myComments.find((m) => m.id === commentId)
+    return entry && Date.now() - entry.postedAt < COMMENT_DELETE_WINDOW_MS
+  }
+
+  function handleDeleteComment(commentId) {
+    if (!post) return
+    setDeleteError('')
+    fetch(`/api/posts/${post.slug}/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientToken: getClientToken() }),
+    })
+      .then(async (r) => {
+        const data = await r.json().catch(() => null)
+        if (!r.ok) throw new Error(data?.error || 'não foi possível excluir o comentário')
+        return data
+      })
+      .then(() => {
+        setComments((prev) => prev.filter((c) => c.id !== commentId))
+        const next = myComments.filter((m) => m.id !== commentId)
+        setMyComments(next)
+        saveMyComments(next)
+      })
+      .catch((err) => setDeleteError(err.message))
   }
 
   async function handleWatchComment(commentId) {
@@ -936,6 +1003,11 @@ export default function PostPage() {
                 {watchError}
               </p>
             )}
+            {deleteError && (
+              <p className="comment-form__error" role="alert">
+                {deleteError}
+              </p>
+            )}
             {comments.length > 0 && (
               <ul className="comments__list">
                 {comments
@@ -982,6 +1054,16 @@ export default function PostPage() {
                             >
                               {flaggedIds.includes(c.id) ? 'sinalizado' : 'sinalizar'}
                             </button>
+                            {isOwnComment(c.id) && (
+                              <button
+                                type="button"
+                                className="comment__delete"
+                                onClick={() => handleDeleteComment(c.id)}
+                                aria-label="Excluir seu comentário (disponível por 15 minutos)"
+                              >
+                                excluir
+                              </button>
+                            )}
                           </div>
                         </div>
                         <p className="comment__body">{c.body}</p>
@@ -1026,6 +1108,16 @@ export default function PostPage() {
                                     >
                                       {flaggedIds.includes(r.id) ? 'sinalizado' : 'sinalizar'}
                                     </button>
+                                    {isOwnComment(r.id) && (
+                                      <button
+                                        type="button"
+                                        className="comment__delete"
+                                        onClick={() => handleDeleteComment(r.id)}
+                                        aria-label="Excluir sua resposta (disponível por 15 minutos)"
+                                      >
+                                        excluir
+                                      </button>
+                                    )}
                                   </div>
                                 </div>
                                 <p className="comment__body">{r.body}</p>

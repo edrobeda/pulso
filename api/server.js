@@ -734,17 +734,57 @@ app.post('/api/posts/:slug/comments', writeLimiter, async (req, res) => {
       parentCommentId = candidate
     }
 
+    // Opcional (comentário continua valendo sem ele, só não dá pra excluir
+    // depois): mesmo clientToken do localStorage usado em like/flag, aqui
+    // guardado como prova de autoria pro DELETE abaixo.
+    const authorToken = String(req.body?.clientToken || '').trim().slice(0, 100) || null
+
     const { rows } = await pool.query(
-      `INSERT INTO post_comments (slug, author_name, body, parent_comment_id)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO post_comments (slug, author_name, body, parent_comment_id, author_token)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING id, author_name, body, created_at, parent_comment_id`,
-      [req.params.slug, authorName, body, parentCommentId]
+      [req.params.slug, authorName, body, parentCommentId, authorToken]
     )
     res.status(201).json(rows[0])
     if (parentCommentId) notifyReplyWatchers(parentCommentId, req.params.slug)
   } catch (err) {
     console.error(err)
     logServerError('POST /api/posts/:slug/comments', err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// Autor exclui o próprio comentário (sem conta: prova de autoria é o
+// clientToken salvo na criação). Janela curta de 15min — é pra corrigir
+// typo/arrependimento na hora, não um "excluir" permanente a qualquer
+// momento; depois da janela, só moderação (flag) ou psql direto. Soft-hide
+// (visible = false) em vez de DELETE de verdade, mesma válvula já usada
+// pelo auto-hide de flag — preserva o contador de respostas e evita
+// precisar lidar com CASCADE apagando resposta de outra pessoa.
+const COMMENT_SELF_DELETE_WINDOW = '15 minutes'
+
+app.delete('/api/posts/:slug/comments/:id', writeLimiter, async (req, res) => {
+  try {
+    const commentId = Number(req.params.id)
+    if (!Number.isInteger(commentId)) return res.status(400).json({ error: 'invalid comment id' })
+    const clientToken = String(req.body?.clientToken || '').trim().slice(0, 100)
+    if (!clientToken) return res.status(400).json({ error: 'clientToken required' })
+
+    const { rows } = await pool.query(
+      `UPDATE post_comments
+       SET visible = false
+       WHERE id = $1 AND slug = $2 AND author_token = $3 AND visible = true
+         AND created_at > now() - interval '${COMMENT_SELF_DELETE_WINDOW}'
+       RETURNING id`,
+      [commentId, req.params.slug, clientToken]
+    )
+    if (rows.length === 0) {
+      return res.status(403).json({ error: 'não foi possível excluir (token não corresponde, janela de 15min expirou, ou já removido)' })
+    }
+    res.json({ deleted: true })
+  } catch (err) {
+    console.error(err)
+    logServerError('DELETE /api/posts/:slug/comments/:id', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
