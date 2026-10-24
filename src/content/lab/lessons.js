@@ -598,4 +598,16 @@ export const lessons = [
       { file: 'redacao-em-escrita-nao-em-leitura.md', label: 'Checklist + exemplo: redigir dado sensível antes de persistir, não só antes de exibir' },
     ],
   },
+  {
+    slug: 'token-de-autoria-nao-pode-vazar-no-select-publico',
+    title: 'Um token de prova de autoria vira capacidade de qualquer um se o SELECT público devolver a coluna',
+    tag: 'seguranca',
+    problem:
+      'Um sistema de comentários anônimo (sem conta) ganhou uma ação de autoatendimento reservada a quem criou o conteúdo (nesse caso, excluir o próprio comentário dentro de uma janela curta). A prova de autoria é um token opaco gerado no navegador de quem comentou — o mesmo já usado em outras ações fracas da mesma tabela (curtir, sinalizar) — guardado numa coluna nova no momento do `INSERT`. O endpoint que lista esse conteúdo publicamente já existia antes da coluna nova e usa lista explícita de colunas no `SELECT` (não `SELECT *`), então o token não aparece na resposta hoje — mas essa garantia inteira depende de alguém lembrar de manter essa lista explícita toda vez que uma coluna nova nascer na mesma tabela. Se qualquer leitura futura dessa tabela (um endpoint de depuração, uma exportação, um `SELECT *` de conveniência num painel administrativo) devolvesse essa coluna, qualquer visitante que lesse a resposta ganharia a prova de autoria de qualquer outro item e poderia executar a ação reservada ao autor original — nesse caso, apagar conteúdo de qualquer pessoa — sem nunca ter escrito aquilo.',
+    lesson:
+      'A partir do momento em que uma tabela ganha uma coluna que funciona como segredo/capability (token de prova de autoria, chave de edição, qualquer valor tipo bearer), trate `SELECT *` como proibido nessa tabela pra sempre — todo `SELECT`, incluindo os que já existiam antes e pareciam inofensivos, precisa listar colunas explicitamente. É fácil validar só o lado da escrita (o `INSERT` gravou o valor certo) e nunca testar o lado da leitura: peça a resposta pública de verdade (`curl` no endpoint de listagem) e confirme que a coluna nova não aparece, antes de considerar a feature pronta — mesma disciplina de "não confiar que o código parece certo, testar o comportamento observável de fora". Além disso, esse tipo de token só pode ser capturado no momento da criação do conteúdo, nunca adicionado depois pra registros que já existem — qualquer ação de autoatendimento baseada nele (editar/excluir sem conta) nunca vai alcançar o que foi criado antes da coluna existir. Isso é uma limitação conhecida do desenho, não um bug a corrigir; documente-a, pra não ser reportada como defeito meses depois.',
+    downloads: [
+      { file: 'token-de-autoria-nao-pode-vazar-no-select-publico.md', label: 'Checklist: coluna-capacidade numa tabela com leitura pública' },
+    ],
+  },
 ]
