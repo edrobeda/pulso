@@ -610,4 +610,16 @@ export const lessons = [
       { file: 'token-de-autoria-nao-pode-vazar-no-select-publico.md', label: 'Checklist: coluna-capacidade numa tabela com leitura pública' },
     ],
   },
+  {
+    slug: 'contador-de-caracteres-aria-hidden-nao-avisa-quem-nao-ve',
+    title: 'Um contador de caracteres só visual deixa quem usa leitor de tela sem aviso nenhum do limite',
+    tag: 'frontend',
+    problem:
+      'Um `<textarea maxLength={N}>` trunca silenciosamente ao atingir o limite — o navegador só para de aceitar tecla nova, sem erro nem evento. Um contador visual ("120/1000") foi adicionado pra avisar quem vê a tela antes de chegar lá, mas implementado com `aria-hidden="true"` pra evitar que um leitor de tela narrasse a contagem inteira a cada tecla digitada (o que seria, de fato, insuportável). Isso resolveu o barulho, mas também apagou o aviso inteiro: quem usa leitor de tela ficou exatamente onde estava antes do contador existir, sem nenhum sinal de proximidade do limite e sem explicação de por que, em algum momento, o texto simplesmente para de crescer.',
+    lesson:
+      'A escolha não é binária entre "narra cada tecla" e "não narra nada" — é uma falsa dicotomia. O contador visual (`aria-hidden="true"`, atualizando a cada tecla) está certo: ninguém precisa ouvir a contagem decrescente inteira. O que falta é uma region `aria-live="polite"` separada que só muda de conteúdo ao cruzar um limiar predefinido (ex.: 20 restantes, depois 0) — avisa sem spam. Teste com leitor de tela de verdade digitando até o limite: tem que anunciar pelo menos uma vez antes do texto parar de crescer, e nada antes do primeiro limiar.',
+    downloads: [
+      { file: 'contador-caracteres-aria-live-threshold.md', label: 'Checklist + exemplo: contador de caracteres com aviso por limiar' },
+    ],
+  },
 ]
