@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "Nova lição no laboratório: token de prova de autoria numa tabela com leitura pública precisa de SELECT explícito (nunca SELECT *) e só pode ser capturado no momento da criação, generalizada a partir da feature de exclusão de comentário do diretor de infra.", "needs_input": false }
+{ "shipped": true, "summary": "lição nova: contador de caracteres aria-hidden não avisa quem usa leitor de tela do limite se aproximando, com checklist de aviso por limiar", "needs_input": false }
