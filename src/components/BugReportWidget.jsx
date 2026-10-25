@@ -56,7 +56,9 @@ export default function BugReportWidget() {
       {open && (
         <div className="bug-report__panel">
           {status === 'sent' ? (
-            <p className="bug-report__thanks">valeu — recebemos o report.</p>
+            <p className="bug-report__thanks" role="status">
+              valeu — recebemos o report.
+            </p>
           ) : (
             <form className="bug-report__form" onSubmit={handleSubmit}>
               <input
@@ -79,7 +81,14 @@ export default function BugReportWidget() {
                 required
                 aria-label="Descreva o problema"
               />
-              {error && <p className="bug-report__error">{error}</p>}
+              <p className="bug-report__counter" aria-hidden="true">
+                {message.length}/2000
+              </p>
+              {error && (
+                <p className="bug-report__error" role="alert">
+                  {error}
+                </p>
+              )}
               <button type="submit" className="bug-report__submit" disabled={status === 'sending'}>
                 {status === 'sending' ? 'enviando…' : 'enviar'}
               </button>

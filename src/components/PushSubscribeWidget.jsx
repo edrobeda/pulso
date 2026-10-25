@@ -88,14 +88,26 @@ export default function PushSubscribeWidget() {
 
   if (status === 'subscribed') {
     return (
-      <button type="button" className="push-subscribe push-subscribe--on" onClick={handleUnsubscribe} disabled={loading}>
+      <button
+        type="button"
+        className="push-subscribe push-subscribe--on"
+        onClick={handleUnsubscribe}
+        disabled={loading}
+        aria-live="polite"
+      >
         🔔 avisos ativados
       </button>
     )
   }
 
   return (
-    <button type="button" className="push-subscribe" onClick={handleSubscribe} disabled={loading}>
+    <button
+      type="button"
+      className="push-subscribe"
+      onClick={handleSubscribe}
+      disabled={loading}
+      aria-live="polite"
+    >
       {status === 'denied'
         ? 'notificações bloqueadas no navegador'
         : status === 'error'

@@ -1160,6 +1160,9 @@ export default function PostPage() {
                               required
                               aria-label={`Sua resposta a ${c.author_name}`}
                             />
+                            <p className="comment-form__counter" aria-hidden="true">
+                              {replyBody.length}/1000
+                            </p>
                             {replyError && (
                               <p className="comment-form__error" role="alert">
                                 {replyError}
@@ -1209,6 +1212,9 @@ export default function PostPage() {
                 required
                 aria-label="Seu comentário"
               />
+              <p className="comment-form__counter" aria-hidden="true">
+                {commentBody.length}/1000
+              </p>
               {commentError && (
                 <p className="comment-form__error" role="alert">
                   {commentError}

@@ -399,6 +399,14 @@ a {
   pointer-events: none;
 }
 
+.bug-report__counter {
+  align-self: flex-end;
+  margin: -4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--mist-400);
+}
+
 .bug-report__error {
   margin: 0;
   font-family: var(--font-mono);
@@ -1532,6 +1540,14 @@ a {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--signal-teal);
+}
+
+.comment-form__counter {
+  align-self: flex-end;
+  margin: -4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--paper-muted);
 }
 
 .comment-form__submit {
