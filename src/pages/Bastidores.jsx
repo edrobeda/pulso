@@ -137,6 +137,7 @@ export default function Bastidores() {
   const [vitals, setVitals] = useState({ status: 'loading', byMetric: {} })
   const [uptime, setUptime] = useState({ status: 'loading', rows: [] })
   const [serverErrors, setServerErrors] = useState({ status: 'loading', rows: [] })
+  const [flaggedComments, setFlaggedComments] = useState({ status: 'loading', rows: [] })
 
   useEffect(() => {
     setDocumentMeta({
@@ -339,6 +340,24 @@ export default function Bastidores() {
       })
       .catch(() => {
         if (!cancelled) setUptime({ status: 'error', rows: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/comments/flagged')
+      .then((res) => {
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        return res.json()
+      })
+      .then((rows) => {
+        if (!cancelled) setFlaggedComments({ status: 'ready', rows })
+      })
+      .catch(() => {
+        if (!cancelled) setFlaggedComments({ status: 'error', rows: [] })
       })
     return () => {
       cancelled = true
@@ -732,6 +751,32 @@ export default function Bastidores() {
                 <span className="usage-item__cost">
                   {d.count === 1 ? '1 download' : `${d.count} downloads`}
                 </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {flaggedComments.status === 'ready' && flaggedComments.rows.length > 0 && (
+        <div className="server-errors-section">
+          <h2 className="section-heading">
+            <span className="section-heading__icon" aria-hidden="true">⚑</span>
+            comentários ocultados por moderação coletiva
+          </h2>
+          <p className="search-stats__summary">
+            escondidos automaticamente depois de 3+ leitores distintos sinalizarem o mesmo
+            comentário — texto não aparece aqui de propósito, só onde e quando aconteceu.
+          </p>
+          <ul className="bug-reports-list">
+            {flaggedComments.rows.map((c) => (
+              <li className="bug-reports-item" key={c.id}>
+                <div className="bug-reports-item__head">
+                  <span className="bug-reports-item__when">{bugReportDateLabel(c.created_at)}</span>
+                  <a href={`/posts/${c.slug}`} className="bug-reports-item__url">
+                    {c.post_title}
+                  </a>
+                </div>
+                <p className="bug-reports-item__message">{c.flag_count} sinalizações</p>
               </li>
             ))}
           </ul>

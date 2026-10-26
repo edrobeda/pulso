@@ -772,7 +772,7 @@ app.delete('/api/posts/:slug/comments/:id', writeLimiter, async (req, res) => {
 
     const { rows } = await pool.query(
       `UPDATE post_comments
-       SET visible = false
+       SET visible = false, hidden_reason = 'self_deleted'
        WHERE id = $1 AND slug = $2 AND author_token = $3 AND visible = true
          AND created_at > now() - interval '${COMMENT_SELF_DELETE_WINDOW}'
        RETURNING id`,
@@ -826,7 +826,10 @@ app.post('/api/comments/:id/flag', writeLimiter, async (req, res) => {
     const flagCount = countRows[0].count
 
     if (flagCount >= FLAG_HIDE_THRESHOLD) {
-      await pool.query('UPDATE post_comments SET visible = false WHERE id = $1', [commentId])
+      await pool.query(
+        "UPDATE post_comments SET visible = false, hidden_reason = 'flagged' WHERE id = $1",
+        [commentId]
+      )
     }
 
     res.json({ flagCount, hidden: flagCount >= FLAG_HIDE_THRESHOLD })
@@ -1105,6 +1108,33 @@ app.get('/api/comments/recent', async (_req, res) => {
   } catch (err) {
     console.error(err)
     logServerError('GET /api/comments/recent', err)
+    res.status(500).json({ error: 'internal error' })
+  }
+})
+
+// Visibilidade de quando a moderação coletiva de fato agiu (ver
+// hidden_reason em db/migrations/0028_comment_hidden_reason.sql) — sem isso
+// não tinha nenhum jeito de notar, em /bastidores ou no banco, se o
+// auto-hide por flag (FLAG_HIDE_THRESHOLD acima) estava escondendo
+// comentário legítimo por engano. Deliberadamente NÃO devolve `body` —
+// reexpor publicamente o texto de algo que 3+ leitores distintos marcaram
+// como spam/problema anularia o propósito de ter escondido.
+app.get('/api/comments/flagged', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT c.id, c.slug, p.title AS post_title, c.created_at,
+              (SELECT count(*)::int FROM comment_flags f WHERE f.comment_id = c.id) AS flag_count
+       FROM post_comments c
+       JOIN posts p ON p.slug = c.slug
+       WHERE c.hidden_reason = 'flagged'
+       ORDER BY c.created_at DESC
+       LIMIT 50`
+    )
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(rows)
+  } catch (err) {
+    console.error(err)
+    logServerError('GET /api/comments/flagged', err)
     res.status(500).json({ error: 'internal error' })
   }
 })
