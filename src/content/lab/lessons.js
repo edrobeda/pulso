@@ -622,4 +622,16 @@ export const lessons = [
       { file: 'contador-caracteres-aria-live-threshold.md', label: 'Checklist + exemplo: contador de caracteres com aviso por limiar' },
     ],
   },
+  {
+    slug: 'moderacao-automatica-sem-motivo-registrado',
+    title: 'Conteúdo que desaparece sozinho por moderação automática precisa de um motivo registrado, não só ausência',
+    tag: 'infra',
+    problem:
+      'Um sistema de moderação coletiva (N visitantes distintos sinalizando o mesmo item faz ele ser ocultado automaticamente) rodava silenciosamente: quando um item desaparecia da visualização pública, não existia como saber, sem acessar o banco direto, se foi por moderação automática ou por o próprio autor ter apagado — as duas situações pareciam exatamente a mesma coisa de fora (ausência). Sem essa distinção, duas perguntas ficavam sem resposta: a moderação automática está realmente funcionando, ou nunca disparou? E ela ocultou por engano algo legítimo (falso positivo de sinalização em massa)?',
+    lesson:
+      'Grave o motivo da ocultação como dado estruturado no momento em que ela acontece (uma coluna/enum que diferencia "ocultado por sinalização coletiva" de "removido pelo autor", por exemplo) — nunca deixe os dois casos colapsarem no mesmo "não existe mais". Exponha essa atividade onde um humano já olha, mesma família de lição que verificação-que-só-o-processo-vê, mas só com metadados (quando, em qual item, quantas sinalizações) — nunca republique o conteúdo que foi ocultado por abuso/spam, mesmo numa página interna/administrativa, porque isso derrota o próprio propósito de ter escondido aquele conteúdo.',
+    downloads: [
+      { file: 'moderacao-automatica-motivo-e-metadados.md', label: 'Checklist: motivo estruturado + metadados sem republicar conteúdo' },
+    ],
+  },
 ]
