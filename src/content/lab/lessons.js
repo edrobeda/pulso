@@ -634,4 +634,16 @@ export const lessons = [
       { file: 'moderacao-automatica-motivo-e-metadados.md', label: 'Checklist: motivo estruturado + metadados sem republicar conteúdo' },
     ],
   },
+  {
+    slug: 'catch-por-rota-nao-cobre-erro-de-middleware',
+    title: 'Um catch em cada rota não pega o erro que acontece antes de qualquer rota rodar',
+    tag: 'infra',
+    problem:
+      'Uma API já seguia a disciplina certa de tratamento de erro: todo `catch` de rota logava o erro completo no servidor e devolvia ao cliente uma mensagem genérica, nunca `err.message` cru. Mesmo assim, um corpo de requisição malformado (JSON inválido) em qualquer endpoint de escrita ainda vazava uma página de erro com stack trace completo e caminho interno de arquivo do servidor. O motivo: o parsing do corpo roda num middleware que executa antes de qualquer rota, então o erro nunca chega a entrar em nenhum dos `catch` escritos dentro das rotas — ele cai direto no handler de erro padrão do próprio framework, que em muitos casos ainda devolve detalhe de debug por padrão.',
+    lesson:
+      'Catch por rota e handler de erro genérico no fim da cadeia de middlewares resolvem problemas diferentes, não o mesmo problema duas vezes — o primeiro cobre o que acontece dentro do corpo de uma rota específica, o segundo é a rede de segurança para qualquer erro que nenhuma rota chegou a ver (erro de parsing de corpo, erro síncrono lançado num middleware anterior, um `next(err)` chamado explicitamente). No Express, esse handler final só é reconhecido como handler de erro pela aridade da função (quatro parâmetros: `err, req, res, next`) — é fácil escrever um middleware de quatro parâmetros achando que vai rodar sempre e ele nunca ser acionado porque, na verdade, o framework o trata como handler de erro normal só quando chamado via `next(err)`, ou vice-versa, esquecer o quarto parâmetro e ele nunca ser reconhecido como handler de erro. Trate erro de parsing como categoria própria ali dentro (checando o tipo do erro) respondendo 4xx genérico; qualquer outro erro vira 500 genérico, sempre logado no servidor antes de responder ao cliente. Teste mandando de propósito um corpo malformado (`curl` com JSON quebrado) contra cada verbo de escrita e confirme que a resposta é o formato de erro genérico da sua própria API, não a página padrão do framework.',
+    downloads: [
+      { file: 'catch-all-error-handler-express.md', label: 'Checklist + template: handler de erro genérico no fim da cadeia de middlewares' },
+    ],
+  },
 ]
