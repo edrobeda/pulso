@@ -1937,6 +1937,20 @@ async function runUptimeChecks() {
 setInterval(runUptimeChecks, UPTIME_CHECK_INTERVAL_MINUTES * 60_000)
 runUptimeChecks().catch(() => {})
 
+// Error handler genérico, depois de todas as rotas — sem isto, um corpo
+// JSON malformado (ex. `curl -d '{bad'`) faz o express.json() lançar e o
+// Express cair no handler padrão, que devolve a página de erro com stack
+// trace completo e paths internos (`/app/node_modules/...`) pro cliente.
+// Precisa dos 4 parâmetros (err, req, res, next) pro Express reconhecer como
+// error handler, mesmo sem chamar `next`.
+app.use((err, req, res, next) => {
+  if (err?.type === 'entity.parse.failed' || err instanceof SyntaxError) {
+    return res.status(400).json({ error: 'invalid json' })
+  }
+  logServerError(req.path, err)
+  res.status(500).json({ error: 'internal error' })
+})
+
 const port = process.env.PORT || 3000
 app.listen(port, () => {
   console.log(`pulso-api listening on ${port}`)
