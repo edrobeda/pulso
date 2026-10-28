@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "error handler genérico na API pra parar de vazar stack trace em JSON malformado", "needs_input": false }
+{ "shipped": true, "summary": "contadores de caracteres (comentário, resposta, bug report) deixaram de usar aria-hidden e agora são anunciados a leitor de tela via aria-describedby", "needs_input": false }

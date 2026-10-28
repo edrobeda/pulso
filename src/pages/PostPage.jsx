@@ -1159,8 +1159,9 @@ export default function PostPage() {
                               rows={2}
                               required
                               aria-label={`Sua resposta a ${c.author_name}`}
+                              aria-describedby={`comment-reply-counter-${c.id}`}
                             />
-                            <p className="comment-form__counter" aria-hidden="true">
+                            <p className="comment-form__counter" id={`comment-reply-counter-${c.id}`}>
                               {replyBody.length}/1000
                             </p>
                             {replyError && (
@@ -1211,8 +1212,9 @@ export default function PostPage() {
                 rows={3}
                 required
                 aria-label="Seu comentário"
+                aria-describedby="comment-form-counter"
               />
-              <p className="comment-form__counter" aria-hidden="true">
+              <p className="comment-form__counter" id="comment-form-counter">
                 {commentBody.length}/1000
               </p>
               {commentError && (

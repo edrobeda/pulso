@@ -80,8 +80,9 @@ export default function BugReportWidget() {
                 rows={3}
                 required
                 aria-label="Descreva o problema"
+                aria-describedby="bug-report-counter"
               />
-              <p className="bug-report__counter" aria-hidden="true">
+              <p className="bug-report__counter" id="bug-report-counter">
                 {message.length}/2000
               </p>
               {error && (
