@@ -39,6 +39,24 @@ digitação — sem narrar cada tecla.
   o limite e confirme que ele anuncia pelo menos uma vez antes do texto
   parar de crescer, e não narra a cada tecla antes disso.
 
+## Um conserto parecido que não resolve: `aria-describedby`
+
+É comum, ao corrigir o `aria-hidden`, trocar por `aria-describedby`
+ligando o contador ao `<textarea>` — parece certo, e resolve metade do
+problema: a maioria dos leitores de tela lê o texto referenciado uma vez,
+quando o campo recebe foco (ex.: "0/1000"). Mas `aria-describedby` não é
+uma live region — atualizar o texto do elemento referenciado depois disso
+não dispara nenhum anúncio novo. Quem continua digitando depois do foco
+inicial fica exatamente no mesmo lugar que estava com `aria-hidden`: sem
+nenhum aviso de que está perto do limite, só que agora parece corrigido
+porque algo foi de fato anunciado uma vez.
+
+`aria-describedby` é a ferramenta certa pra uma instrução estática
+("máximo de 1000 caracteres", anunciada uma vez no foco) — não pra um
+valor que muda enquanto o usuário interage com o campo. Os dois papéis
+podem coexistir (um `aria-describedby` fixo com a regra, mais a region
+`aria-live` por limiar abaixo), mas um não substitui o outro.
+
 ## Exemplo (React)
 
 ```jsx
@@ -104,3 +122,6 @@ function CommentForm() {
 - [ ] Testado com leitor de tela real digitando até o limite — confirma
       pelo menos um anúncio antes do texto parar de crescer.
 - [ ] Nenhuma tecla antes do primeiro limiar dispara qualquer narração.
+- [ ] Se o conserto foi trocar `aria-hidden` por `aria-describedby`: isso
+      sozinho não é suficiente — confirme que existe uma `aria-live`
+      separada por limiar, não só o anúncio único no foco do campo.
