@@ -16,6 +16,9 @@ import { isSaved, toggleSaved } from '../lib/saved'
 import { precachePostOffline, dropPostOfflineCache } from '../lib/offlineCache'
 import { getClientToken } from '../lib/clientToken'
 import { useEscapeToClose } from '../hooks/useEscapeToClose'
+import { useThresholdAnnouncement } from '../hooks/useThresholdAnnouncement'
+
+const COMMENT_MAX_LEN = 1000
 
 function viewsLabel(count) {
   return count === 1 ? '1 leitura' : `${count} leituras`
@@ -339,6 +342,8 @@ export default function PostPage() {
   const [replyHoneypot, setReplyHoneypot] = useState('')
   const [replyStatus, setReplyStatus] = useState('idle')
   const [replyError, setReplyError] = useState('')
+  const commentCounterAnnouncement = useThresholdAnnouncement(COMMENT_MAX_LEN - commentBody.length)
+  const replyCounterAnnouncement = useThresholdAnnouncement(COMMENT_MAX_LEN - replyBody.length)
   // Form de resposta fecha ao publicar (replyTarget volta a null), então a
   // confirmação não pode morar dentro do form — fica ligada ao comentário-pai
   // em vez do estado do form, pra sobreviver ao fechamento.
@@ -1155,14 +1160,16 @@ export default function PostPage() {
                               placeholder="escreva sua resposta"
                               value={replyBody}
                               onChange={(e) => setReplyBody(e.target.value)}
-                              maxLength={1000}
+                              maxLength={COMMENT_MAX_LEN}
                               rows={2}
                               required
                               aria-label={`Sua resposta a ${c.author_name}`}
-                              aria-describedby={`comment-reply-counter-${c.id}`}
                             />
-                            <p className="comment-form__counter" id={`comment-reply-counter-${c.id}`}>
-                              {replyBody.length}/1000
+                            <p className="comment-form__counter" aria-hidden="true">
+                              {replyBody.length}/{COMMENT_MAX_LEN}
+                            </p>
+                            <p className="sr-only" role="status" aria-live="polite">
+                              {replyCounterAnnouncement}
                             </p>
                             {replyError && (
                               <p className="comment-form__error" role="alert">
@@ -1208,14 +1215,16 @@ export default function PostPage() {
                 placeholder="deixe um comentário"
                 value={commentBody}
                 onChange={(e) => setCommentBody(e.target.value)}
-                maxLength={1000}
+                maxLength={COMMENT_MAX_LEN}
                 rows={3}
                 required
                 aria-label="Seu comentário"
-                aria-describedby="comment-form-counter"
               />
-              <p className="comment-form__counter" id="comment-form-counter">
-                {commentBody.length}/1000
+              <p className="comment-form__counter" aria-hidden="true">
+                {commentBody.length}/{COMMENT_MAX_LEN}
+              </p>
+              <p className="sr-only" role="status" aria-live="polite">
+                {commentCounterAnnouncement}
               </p>
               {commentError && (
                 <p className="comment-form__error" role="alert">

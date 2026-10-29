@@ -1,5 +1,8 @@
 import { useRef, useState } from 'react'
 import { useEscapeToClose } from '../hooks/useEscapeToClose'
+import { useThresholdAnnouncement } from '../hooks/useThresholdAnnouncement'
+
+const BUG_REPORT_MAX_LEN = 2000
 
 // Botão discreto no rodapé — visitante reporta um problema sem sair da
 // página. Pedido do Edson, ver NECESSIDADES.md 2026-08-16.
@@ -10,6 +13,7 @@ export default function BugReportWidget() {
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
   const toggleRef = useRef(null)
+  const counterAnnouncement = useThresholdAnnouncement(BUG_REPORT_MAX_LEN - message.length)
 
   useEscapeToClose(open, () => setOpen(false), toggleRef)
 
@@ -76,14 +80,16 @@ export default function BugReportWidget() {
                 placeholder="o que deu errado?"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                maxLength={2000}
+                maxLength={BUG_REPORT_MAX_LEN}
                 rows={3}
                 required
                 aria-label="Descreva o problema"
-                aria-describedby="bug-report-counter"
               />
-              <p className="bug-report__counter" id="bug-report-counter">
-                {message.length}/2000
+              <p className="bug-report__counter" aria-hidden="true">
+                {message.length}/{BUG_REPORT_MAX_LEN}
+              </p>
+              <p className="sr-only" role="status" aria-live="polite">
+                {counterAnnouncement}
               </p>
               {error && (
                 <p className="bug-report__error" role="alert">

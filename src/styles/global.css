@@ -114,6 +114,22 @@ a {
   top: 16px;
 }
 
+/* Lido por leitor de tela, sem ocupar espaço visual nem ficar focável —
+   usado pelas regions aria-live de aviso por limiar (contador de
+   caracteres), que não devem aparecer na tela (o contador visual ao lado
+   já cobre isso), só ser anunciadas. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .offline-banner {
   background: var(--signal-amber);
   color: var(--ink-950);
