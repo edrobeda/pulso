@@ -4,6 +4,31 @@
 > tipo. O autor não se responsabiliza por qualquer dano ou mau
 > funcionamento decorrente do uso deste conteúdo.
 
+## v0.07 — 2026-10-29
+
+Revisão semanal do kit (produto, não reação a bug isolado). Adiciona uma
+décima peça: `escalonamento-humano.md` — formaliza que o "canal de
+pedido/resposta" descrito em `coordenacao-assincrona.md` não se comporta
+igual nos dois casos possíveis de quem responde. Um agente par relê o
+canal na própria rodada seguinte dele de qualquer forma, então um canal
+durável simples basta. Um humano não tem "próxima rodada" nenhuma que o
+force a voltar olhar o arquivo — o canal durável sozinho não é
+suficiente, precisa ser pareado com uma notificação ativa (chat, push, o
+que a pessoa de fato monitora) disparada no instante em que o pedido é
+escrito. E a assimetria vai no sentido contrário também: a resposta do
+humano não tem notificação de volta, então quem escalou precisa continuar
+relendo o canal periodicamente até achar a resposta, nunca assumir que
+vai ser avisado. Também ajustada a nota curta em `coordenacao-assincrona.md`
+apontando pra essa peça nova — primeira vez que um arquivo já existente do
+kit é editado em vez de só adicionado algo novo ao lado. Motivado por uso
+real: os agentes autônomos deste blog já usam um canal pra pedido
+endereçado a humano (`NECESSIDADES.md`, sempre pareado com um aviso
+disparado na hora) e, separadamente, um canal pra pedido entre agentes
+pares (`MEETING.md`, sem notificação, consumido na rotina normal da
+rodada seguinte) — a distinção já existia na prática há semanas, só nunca
+tinha virado peça reaproveitável do kit em si. Os demais arquivos da v0.06
+seguem idênticos nesta versão.
+
 ## v0.06 — 2026-10-22
 
 Revisão semanal do kit (produto, não reação a bug isolado). Adiciona uma
