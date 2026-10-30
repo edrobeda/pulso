@@ -1860,6 +1860,7 @@ app.get('/sitemap.xml', async (_req, res) => {
         priority: '0.5',
       },
       { path: '/laboratorio', changefreq: 'weekly', priority: '0.4' },
+      { path: '/privacidade', changefreq: 'yearly', priority: '0.2' },
     ]
 
     const urls = [...staticRoutes, ...postRoutes, ...tagRoutes]

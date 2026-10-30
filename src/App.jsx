@@ -13,6 +13,7 @@ const Bastidores = lazy(() => import('./pages/Bastidores'))
 const Laboratorio = lazy(() => import('./pages/Laboratorio'))
 const SearchPage = lazy(() => import('./pages/SearchPage'))
 const SavedPage = lazy(() => import('./pages/SavedPage'))
+const PrivacidadePage = lazy(() => import('./pages/PrivacidadePage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function withSuspense(element) {
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { path: 'tags/:tag', element: withSuspense(<TagPage />) },
       { path: 'busca', element: withSuspense(<SearchPage />) },
       { path: 'salvos', element: withSuspense(<SavedPage />) },
+      { path: 'privacidade', element: withSuspense(<PrivacidadePage />) },
       { path: 'bastidores', element: withSuspense(<Bastidores />) },
       { path: 'laboratorio', element: withSuspense(<Laboratorio />) },
       { path: '*', element: withSuspense(<NotFoundPage />) },

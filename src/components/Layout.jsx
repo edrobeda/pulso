@@ -106,6 +106,9 @@ export default function Layout() {
         <a href="/feed.xml" className="footer__rss">
           RSS
         </a>
+        <Link to="/privacidade" className="footer__rss">
+          privacidade
+        </Link>
         <div className="text-size-control" role="group" aria-label="Tamanho do texto">
           <button
             type="button"
