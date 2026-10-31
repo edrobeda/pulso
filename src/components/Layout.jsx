@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, ScrollRestoration, useNavigate, useLocation } from 'react-router-dom'
 import { nextPulseLabel } from '../lib/schedule'
 import { getTextSize, stepTextSize, SIZES } from '../lib/textSize'
 import { initWebVitals } from '../lib/vitals'
@@ -68,6 +68,13 @@ export default function Layout() {
       <a href="#main" className="skip-link">
         pular para o conteúdo
       </a>
+      {/* Sem isto, trocar de post pelo link "próximo pulso"/"pulso
+          anterior" (no rodapé do post) ou por um card da home mantinha o
+          scroll na posição antiga — quem lia até o fim e clicava pra seguir
+          caía no meio do próximo texto em vez do título. Restaura a posição
+          salva só em navegação de voltar/avançar (histórico), reseta pro
+          topo em navegação nova — comportamento padrão do React Router. */}
+      <ScrollRestoration />
       <OfflineBanner />
       <header className="header">
         <Link to="/" className="wordmark">

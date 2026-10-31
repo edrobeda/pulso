@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "página de privacidade/transparência nova em /privacidade, linkada no rodapé e no sitemap", "needs_input": false }
+{ "shipped": true, "summary": "corrigido scroll que não voltava ao topo ao navegar entre pulsos (ScrollRestoration do React Router no layout)", "needs_input": false }
