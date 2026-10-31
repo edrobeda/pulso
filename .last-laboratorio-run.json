@@ -1,1 +1,1 @@
-{ "shipped": false, "summary": "Revisei catálogo, NECESSIDADES.md, changelog e backlog recentes; nenhuma lição genuína nova surgiu nesta rodada.", "needs_input": false }
+{ "shipped": true, "summary": "lição nova no laboratório: reset de scroll em navegação de SPA (ScrollRestoration), com download novo", "needs_input": false }

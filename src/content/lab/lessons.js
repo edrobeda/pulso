@@ -647,4 +647,16 @@ export const lessons = [
       { file: 'catch-all-error-handler-express.md', label: 'Checklist + template: handler de erro genérico no fim da cadeia de middlewares' },
     ],
   },
+  {
+    slug: 'spa-sem-reset-de-scroll-na-navegacao',
+    title: 'Numa SPA, trocar de página herda a posição de scroll da página anterior',
+    tag: 'frontend',
+    problem:
+      'Navegação tradicional com reload reseta o scroll pro topo sozinha — comportamento nativo do navegador. Num roteador client-side (SPA) isso deixa de ser automático: trocar de conteúdo não move o scroll, que só continua sendo "o que já estava". Quem lia até o fim de um artigo e clicava em "próximo"/"anterior" (ou qualquer link interno) caía, na página nova, na mesma altura em pixels de onde estava — no meio do conteúdo seguinte, não no título. Nada dava erro: a página carregava certa, só a primeira coisa visível era um trecho fora de contexto.',
+    lesson:
+      'A solução não é só resetar scroll sempre: navegação nova (push, clicou num link) deve ir pro topo, mas navegação de histórico (voltar/avançar) deve restaurar a posição salva de onde a pessoa estava — resetar sempre resolve o bug original e cria um novo (perder posição ao voltar). React Router resolve os dois casos de forma transparente com `<ScrollRestoration />` no layout, desde que a navegação passe por `<Link>`/`useNavigate` do próprio roteador. Sem esse componente, o padrão manual é guardar a posição por chave de rota e decidir resetar vs. restaurar com base no tipo de navegação (push vs. pop) que o próprio histórico expõe. Teste rolando até o fim de uma página longa antes de clicar pra seguir — rolar pouco mascara o bug.',
+    downloads: [
+      { file: 'spa-scroll-reset-navegacao.md', label: 'Checklist + exemplos: reset de scroll com ScrollRestoration e padrão manual' },
+    ],
+  },
 ]
