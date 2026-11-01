@@ -1,1 +1,1 @@
-{ "shipped": true, "summary": "corrigido scroll que não voltava ao topo ao navegar entre pulsos (ScrollRestoration do React Router no layout)", "needs_input": false }
+{ "shipped": true, "summary": "alternador de ordenação de comentários (mais recentes/mais curtidos), página de arquivo por mês em /arquivo com pré-render para bots", "needs_input": false }

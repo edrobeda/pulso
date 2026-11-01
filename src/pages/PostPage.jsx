@@ -24,6 +24,19 @@ function viewsLabel(count) {
   return count === 1 ? '1 leitura' : `${count} leituras`
 }
 
+// Ordena só os comentários de nível 1 (as respostas de cada thread ficam
+// sempre em ordem cronológica — é uma conversa, reordenar quebraria o fio).
+function sortTopLevelComments(topLevel, sort) {
+  if (sort === 'recent') return [...topLevel].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+  if (sort === 'liked') {
+    return [...topLevel].sort((a, b) => {
+      if (b.like_count !== a.like_count) return b.like_count - a.like_count
+      return a.created_at < b.created_at ? -1 : 1
+    })
+  }
+  return topLevel
+}
+
 const REACTION_EMOJIS = ['👍', '💡', '🔥', '❤️']
 const REACTION_LABELS = {
   '👍': 'concordo',
@@ -317,6 +330,7 @@ export default function PostPage() {
   const [saved, setSaved] = useState(false)
 
   const [comments, setComments] = useState([])
+  const [commentSort, setCommentSort] = useState('oldest')
   const [commentName, setCommentName] = useState('')
   const [commentBody, setCommentBody] = useState('')
   const [commentHoneypot, setCommentHoneypot] = useState('')
@@ -1013,10 +1027,40 @@ export default function PostPage() {
                 {deleteError}
               </p>
             )}
+            {comments.filter((c) => !c.parent_comment_id).length > 1 && (
+              <div className="comments__sort" role="group" aria-label="Ordenar comentários">
+                <button
+                  type="button"
+                  className={`comments__sort-btn${commentSort === 'oldest' ? ' comments__sort-btn--active' : ''}`}
+                  onClick={() => setCommentSort('oldest')}
+                  aria-pressed={commentSort === 'oldest'}
+                >
+                  mais antigos
+                </button>
+                <button
+                  type="button"
+                  className={`comments__sort-btn${commentSort === 'recent' ? ' comments__sort-btn--active' : ''}`}
+                  onClick={() => setCommentSort('recent')}
+                  aria-pressed={commentSort === 'recent'}
+                >
+                  mais recentes
+                </button>
+                <button
+                  type="button"
+                  className={`comments__sort-btn${commentSort === 'liked' ? ' comments__sort-btn--active' : ''}`}
+                  onClick={() => setCommentSort('liked')}
+                  aria-pressed={commentSort === 'liked'}
+                >
+                  mais curtidos
+                </button>
+              </div>
+            )}
             {comments.length > 0 && (
               <ul className="comments__list">
-                {comments
-                  .filter((c) => !c.parent_comment_id)
+                {sortTopLevelComments(
+                  comments.filter((c) => !c.parent_comment_id),
+                  commentSort
+                )
                   .map((c) => {
                     const replies = comments.filter((r) => r.parent_comment_id === c.id)
                     return (

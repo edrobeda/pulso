@@ -167,3 +167,14 @@ export function groupByDay(posts) {
   }
   return [...groups.entries()].map(([date, slots]) => ({ date, slots }))
 }
+
+/** Pra `/arquivo`: cada mês com seus posts (mais recente primeiro), ordem decrescente. */
+export function groupByMonth(posts) {
+  const groups = new Map()
+  for (const post of sortPosts(posts)) {
+    const monthKey = post.date.slice(0, 7) // AAAA-MM
+    if (!groups.has(monthKey)) groups.set(monthKey, [])
+    groups.get(monthKey).push(post)
+  }
+  return [...groups.entries()].map(([monthKey, monthPosts]) => ({ monthKey, posts: monthPosts }))
+}

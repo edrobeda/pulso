@@ -113,6 +113,9 @@ export default function Layout() {
         <a href="/feed.xml" className="footer__rss">
           RSS
         </a>
+        <Link to="/arquivo" className="footer__rss">
+          arquivo
+        </Link>
         <Link to="/privacidade" className="footer__rss">
           privacidade
         </Link>

@@ -1498,6 +1498,56 @@ ${tags
   }
 })
 
+app.get('/prerender/arquivo', async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT slug, title, date FROM posts ORDER BY date DESC, slot DESC')
+    const months = new Map()
+    for (const p of rows) {
+      const monthKey = p.date.slice(0, 7)
+      if (!months.has(monthKey)) months.set(monthKey, [])
+      months.get(monthKey).push(p)
+    }
+    const title = `Arquivo — ${SITE_NAME}`
+    const description = 'Todos os pulsos publicados, por mês — do mais recente ao mais antigo.'
+    const itemListLd = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: rows.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}/posts/${p.slug}`,
+        name: p.title,
+      })),
+    }
+    const bodyHtml = `<main>
+<h1>Arquivo</h1>
+<p>${rows.length} pulsos publicados até agora.</p>
+${[...months.entries()]
+  .map(([monthKey, posts]) => {
+    const [y, m] = monthKey.split('-')
+    const label = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(
+      new Date(Number(y), Number(m) - 1, 1, 12)
+    )
+    return `<section>
+<h2>${escapeXml(label.charAt(0).toUpperCase() + label.slice(1))}</h2>
+<ul>
+${posts.map((p) => `<li><time datetime="${escapeXml(p.date)}">${prerenderDate(p.date)}</time> · <a href="${SITE_URL}/posts/${p.slug}">${escapeXml(p.title)}</a></li>`).join('\n')}
+</ul>
+</section>`
+  })
+  .join('\n')}
+</main>`
+    sendPrerender(
+      res,
+      prerenderShell({ title, description, canonicalPath: '/arquivo', jsonLd: itemListLd, bodyHtml })
+    )
+  } catch (err) {
+    console.error(err)
+    logServerError('GET /prerender/arquivo', err)
+    res.status(500).send('error')
+  }
+})
+
 app.get('/prerender/tag/:tagSlug', async (req, res) => {
   try {
     const { tagSlug } = req.params
@@ -1853,6 +1903,7 @@ app.get('/sitemap.xml', async (_req, res) => {
     const staticRoutes = [
       { path: '/', changefreq: 'hourly', priority: '1.0' },
       { path: '/tags', changefreq: 'weekly', priority: '0.4' },
+      { path: '/arquivo', lastmod: rows[0]?.date, changefreq: 'daily', priority: '0.4' },
       {
         path: '/bastidores',
         lastmod: backlogRows[0]?.entry_date,
