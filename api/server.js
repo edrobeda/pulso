@@ -1989,6 +1989,22 @@ async function runUptimeChecks() {
 setInterval(runUptimeChecks, UPTIME_CHECK_INTERVAL_MINUTES * 60_000)
 runUptimeChecks().catch(() => {})
 
+// web_vitals e search_queries crescem um pouco a cada page view/busca (sem
+// o teto natural que uptime_checks tem, que é por alvo fixo) e, até agora,
+// não tinham retenção — mesmo risco que já causou incidente de disco cheio
+// no passado (ver MEETING.md/NECESSIDADES.md). /api/vitals/summary só lê os
+// últimos 7 dias e /api/search/top-queries só os últimos 30; 90 dias dá
+// margem confortável pra ambos sem deixar a tabela crescer sem limite.
+const MONITORING_RETENTION_INTERVAL_MINUTES = 60
+
+async function pruneOldMonitoringData() {
+  await pool.query("DELETE FROM web_vitals WHERE created_at < now() - interval '90 days'").catch(() => {})
+  await pool.query("DELETE FROM search_queries WHERE created_at < now() - interval '90 days'").catch(() => {})
+}
+
+setInterval(pruneOldMonitoringData, MONITORING_RETENTION_INTERVAL_MINUTES * 60_000)
+pruneOldMonitoringData().catch(() => {})
+
 // Error handler genérico, depois de todas as rotas — sem isto, um corpo
 // JSON malformado (ex. `curl -d '{bad'`) faz o express.json() lançar e o
 // Express cair no handler padrão, que devolve a página de erro com stack
